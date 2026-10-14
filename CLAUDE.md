@@ -1,3 +1,8 @@
+@AGENTS.md
+
+## Específic de Claude Code
+- No llegeixis mai `.env` ni `~/.secrets`.
+- Per a decisions de disseny, proposa primer i espera confirmació.
 # BlondSwim v2.0
 
 Planificador d'entrenaments de natació per a 4 nedadors màsters.
