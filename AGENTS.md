@@ -12,7 +12,7 @@ Una capa només importa capes inferiors.
 
 ## Decisions fixades (no les canviïs sense ADR a docs/decisions/)
 - Una carpeta per nedador a `data/`; el nom de carpeta és l'ID.
-- JSON = font de veritat; Excel = només sortida.
+- L'Excel de calendari i el d'inscripcions són entrades; la importació els converteix a JSON i el sistema només llegeix JSON. Els Excels que genera el sistema són només sortida (ADR-0007).
 - Catàleg comú de competicions per temporada; inscripcions per nedador amb classe A/B/C per participació i prioritat principal/secundària per prova (ADR-0006).
 - L'històric d'entrenaments és un arxiu de referència per al coach; no és font de sessions ni es passa a l'LLM (ADR-0003).
 - Sessió: escalfament, tècnica, principal I, principal II (opcional), tornada a la calma (ADR-0004).

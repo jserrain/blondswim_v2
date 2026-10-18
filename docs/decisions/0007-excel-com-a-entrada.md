@@ -1,6 +1,6 @@
 # ADR-0007 — Excel com a format d'entrada
 
-**Estat:** Proposat
+**Estat:** Acceptat
 
 ## Context
 El coach manté el calendari i les inscripcions en fulls de càlcul. AGENTS.md deia «Excel = només sortida».
