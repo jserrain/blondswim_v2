@@ -1,0 +1,130 @@
+# Spec 000 — Glossari
+
+**Estat:** Aprovada
+
+## Objectiu
+Fixar els termes, els codis i la notació canònica del sistema. Cada codi té un sol significat.
+
+Fora d'abast:
+- Àlies i irregularitats d'importació: spec 002.
+- Ritme de cada zona per nedador: spec 004.
+- Tractament de cada classe de competició i noms de fases: spec 003.
+
+## 1. Zones d'intensitat
+
+| Codi | Nom | Ús |
+|---|---|---|
+| A0 | Recuperació | Recuperació activa, entre sèries o entre principals |
+| A1 | Aeròbic extensiu | Volum aeròbic de base |
+| A2 | Llindar | Ritme CSS |
+| A3 | VO2 màx | Aeròbic intensiu |
+| TOLA | Tolerància al lactat | Esforços submàxims amb descans mitjà o incomplet; mantenir la velocitat amb fatiga |
+| MPLA | Màxima producció de lactat | Esforços màxims de 25–50 m amb descans molt llarg |
+| Vel | Velocitat (alàctica) | Esforços màxims de ≤ 25 m amb recuperació completa |
+
+**Màx** = esforç màxim a la distància de la repetició. Només es fa servir com a darrer pas d'una seqüència AeM (§2).
+
+## 2. Patró de ritme dins d'una sèrie
+- **constant**: el mateix ritme a totes les repeticions. És el valor quan no se n'indica cap.
+- **progressiu**: es comença lent i s'acaba més ràpid.
+- **regressiu**: es comença ràpid i s'acaba més lent.
+- **fartlek**: canvis de ritme dins de la sèrie.
+
+**AeM (Aeròbic mix):** sèrie progressiva per zones. Cada repetició té la seva zona, en ordre creixent, i la seqüència té tantes zones com repeticions. AeM no és una zona de l'escala.
+- *Exemple:* `4x100 Cr AeM (A1-A2-A3-Màx) c/2:00`. Són quatre repeticions de 100 m de crol: la primera a A1, la segona a A2, la tercera a A3 i la quarta al màxim. Cada repetició comença cada 2 minuts.
+
+## 3. Descans
+- **`d/m:ss`**: descans fix entre repeticions. És l'única forma que prescriu el sistema.
+  - *Exemple:* `12x25 Cr (subaquàtic 15 m) A1 d/0:45`.
+- **`c/m:ss`**: cicle. Cada repetició comença a l'interval indicat, i el descans és el temps que sobra. Si el nedador va més ràpid, descansa més; si va més lent, descansa menys.
+  - *Exemple:* `4x100 Cr A1 c/1:45`. Si el nedador fa cada 100 m en 1:27, descansa 18 s.
+  - El sistema només l'accepta en dades importades o introduïdes pel coach.
+- **Durades:** sempre en format `m:ss`.
+- **Temps de registre** (marques): format `m:ss.cc`, amb centèsimes; per exemple, `1:05.32`.
+
+## 4. Estils i combinacions
+
+| Codi | Significat |
+|---|---|
+| Cr | Crol |
+| Esq | Esquena |
+| Br | Braça |
+| Pap | Papallona |
+| Ei | Estils individuals (Pap-Esq-Br-Cr). Prova d'estils; també es pot fer servir com a estil preferent |
+| Ei inv | Estils en ordre invers (Cr-Br-Esq-Pap) |
+| FRIM | Estils amb crol en lloc de papallona (Cr-Esq-Br-Cr) |
+| PEB | Papallona-Esquena-Braça |
+| EP | Estil preferent del nedador. Es resol per a cada nedador (spec 006) |
+
+**Seqüències d'escalfament:** cada lletra és un tram de la sèrie, en l'ordre escrit (per exemple, `4x100 NPBN`: cada 100 m es fa d'una manera diferent).
+- **N**: nedar, a ritme suau, normalment a crol.
+- **P**: nedar amb pales.
+- **B**: nedar amb pull i pales; només treballa el tren superior.
+- **T**: tècnica.
+- Codis canònics: **NPB**, **NPT**, **NPBT**, **NPBN**. S'escriuen sencers; dins d'aquests codis, P i B no són estils.
+
+**Execució:**
+- **N** = nedar (estil complet).
+- **Ps + estil** = només peus; per exemple, `Ps Cr`. Un `Ps` sense estil no és vàlid.
+
+Les lletres soltes C/E/B/P i «IM» (= Ei) no són codis canònics; només són àlies d'importació (spec 002).
+
+## 5. Material i respiració
+
+| Codi | Significat |
+|---|---|
+| AL | Aletes |
+| Pp | Pales petites |
+| Pal | Pales |
+| Pb | Pull |
+| Tub | Tub frontal |
+| Pilotes | Pilotes |
+| r/N | Respiració cada N braçades |
+| hypox | Treball en hipòxia |
+
+## 6. Prescripció d'una sèrie
+
+`<rep>x<dist> <estil|Ps estil> [(detall)] <zona|AeM (seqüència)> [patró] d/m:ss [r/N] [material]`
+
+- La zona (o la seqüència AeM) i el descans són obligatoris.
+- *Exemple:* `8x50 Cr progressiu A2 d/0:20 Pb`.
+
+## 7. Competició i proves
+- **Competició**: element del catàleg comú; té data o dates, piscina (25 m o 50 m) i seu.
+- **Participació**: la presència d'un nedador en una competició, amb una classe.
+- **Classe** de la participació (inspirada en TrainingPeaks; ADR-0006):
+  - **A**: objectiu de temporada. Pic de forma amb taper complet.
+  - **B**: competició exigent. Taper breu.
+  - **C**: es tracta com un entrenament de qualitat. Sense descàrrega prèvia.
+- **Prova**: distància + estil; per exemple, `100 Ei`.
+- **Inscripció**: una prova que el nedador neda dins d'una participació, en un dia concret i amb una prioritat. Tota participació porta les proves que s'hi volen nedar.
+- **Prioritat**: principal o secundària.
+- **Prova objectiu**: prova inscrita en una participació de classe A. No hi ha proves objectiu sense competició.
+- **Prova d'avaluació**: prova inscrita en una participació de classe B o C.
+- **Millor registre**: temps per a un estil i una distància, amb la piscina on es va fer.
+
+## 8. Cicles
+- **Macrocicle**: la temporada.
+- **Mesocicle**: una fase, formada per un o més blocs.
+- **Bloc**: un grup de setmanes amb un patró de càrrega i recuperació.
+- **Microcicle**: la setmana. Es deriva de la data i no es desa.
+
+## 9. Sessió
+- **Part**: escalfament, tècnica, principal I, principal II (opcional) o tornada a la calma (ADR-0004).
+- **Sèrie**: la unitat de prescripció dins d'una part.
+- **Exercici de tècnica**: un element de la biblioteca de tècnica del coach (ADR-0005).
+
+## Criteris d'acceptació
+1. **Donat** el catàleg de zones, **quan** es llista, **aleshores** conté exactament A0, A1, A2, A3, TOLA, MPLA i Vel.
+2. **Donat** qualsevol codi canònic, **quan** es converteix a text i es torna a llegir, **aleshores** s'obté el mateix valor.
+3. **Donat** un codi no canònic (per exemple, `Mpla` o `C`), **quan** el domini el llegeix, **aleshores** el rebutja amb un error, sense interpretar-lo ni assignar-li cap valor per defecte.
+4. **Donats** tots els codis del glossari, **quan** es comparen, **aleshores** no n'hi ha dos d'iguals amb significats diferents.
+5. **Donada** una sèrie sense zona (ni seqüència AeM) o sense descans, **quan** es valida, **aleshores** és invàlida (error bloquejant).
+6. **Donada** una sèrie generada pel sistema, **quan** es valida, **aleshores** el descans és de tipus `d/`.
+7. **Donada** la durada `1:45`, **quan** es llegeix, **aleshores** val 105 s. **Donada** la durada `45`, **quan** es llegeix, **aleshores** es rebutja.
+8. **Donada** una sèrie `Ps` sense estil, **quan** es valida, **aleshores** és invàlida.
+9. **Donada** una sèrie sense patró de ritme, **quan** es llegeix, **aleshores** el patró és constant.
+10. **Donat** un millor registre sense piscina, **quan** es valida, **aleshores** és invàlid.
+11. **Donada** una sèrie AeM de 4 repeticions amb una seqüència de 3 zones, **quan** es valida, **aleshores** és invàlida.
+12. **Donada** una sèrie AeM amb una seqüència que no és creixent (per exemple, A2-A1-A3-Màx), **quan** es valida, **aleshores** és invàlida.
+13. **Donada** una sèrie amb zona `Màx` fora d'una seqüència AeM, **quan** es valida, **aleshores** és invàlida.
