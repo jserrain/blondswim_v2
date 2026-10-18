@@ -1,50 +1,109 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# BlondSwim v2 Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Arquitectura per capes (NON-NEGOTIABLE)
+- El codi s'organitza en quatre capes: `domain`, `application`, `infrastructure` i
+  `interfaces`.
+- Una capa només importa capes inferiors. import-linter ho verifica i una violació bloqueja.
+- `domain` és pur: no fa I/O, no crida cap LLM, no llegeix el rellotge ni secrets i no té
+  dependències externes.
+- El rellotge, l'LLM i l'accés a dades arriben a `application` a través de ports
+  (Protocols), injectats des de les capes exteriors.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+Raó: a la v1, funcions que semblaven pures llegien la data o carregaven secrets.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. Primer la spec
+- Tota feina parteix d'una spec de `specs/`. Si no n'hi ha, la feina s'atura i es demana.
+- No s'inventen regles de negoci. Tot el que la spec no diu es marca [NEEDS CLARIFICATION]
+  i es pregunta.
+- Cada branca porta una sola spec, amb canvis petits.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### III. Regles de negoci identificades i amb una sola font
+- Tota regla de negoci té un identificador `RN-NNN` i un tipus: bloquejant, avís o judici
+  LLM.
+- Les regles viuen a `docs/regles.md`, que n'és l'única font. Les specs, els plans i el
+  codi s'hi refereixen per ID i no en repeteixen el contingut.
+- Abans d'acceptar una regla nova, cal comprovar-la contra les existents: duplicats,
+  contradiccions i solapaments. El resultat d'aquesta comprovació queda escrit.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+Raó: a la v1 hi havia regles duplicades amb valors diferents i regles que es bloquejaven
+entre elles.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### IV. El sistema avisa; el coach decideix
+- Cap guarda retalla, corregeix o descarta una dada o un pla sense avisar-ne.
+- Una regla bloquejant atura el procés i diu per què. Una regla d'avís deixa continuar i
+  ho comunica.
+- L'LLM només actua en els punts de judici, i cadascun és una regla de tipus judici LLM a
+  `docs/regles.md`. Tota la resta és determinista.
+- Tota regla de tipus judici LLM indica les seves entrades, la sortida esperada i la
+  comprovació determinista que valida la sortida abans d'acceptar-la. Una sortida que no
+  passa la comprovació no s'accepta.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### V. Dades honestes
+- Un valor derivat no es desa mai: es calcula quan cal.
+- Cap valor per defecte amaga una dada que falta. Una dada desconeguda es guarda com a
+  `null` i genera un avís.
+- Els paràmetres són del nedador o de la spec, mai constants al codi.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+### VI. El pla es persisteix i es versiona
+- Un pla generat es desa i se'n guarden les versions. No es regenera ni se sobreescriu
+  sense que quedi constància.
+- Els identificadors persistits són estables entre execucions.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### VII. Traçabilitat de la spec al test
+- Tota tasca indica a quina capa pertany: `domain`, `application`, `infrastructure` o
+  `interfaces`.
+- Cada criteri d'acceptació té un ID amb el format `CA-<spec>-<nn>`, on `<spec>` és el
+  número de la spec i admet un sufix de lletra (per exemple, `CA-002b-01`).
+- Un test es lliga a un criteri amb el marcador pytest `@pytest.mark.ca("<ID>")`. Un test
+  pot portar diversos marcadors i un criteri pot tenir diversos tests.
+- Tot criteri d'una spec aprovada té almenys un test amb el seu marcador, i
+  `scripts/verify.sh` ho comprova.
+- Una tasca no s'acaba fins que `bash scripts/verify.sh` passa en verd.
+
+### VIII. Documents genèrics i sense història
+- Les specs, els ADR, les regles i el codi no anomenen mai cap nedador, competició ni data
+  concreta. Això només és permès als tests i als exemples.
+- A cada document normatiu hi ha només l'estat actual. El perquè va a l'ADR i la
+  història, a git.
+
+## Fonts normatives
+
+Són normatives, per aquest ordre de precedència:
+1. Aquesta constitució.
+2. Els ADR acceptats de `docs/decisions/`.
+3. `specs/000-glossari.md`.
+4. Les specs aprovades de `specs/`.
+
+Si dues fonts entren en conflicte, mana la de rang superior, i el conflicte s'ha de
+resoldre amb una esmena explícita.
+
+Les decisions fixades són als ADR. La constitució no en reprodueix el contingut, i
+canviar-ne una requereix un ADR nou que la substitueixi.
+
+No són normatius: `docs/mapa_specs.md`, les guies, els inventaris, el codi i els documents
+de la v1, ni l'històric d'entrenaments. Una regla de la v1 només és vàlida quan queda
+recollida en un ADR, en una spec o a `docs/regles.md`.
+
+## Flux de treball i portes de qualitat
+
+- Tot s'executa amb `uv run`, i les dependències només s'afegeixen amb `uv add`.
+- `bash scripts/verify.sh` és la porta única: lint, format, mypy estricte, import-linter,
+  tests, traçabilitat dels criteris d'acceptació i comprovacions de seguretat.
+- Els secrets només els llegeix `infrastructure`, i no es versionen mai.
+- La v1 només es pot llegir.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- La constitució té precedència sobre qualsevol altra pràctica o document. `AGENTS.md` és
+  la guia operativa i ha de ser coherent amb la constitució.
+- Una esmena es fa amb un canvi explícit en aquest fitxer, amb l'increment de versió
+  corresponent:
+  - MAJOR: es treu o es redefineix un principi.
+  - MINOR: s'afegeix un principi o una secció, o se n'amplia materialment el contingut.
+  - PATCH: aclariments i redacció.
+- El *Constitution Check* de `/speckit-plan` i `/speckit-analyze` verifica el compliment.
+  Una violació s'ha de justificar o corregir abans d'implementar.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-10-18 | **Last Amended**: 2026-10-18
