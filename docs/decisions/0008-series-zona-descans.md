@@ -14,6 +14,6 @@ Una sèrie es prescriu amb una zona del glossari (spec 000) i un descans. La sè
 
 ## Conseqüències
 - Com s'obtenen els ritmes de cada zona ho decideix la spec 004.
-- El pla emmagatzema sempre el descans (`d/`). A A0–A2, el render mostra el cicle (`c/` = ritme + descans), calculat amb els ritmes vigents. A A3, TOLA i Vel mostra `d/`.
-- A TOLA i Vel, el descans es pot prescriure com a ràtio treball:descans (per exemple, `d/1:2`). La conversió a segons és de la spec 004.
+- El pla emmagatzema sempre el descans (`d/`). A A0–A2, el render mostra el cicle (`c/` = ritme + descans), calculat amb els ritmes vigents. A A3, TOLA, MPLA i Vel mostra `d/`.
+- A TOLA, MPLA i Vel, el descans es pot prescriure com a ràtio treball:descans (`d/×N`, glossari §3). La conversió a segons és de la spec 004.
 - Si els cicles `c/` de les dades importades es converteixen i com es fa ho decideix la spec 002.

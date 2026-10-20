@@ -31,11 +31,15 @@ Fora d'abast:
 - **fartlek**: canvis de ritme dins de la sèrie.
 
 **AeM (Aeròbic mix):** sèrie progressiva per zones. Cada repetició té la seva zona, en ordre creixent, i la seqüència té tantes zones com repeticions. AeM no és una zona de l'escala.
+- És una forma només d'entrada: pot aparèixer en dades importades, però el sistema no la prescriu. La conversió és de la spec 002.
 - *Exemple:* `4x100 Cr AeM (A1-A2-A3-Màx) c/2:00`. Són quatre repeticions de 100 m de crol: la primera a A1, la segona a A2, la tercera a A3 i la quarta al màxim. Cada repetició comença cada 2 minuts.
 
 ## 3. Descans
-- **`d/m:ss`**: descans fix entre repeticions. És l'única forma que prescriu el sistema.
+- **`d/m:ss`**: descans fix entre repeticions.
   - *Exemple:* `12x25 Cr (subaquàtic 15 m) A1 d/0:45`.
+- **`d/×N`**: ràtio treball:descans. El descans és N vegades la durada de la repetició, amb N enter positiu. Només s'admet a TOLA, MPLA i Vel. La conversió a segons és de la spec 004.
+  - *Exemple:* `6x50 Cr TOLA d/×2`.
+- `d/m:ss` i `d/×N` són les úniques formes de descans que prescriu el sistema.
 - **`c/m:ss`**: cicle. Cada repetició comença a l'interval indicat, i el descans és el temps que sobra. Si el nedador va més ràpid, descansa més; si va més lent, descansa menys.
   - *Exemple:* `4x100 Cr A1 c/1:45`. Si el nedador fa cada 100 m en 1:27, descansa 18 s.
   - El sistema només l'accepta en dades importades o introduïdes pel coach.
@@ -84,9 +88,10 @@ Les lletres soltes C/E/B/P i «IM» (= Ei) no són codis canònics; només són 
 
 ## 6. Prescripció d'una sèrie
 
-`<rep>x<dist> <estil|Ps estil> [(detall)] <zona|AeM (seqüència)> [patró] d/m:ss [r/N] [material]`
+`<rep>x<dist> <estil|Ps estil> [(detall)] <zona> [patró] <d/m:ss|d/×N> [r/N] [material]`
 
-- La zona (o la seqüència AeM) i el descans són obligatoris.
+- La zona i el descans són obligatoris.
+- Les dades importades poden portar una seqüència AeM en lloc de la zona (§2).
 - *Exemple:* `8x50 Cr progressiu A2 d/0:20 Pb`.
 
 ## 7. Competició i proves
@@ -128,3 +133,6 @@ Les lletres soltes C/E/B/P i «IM» (= Ei) no són codis canònics; només són 
 11. **Donada** una sèrie AeM de 4 repeticions amb una seqüència de 3 zones, **quan** es valida, **aleshores** és invàlida.
 12. **Donada** una sèrie AeM amb una seqüència que no és creixent (per exemple, A2-A1-A3-Màx), **quan** es valida, **aleshores** és invàlida.
 13. **Donada** una sèrie amb zona `Màx` fora d'una seqüència AeM, **quan** es valida, **aleshores** és invàlida.
+14. **Donada** una sèrie generada pel sistema amb una seqüència AeM, **quan** es valida, **aleshores** és invàlida.
+15. **Donada** una sèrie a A0, A1, A2 o A3 amb descans `d/×N`, **quan** es valida, **aleshores** és invàlida.
+16. **Donat** el descans `d/×0`, **quan** es llegeix, **aleshores** es rebutja.
