@@ -42,9 +42,9 @@ entre elles.
 
 ### V. Dades honestes
 - Un valor derivat no es desa mai: es calcula quan cal.
-- Cap valor per defecte amaga una dada que falta. Una dada desconeguda es guarda com a
+- Una dada obligatòria que falta és un error. Una dada opcional desconeguda es desa com a
   `null` i genera un avís.
-- Els paràmetres són del nedador o de la spec, mai constants al codi.
+- Els paràmetres vénen de les dades o de la spec, mai de constants al codi.
 
 ### VI. El pla es persisteix i es versiona
 - Un pla generat es desa i se'n guarden les versions. No es regenera ni se sobreescriu
@@ -59,7 +59,7 @@ entre elles.
 - Un test es lliga a un criteri amb el marcador pytest `@pytest.mark.ca("<ID>")`. Un test
   pot portar diversos marcadors i un criteri pot tenir diversos tests.
 - Tot criteri d'una spec aprovada té almenys un test amb el seu marcador, i
-  `scripts/verify.sh` ho comprova.
+  `scripts/verify.sh` ho ha de comprovar (pendent d'implementar).
 - Una tasca no s'acaba fins que `bash scripts/verify.sh` passa en verd.
 
 ### VIII. Documents genèrics i sense història
@@ -74,23 +74,26 @@ Són normatives, per aquest ordre de precedència:
 1. Aquesta constitució.
 2. Els ADR acceptats de `docs/decisions/`.
 3. `specs/000-glossari.md`.
-4. Les specs aprovades de `specs/`.
+4. `docs/regles.md`.
+5. Les specs aprovades de `specs/`.
 
-Si dues fonts entren en conflicte, mana la de rang superior, i el conflicte s'ha de
-resoldre amb una esmena explícita.
+Si dues fonts entren en conflicte, la feina s'atura i el conflicte es resol amb una esmena
+explícita de la font de rang inferior (o un ADR nou). Mentrestant, preval la de rang
+superior.
 
 Les decisions fixades són als ADR. La constitució no en reprodueix el contingut, i
 canviar-ne una requereix un ADR nou que la substitueixi.
 
 No són normatius: `docs/mapa_specs.md`, les guies, els inventaris, el codi i els documents
-de la v1, ni l'històric d'entrenaments. Una regla de la v1 només és vàlida quan queda
-recollida en un ADR, en una spec o a `docs/regles.md`.
+de la v1. Una regla de la v1 només és vàlida quan queda recollida en un ADR, en una spec o
+a `docs/regles.md`.
 
 ## Flux de treball i portes de qualitat
 
 - Tot s'executa amb `uv run`, i les dependències només s'afegeixen amb `uv add`.
 - `bash scripts/verify.sh` és la porta única: lint, format, mypy estricte, import-linter,
-  tests, traçabilitat dels criteris d'acceptació i comprovacions de seguretat.
+  tests i comprovacions de seguretat. També ha de comprovar la traçabilitat dels criteris
+  d'acceptació (pendent d'implementar).
 - Els secrets només els llegeix `infrastructure`, i no es versionen mai.
 - La v1 només es pot llegir.
 
