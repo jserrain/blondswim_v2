@@ -73,7 +73,7 @@ Convencions de noms:
 | 002 | Importació i normalització | Excel de calendari → catàleg; Excel d'inscripcions → inscripcions del nedador (ADR-0007); Excel d'entrenaments → arxiu, sense etiquetar (ADR-0003). Regles per a cada irregularitat de `fonts_dades.md`. Informe d'errors; mai valors inventats | Ubicació dels Excels d'entrada; conversió `c/` → `d/`; identificació del nedador en importar (id o alias com a argument) i, si l'Excel porta el nom, validar-lo contra `nedador.json` i avisar si no coincideix |
 | 002b | Biblioteca d'exercicis de tècnica | Exercicis per estil confeccionats pel coach, format, metres per exercici, cobertura per estil (ADR-0005) | Format de l'exercici; com es tria per a les proves objectiu |
 | 003 | Periodització | Fases cap enrere des de cada A, blocs càrrega:recuperació, doble pic, finestra insuficient, activació quan la competició és en cap de setmana, tractament de B i C, períodes no disponibles | Model de taper; mínims de fase; regla de doble pic |
-| 004 | Zones i càrrega | CSS → zones; nedador sense CSS; mesura de càrrega (sTSS/CTL/ATL/TSB o volum + RPE) | Model de càrrega; mode sense zones |
+| 004 | Zones i càrrega | CSS → zones; nedador sense CSS; càrrega per RPE de sessió (pendent d'ADR-0009) | Model de càrrega; mode sense zones |
 | 005 | Microcicle | Plantilla per nombre de dies, rols de sessió, repartiment del rang de volum per fase i tipus de setmana | Plantilla per dies; tolerància de volum |
 | 006 | Composició de sessions | Plantilla (rol + fase) → parts (ADR-0004) → tècnica de la biblioteca → principals segons les proves objectiu i la seva prioritat → volum ajustat; l'LLM només redacta i adapta dins de límits | Punts de judici LLM; activació del principal II; pes per prioritat |
 | 007 | Progressió amb B/C | Resultats, bandes de progressió, alertes | — |
@@ -89,6 +89,17 @@ Les decisions vigents són als ADR de `docs/decisions/`. Aquest mapa no en repet
 2. Activació abans d'una competició en diumenge (o en un dia sense natació): a l'aigua, en sec o sense activació?
 3. Períodes no disponibles (vacances, festius): com es declaren i com afecten el bloc?
 4. B i C: només avaluació o la B porta setmana reduïda?
-5. Càrrega: sTSS/CTL estil TrainingPeaks, o volum + RPE?
-6. Dades mínimes d'un nedador per poder planificar (dies, rang de volum, estils preferents, CSS o RPE, proves objectiu).
+5. **Resolta (pendent d'ADR-0009).** Càrrega: només RPE de sessió, al registre. Sense sTSS/CTL/ATL/TSB fins a tenir dispositius fiables. L'RPE també alimenta avisos de revisió de ritmes i de recuperació (spec 004 i `docs/regles.md`).
+6. **Resolta per la spec 001.** Dades mínimes per planificar: model vàlid i una participació de classe A. Els ritmes són opcionals (vegeu la pregunta 8).
 7. Estils preferents i proves objectiu: com es reparteix l'entrenament entre l'estil preferent i els estils de les proves quan no coincideixen?
+8. Ritmes de zona (spec 004), model híbrid. Sense test CSS, el coach entra els ritmes; amb test CSS, el sistema els calcula. Proposta, pendent de confirmar a l'ADR-0010:
+   a) Deriven del CSS: A0–A3. TOLA: ritme de prova objectiu o millor marca de la piscina del bloc. MPLA: [NEEDS CLARIFICATION] (proposta: ritme de prova o millor marca de 50/100, com TOLA). Vel: sense ritme.
+   b) Precedència: valor del coach (per zona) > calculat CSS > estimat. L'estimat sempre requereix confirmació del coach.
+   c) Avís de test caducat a les 8 setmanes.
+   d) Ritmes per piscina: un conjunt per a 25 m i un per a 50 m. Sense conjunt de la piscina del bloc → estimat amb factor configurable i avís.
+   e) Estils diferents del lliure: offset a partir de les millors marques de 100, sobreescrivible pel coach.
+   f) Validació del test (ràtio T400/T200, 200 no màxim): avís, no bloqueig.
+   g) Render sense ritme: A0–A2 també es mostra amb `d/` i el descriptor RPE de la zona (spec 004).
+   - Nota per a la spec 004: offsets orientatius sobre T_CSS per 100 m, configurables: A0 +15/+20 s, A1 +8/+12 s, A2 −1/+2 s, A3 −2/−5 s.
+9. Piscina per bloc (hivern 25 m, estiu 50 m). On es defineix: spec de blocs/calendari. Pendent.
+10. Regles de sèries: repeticions de 400 m segons proves inscrites i fase (a A1–A2; mai a A3 o superior), distribució de zones per prova, límit de sessions de qualitat per a màsters. Destí: `docs/regles.md`.
