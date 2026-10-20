@@ -27,9 +27,24 @@ data/
 - L'id del nedador és el nom de la carpeta i no es repeteix dins del fitxer.
 - Les proves objectiu no es desen enlloc: es deriven de les participacions de classe A.
 
+## Identificador del nedador
+- L'id del nedador és el nom de la carpeta (`nedadors/<id>/`).
+- L'id l'assigna el sistema en crear el nedador: format `n` + 4 dígits (per exemple, `n0001`), seqüencial i únic. No es reutilitza mai.
+- El següent id és el més alt existent (arxivats inclosos) + 1. Els nedadors no s'esborren: s'arxiven.
+- L'id és immutable: un canvi de nom no el modifica.
+- El nom i els cognoms són dades de `nedador.json`, no formen part de l'id.
+- `nedador.json` pot tenir un `alias` opcional per a ús del coach a la CLI.
+
 ## Entitats
 
 **Nedador** (`nedador.json`)
+- `nom`: text no buit.
+- `cognoms`: text no buit. Admet un o dos cognoms en el mateix camp.
+- `alias`: text o `null`.
+  - Únic entre tots els nedadors.
+  - Només `[a-z0-9-]`, de 2 a 20 caràcters.
+  - No pot tenir la forma d'un id (`n` + 4 dígits).
+- `arxivat`: booleà. En crear el nedador val `false`.
 - `estils_preferents`: un o més codis, sense repetir. Admesos: Cr, Esq, Br, Pap, Ei.
 - `dies_entrenament`: un o més dies de la setmana (dl, dt, dc, dj, dv, ds, dg), sense repetir. Les competicions no hi compten.
 - `volum_setmanal`: `{min, max}` en metres, amb 0 < min ≤ max.
@@ -71,7 +86,7 @@ data/
 
 ## Validació: dues categories
 - **Model vàlid:** compleix els invariants anteriors. Si no els compleix, error de càrrega.
-- **Apte per planificar:** a més del model vàlid, té com a mínim un test CSS i com a mínim una participació de classe A. Si no ho és, la planificació queda bloquejada i el missatge indica què falta.
+- **Apte per planificar:** a més del model vàlid, no està arxivat, té com a mínim un test CSS i com a mínim una participació de classe A. Si no ho és, la planificació queda bloquejada i el missatge indica què falta.
 - **Avís (no bloqueja):** participació de classe A sense cap inscripció principal.
 
 ## Format JSON
@@ -104,3 +119,8 @@ data/
 21. **Donada** una competició del catàleg amb participacions, **quan** s'intenta esborrar, **aleshores** dona un error.
 22. **Donat** un canvi de data d'una competició al catàleg, **quan** es consulten les participacions dels nedadors, **aleshores** totes veuen la data nova.
 23. **Donat** un nedador amb dues participacions a la mateixa competició, **quan** es carrega, **aleshores** dona un error.
+24. **Donats** dos nedadors amb el mateix nom i cognoms, **quan** es creen, **aleshores** reben ids diferents i tots dos són vàlids.
+25. **Donat** un nedador existent, **quan** se'n canvia el nom, **aleshores** l'id no canvia.
+26. **Donats** dos nedadors amb el mateix `alias`, **quan** es valida el model, **aleshores** dona un error.
+27. **Donada** una carpeta de nedador amb un nom que no té el format `n` + 4 dígits, **quan** es carrega, **aleshores** dona un error.
+28. **Donat** un nedador arxivat, **quan** es demana si és apte per planificar, **aleshores** la resposta és «no» i el motiu és «arxivat».
