@@ -86,8 +86,10 @@ data/
 
 ## Validació: dues categories
 - **Model vàlid:** compleix els invariants anteriors. Si no els compleix, error de càrrega.
-- **Apte per planificar:** a més del model vàlid, no està arxivat, té com a mínim un test CSS i com a mínim una participació de classe A. Si no ho és, la planificació queda bloquejada i el missatge indica què falta.
-- **Avís (no bloqueja):** participació de classe A sense cap inscripció principal.
+- **Apte per planificar:** a més del model vàlid, no està arxivat i té com a mínim una participació de classe A. Si no ho és, la planificació queda bloquejada i el missatge indica què falta.
+- **Avisos (no bloquegen):**
+  - Participació de classe A sense cap inscripció principal.
+  - Nedador sense cap test CSS i sense ritmes introduïts pel coach: avís «sense ritmes». El format dels ritmes introduïts pel coach és de la spec 004.
 
 ## Format JSON
 - Cada fitxer porta `versio_esquema`.
@@ -109,7 +111,7 @@ data/
 11. **Donats** dos ids de competició repetits al catàleg, **quan** es carrega, **aleshores** dona un error.
 12. **Donada** una competició amb `seu: null`, **quan** es carrega, **aleshores** es carrega correctament i genera un avís.
 13. **Donada** una participació de classe A sense cap inscripció principal, **quan** es valida, **aleshores** genera un avís i no bloqueja la planificació.
-14. **Donat** un nedador vàlid sense cap test CSS, **quan** es demana si és apte per planificar, **aleshores** la resposta és «no» i el motiu és «falta test CSS».
+14. **Donat** un nedador vàlid, no arxivat, sense cap test CSS i sense ritmes, amb una participació de classe A, **quan** es demana si és apte per planificar, **aleshores** la resposta és «sí» i genera l'avís «sense ritmes».
 15. **Donat** un nedador sense cap participació de classe A, **quan** es demana si és apte per planificar, **aleshores** la resposta és «no» i el motiu és «falta competició A».
 16. **Donat** un nedador amb participacions A, B i C, **quan** es demanen les proves objectiu, **aleshores** s'obtenen només les inscripcions de les participacions A.
 17. **Donat** un fitxer amb un `versio_esquema` desconegut, **quan** es carrega, **aleshores** dona un error.
