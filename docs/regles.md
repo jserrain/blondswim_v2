@@ -26,9 +26,9 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-011 | Participació d'una competició del catàleg | bloquejant | càrrega | spec 001, ADR-0006 |
 | RN-012 | Una participació per competició | bloquejant | càrrega | spec 001 |
 | RN-013 | Competició dins de la temporada | bloquejant | càrrega | spec 001 |
-| RN-014 | Participació amb inscripcions | bloquejant | càrrega | spec 001 |
+| RN-014 | Inscripcions d'una participació | bloquejant | càrrega | spec 001 |
 | RN-015 | Dia de la inscripció | bloquejant | càrrega | spec 001 |
-| RN-016 | Inscripcions sense repetir | bloquejant | càrrega | spec 001 |
+| RN-016 | Una inscripció per prova i competició | bloquejant | càrrega | spec 001 |
 | RN-017 | Nedador arxivat | bloquejant | planificació | spec 001 |
 | RN-018 | Competició A obligatòria | bloquejant | planificació | spec 001 |
 | RN-019 | Participació A sense prova principal | avís | planificació | spec 001 |
@@ -135,12 +135,12 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Font:** spec 001.
 - **Coherència:** revisada contra RN-015; sense conflicte.
 
-### RN-014 — Participació amb inscripcions
+### RN-014 — Inscripcions d'una participació
 - **Tipus:** bloquejant · **Moment:** càrrega
-- **Regla:** tota participació té com a mínim una inscripció.
+- **Regla:** una participació té una o més inscripcions. El sistema no controla el nombre màxim d'inscripcions: el límit és per competició i el controla la federació en el moment de la inscripció.
 - **Missatge:** identifica la participació.
 - **Font:** spec 001.
-- **Coherència:** revisada contra RN-019; RN-014 exigeix alguna inscripció i RN-019 avisa si cap no és principal. Sense solapament.
+- **Coherència:** revisada contra RN-016 i RN-019. RN-014 exigeix alguna inscripció i no en limita el nombre; RN-016 n'impedeix la repetició; RN-019 avisa si cap no és principal. Sense solapament.
 
 ### RN-015 — Dia de la inscripció
 - **Tipus:** bloquejant · **Moment:** càrrega
@@ -149,12 +149,12 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Font:** spec 001.
 - **Coherència:** revisada contra RN-013; sense conflicte.
 
-### RN-016 — Inscripcions sense repetir
+### RN-016 — Una inscripció per prova i competició
 - **Tipus:** bloquejant · **Moment:** càrrega
-- **Regla:** dins d'una participació no hi ha dues inscripcions a la mateixa prova el mateix dia.
-- **Missatge:** identifica la prova i el dia.
+- **Regla:** un nedador no es pot inscriure dues vegades a la mateixa prova (`{distancia, estil}`) d'una competició, sigui el mateix dia o un altre.
+- **Missatge:** identifica la prova i els dies de les inscripcions repetides.
 - **Font:** spec 001.
-- **Coherència:** revisada contra RN-012; sense solapament.
+- **Coherència:** revisada contra RN-012 i RN-014. Com que RN-012 admet una sola participació per competició, n'hi ha prou de comprovar-la dins de cada participació. Sense conflicte.
 
 ## Aptitud per planificar
 

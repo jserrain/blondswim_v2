@@ -95,14 +95,15 @@ Les lletres soltes C/E/B/P i «IM» (= Ei) no són codis canònics; només són 
 - *Exemple:* `8x50 Cr progressiu A2 d/0:20 Pb`.
 
 ## 7. Competició i proves
-- **Competició**: element del catàleg comú; té data o dates, piscina (25 m o 50 m) i seu.
+- **Competició**: element del catàleg comú; té data o dates, piscina (25 m o 50 m) i seu. Té un programa de proves, que el sistema no desa.
 - **Participació**: la presència d'un nedador en una competició, amb una classe.
 - **Classe** de la participació (inspirada en TrainingPeaks; ADR-0006):
   - **A**: objectiu de temporada. Pic de forma amb taper complet.
   - **B**: competició exigent. Taper breu.
   - **C**: es tracta com un entrenament de qualitat. Sense descàrrega prèvia.
-- **Prova**: distància + estil; per exemple, `100 Ei`.
-- **Inscripció**: una prova que el nedador neda dins d'una participació, en un dia concret i amb una prioritat. Tota participació porta les proves que s'hi volen nedar.
+- **Prova**: distància + estil; per exemple, `100 Ei`. Al programa d'una competició, cada prova apareix una sola vegada per sexe. Al sistema s'identifica per distància i estil; el sexe el determina el nedador.
+- **Inscripció**: la participació d'un nedador en una prova individual del programa, dins d'una participació, en un dia concret i amb una prioritat. Tota participació porta les proves que s'hi volen nedar.
+- **Relleu**: prova per equips. No es modela: no és una inscripció individual ni una prova objectiu.
 - **Prioritat**: principal o secundària.
 - **Prova objectiu**: prova inscrita en una participació de classe A. No hi ha proves objectiu sense competició.
 - **Prova d'avaluació**: prova inscrita en una participació de classe B o C.

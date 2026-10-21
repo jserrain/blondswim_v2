@@ -11,6 +11,8 @@ Fora d'abast:
 - Períodes no disponibles i canvis de disponibilitat (spec 003).
 - Importació des de l'Excel (spec 002).
 - Aigües obertes (AAOO).
+- Relleus: no es modelen (spec 000).
+- Programa de proves de la competició: no es desa al catàleg.
 
 ## Organització
 
@@ -28,68 +30,61 @@ data/
 - Les proves objectiu no es desen enlloc: es deriven de les participacions de classe A.
 
 ## Identificador del nedador
-- L'id del nedador és el nom de la carpeta (`nedadors/<id>/`).
-- L'id l'assigna el sistema en crear el nedador: format `n` + 4 dígits (per exemple, `n0001`), seqüencial i únic. No es reutilitza mai.
-- El següent id és el més alt existent (arxivats inclosos) + 1. Els nedadors no s'esborren: s'arxiven.
-- L'id és immutable: un canvi de nom no el modifica.
+- L'id del nedador és el nom de la carpeta (`nedadors/<id>/`); per exemple, `n0001`. Format: RN-001.
+- Assignació i immutabilitat: RN-002. Els nedadors no s'esborren, s'arxiven: RN-004.
 - El nom i els cognoms són dades de `nedador.json`, no formen part de l'id.
-- `nedador.json` pot tenir un `alias` opcional per a ús del coach a la CLI.
+- `nedador.json` pot tenir un `alias` opcional per a ús del coach a la CLI (RN-003).
 
 ## Entitats
 
 **Nedador** (`nedador.json`)
 - `nom`: text no buit.
 - `cognoms`: text no buit. Admet un o dos cognoms en el mateix camp.
-- `alias`: text o `null`.
-  - Únic entre tots els nedadors.
-  - Només `[a-z0-9-]`, de 2 a 20 caràcters.
-  - No pot tenir la forma d'un id (`n` + 4 dígits).
-- `arxivat`: booleà. En crear el nedador val `false`.
+- `alias`: text o `null` (RN-003).
+- `arxivat`: booleà. En crear el nedador val `false` (RN-017).
 - `estils_preferents`: un o més codis, sense repetir. Admesos: Cr, Esq, Br, Pap, Ei.
 - `dies_entrenament`: un o més dies de la setmana (dl, dt, dc, dj, dv, ds, dg), sense repetir. Les competicions no hi compten.
-- `volum_setmanal`: `{min, max}` en metres, amb 0 < min ≤ max.
-- `tests_css`: llista de `{data, t400, t200}`, amb t400 > t200.
+- `volum_setmanal`: `{min, max}` en metres (RN-005).
+- `tests_css`: llista de `{data, t400, t200}` (RN-006).
   - El coach registra els tests manualment; el sistema no els planifica.
   - El CSS i les zones es calculen (spec 004); no es desen.
-  - El test vigent és el de data més recent.
+  - **Test vigent:** el de data més recent. Es precisarà per piscina del bloc a la spec 004.
 - `millors_registres`: llista de `{estil, distancia, piscina, temps, data, competicio}`.
   - `competicio` és un text lliure, perquè pot ser d'una temporada anterior.
-  - Per a cada combinació d'estil, distància i piscina hi ha com a màxim un registre.
+  - Unicitat: RN-007.
 
 **Temporada** (`temporada.json`)
 - `inici` i `fi` (dates), amb inici < fi.
 - La carpeta es diu `AAAA-AA` i es correspon amb l'any d'inici.
 
 **Competició** (catàleg `competicions/<AAAA-AA>.json`)
-- `id`: estable i únic dins del catàleg.
+- `id`: estable (RN-008).
 - `nom`, `dates` (un o més dies), `piscina` (25 o 50).
-- `seu`: un text, o `null` si no es coneix (amb avís).
+- `seu`: un text, o `null` si no es coneix (RN-009).
+- Esborrat: RN-010.
 
 **Participació** (dins de `inscripcions.json` del nedador)
-- `id_competicio`: ha d'existir al catàleg de la mateixa temporada.
+- `id_competicio` (RN-011).
 - `classe`: A, B o C.
-- `proves`: una o més inscripcions.
-- Un nedador no pot tenir dues participacions a la mateixa competició.
-- Totes les dates de la competició han de caure dins de la temporada del nedador.
+- `proves`: llista d'inscripcions (RN-014). Sense límit màxim al sistema.
+- Regles: RN-012, RN-013.
 
 **Inscripció**
-- `prova`: `{distancia, estil}`.
-- `dia`: ha de ser una de les dates de la competició.
+- `prova`: `{distancia, estil}`, una prova individual del programa de la competició.
+- `dia`: una data (RN-015).
 - `prioritat`: principal o secundària.
-- No hi pot haver dues inscripcions a la mateixa prova el mateix dia.
+- Una sola inscripció per prova i competició: RN-016.
 
 **Valors derivats (no es desen mai)**
-- Setmana ISO.
+- **Setmana:** setmana ISO 8601 (de dilluns a diumenge), identificada per l'any ISO i el número de setmana.
 - CSS i zones.
 - Proves objectiu.
 - Classe de cada prova (s'agafa de la participació).
 
 ## Validació: dues categories
-- **Model vàlid:** compleix els invariants anteriors. Si no els compleix, error de càrrega.
-- **Apte per planificar:** a més del model vàlid, no està arxivat i té com a mínim una participació de classe A. Si no ho és, la planificació queda bloquejada i el missatge indica què falta.
-- **Avisos (no bloquegen):**
-  - Participació de classe A sense cap inscripció principal.
-  - Nedador sense cap test CSS i sense ritmes introduïts pel coach: avís «sense ritmes». El format dels ritmes introduïts pel coach és de la spec 004.
+- **Model vàlid:** compleix els invariants de format d'aquesta spec i les regles de càrrega RN-001, RN-003, RN-005 a RN-008 i RN-011 a RN-016. Si no els compleix, error de càrrega.
+- **Apte per planificar:** a més del model vàlid, compleix RN-017 i RN-018. Si no ho és, la planificació queda bloquejada i el missatge indica què falta.
+- **Avisos (no bloquegen):** RN-009, RN-019, RN-020.
 
 ## Format JSON
 - Cada fitxer porta `versio_esquema`.
