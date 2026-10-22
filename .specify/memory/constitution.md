@@ -54,14 +54,16 @@ entre elles.
 - Els identificadors persistits són estables entre execucions.
 
 ### VII. Traçabilitat de la spec al test
-- Tota tasca indica a quina capa pertany: `domain`, `application`, `infrastructure` o
-  `interfaces`.
+- Tota tasca indica a quina capa pertany: `domain`, `application`, `infrastructure`,
+  `interfaces` o `project`. `project` és per a la configuració, les eines i la documentació;
+  no és una capa de codi i no forma part de l'arquitectura del principi I.
 - Cada criteri d'acceptació té un ID amb el format `CA-<spec>-<nn>`, on `<spec>` és el
   número de la spec i admet un sufix de lletra (per exemple, `CA-002b-01`).
 - Un test es lliga a un criteri amb el marcador pytest `@pytest.mark.ca("<ID>")`. Un test
   pot portar diversos marcadors i un criteri pot tenir diversos tests.
 - Tot criteri d'una spec aprovada té almenys un test amb el seu marcador, i
-  `scripts/verify.sh` ho ha de comprovar (pendent d'implementar).
+  `scripts/verify.sh` ho ha de comprovar (pendent d'implementar). Se n'exclouen els
+  criteris marcats `[PENDENT spec NNN]`, que depenen d'una spec que encara no existeix.
 - Una tasca no s'acaba fins que `bash scripts/verify.sh` passa en verd.
 
 ### VIII. Documents genèrics i sense història
@@ -78,6 +80,9 @@ Són normatives, per aquest ordre de precedència:
 3. `specs/000-glossari.md`.
 4. `docs/regles.md`.
 5. Les specs aprovades de `specs/`.
+
+Una spec és aprovada quan la capçalera diu `**Estat:** Aprovada`. Mentre és un esborrany,
+diu `**Estat:** Esborrany`.
 
 Si dues fonts entren en conflicte, la feina s'atura i el conflicte es resol amb una esmena
 explícita de la font de rang inferior (o un ADR nou). Mentrestant, preval la de rang
@@ -111,4 +116,4 @@ a `docs/regles.md`.
 - El *Constitution Check* de `/speckit-plan` i `/speckit-analyze` verifica el compliment.
   Una violació s'ha de justificar o corregir abans d'implementar.
 
-**Version**: 1.1.0 | **Ratified**: 2026-10-18 | **Last Amended**: 2026-10-22
+**Version**: 1.2.0 | **Ratified**: 2026-10-18 | **Last Amended**: 2026-10-22
