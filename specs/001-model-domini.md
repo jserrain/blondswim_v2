@@ -103,31 +103,38 @@ data/
 - No hi ha valors per defecte: un camp que falta i és obligatori provoca un error. Un camp opcional desconegut es desa com a `null`. Només genera avís on aquesta spec ho indica (RN-009).
 
 ## Criteris d'acceptació
-1. **Donat** un `nedador.json` vàlid, **quan** es carrega i es torna a desar, **aleshores** el fitxer resultant és idèntic.
-2. **Donat** un catàleg de competicions i un `inscripcions.json` vàlids, **quan** es carreguen i es tornen a desar, **aleshores** els fitxers resultants són idèntics.
-3. **Donat** un nedador sense estils preferents, sense dies d'entrenament o amb `volum_setmanal.min > max`, **quan** es carrega, **aleshores** dona un error que identifica el camp.
-4. **Donat** un test CSS amb t400 ≤ t200, **quan** es carrega, **aleshores** dona un error.
-5. **Donats** dos tests CSS acceptats de la mateixa piscina i un de més recent no acceptat, **quan** es demana el vigent per a aquella piscina, **aleshores** s'obté l'acceptat de data més recent.
-6. **Donats** dos millors registres amb el mateix estil, distància i piscina, **quan** es carrega, **aleshores** dona un error.
-7. **Donat** un millor registre amb temps `1:05.3`, **quan** es carrega, **aleshores** dona un error de format.
-8. **Donada** una participació sense inscripcions, **quan** es carrega, **aleshores** dona un error.
-9. **Donada** una inscripció amb un dia que no és de la competició, **quan** es carrega, **aleshores** dona un error.
-10. **Donada** una participació a una competició amb alguna data fora de la temporada del nedador, **quan** es carrega, **aleshores** dona un error.
-11. **Donats** dos ids de competició repetits al catàleg, **quan** es carrega, **aleshores** dona un error.
-12. **Donada** una competició amb `seu: null`, **quan** es carrega, **aleshores** es carrega correctament i genera un avís.
-13. **Donada** una participació de classe A sense cap inscripció principal, **quan** es valida, **aleshores** genera un avís i no bloqueja la planificació.
-14. **Donat** un nedador vàlid, no arxivat, sense cap test CSS acceptat i sense ritmes, amb una participació de classe A, **quan** es demana si és apte per planificar, **aleshores** la resposta és «sí» i genera l'avís «sense ritmes».
-15. **Donat** un nedador sense cap participació de classe A, **quan** es demana si és apte per planificar, **aleshores** la resposta és «no» i el motiu és «falta competició A».
-16. **Donat** un nedador amb participacions A, B i C, **quan** es demanen les proves objectiu, **aleshores** s'obtenen només les inscripcions de les participacions A.
-17. **Donat** un fitxer amb un `versio_esquema` desconegut, **quan** es carrega, **aleshores** dona un error.
-18. **Donada** una competició en una data qualsevol, **quan** es demana la setmana, **aleshores** es calcula a partir de la data (any ISO + setmana) i no es llegeix del fitxer.
-19. **Donada** una participació amb un `id_competicio` que no és al catàleg, **quan** es carrega, **aleshores** dona un error.
-20. **Donats** dos nedadors que participen a la mateixa competició amb classes diferents (A i C), **quan** es carreguen, **aleshores** tots dos són vàlids i cadascun conserva la seva classe.
-21. **Donada** una competició del catàleg amb participacions, **quan** s'intenta esborrar, **aleshores** dona un error.
-22. **Donat** un canvi de data d'una competició al catàleg, **quan** es consulten les participacions dels nedadors, **aleshores** totes veuen la data nova.
-23. **Donat** un nedador amb dues participacions a la mateixa competició, **quan** es carrega, **aleshores** dona un error.
-24. **Donats** dos nedadors amb el mateix nom i cognoms, **quan** es creen, **aleshores** reben ids diferents i tots dos són vàlids.
-25. **Donat** un nedador existent, **quan** se'n canvia el nom, **aleshores** l'id no canvia.
-26. **Donats** dos nedadors amb el mateix `alias`, **quan** es valida el model, **aleshores** dona un error.
-27. **Donada** una carpeta de nedador amb un nom que no té el format `n` + 4 dígits, **quan** es carrega, **aleshores** dona un error.
-28. **Donat** un nedador arxivat, **quan** es demana si és apte per planificar, **aleshores** la resposta és «no» i el motiu és «arxivat».
+- **CA-001-01** — **Donat** un `nedador.json` vàlid, **quan** es carrega i es torna a desar, **aleshores** el fitxer resultant és idèntic.
+- **CA-001-02** — **Donat** un catàleg de competicions i un `inscripcions.json` vàlids, **quan** es carreguen i es tornen a desar, **aleshores** els fitxers resultants són idèntics.
+- **CA-001-03** — **Donat** un nedador sense estils preferents, sense dies d'entrenament o amb `volum_setmanal.min > max`, **quan** es carrega, **aleshores** dona un error que identifica el camp.
+- **CA-001-04** — **Donat** un test CSS amb t400 ≤ t200, **quan** es carrega, **aleshores** dona un error.
+- **CA-001-05** — **Donats** dos tests CSS acceptats de la mateixa piscina i un de més recent no acceptat, **quan** es demana el vigent per a aquella piscina, **aleshores** s'obté l'acceptat de data més recent.
+- **CA-001-06** — **Donats** dos millors registres amb el mateix estil, distància i piscina, **quan** es carrega, **aleshores** dona un error.
+- **CA-001-07** — **Donat** un millor registre amb temps `1:05.3`, **quan** es carrega, **aleshores** dona un error de format.
+- **CA-001-08** — **Donada** una participació sense inscripcions, **quan** es carrega, **aleshores** dona un error.
+- **CA-001-09** — **Donada** una inscripció amb un dia que no és de la competició, **quan** es carrega, **aleshores** dona un error.
+- **CA-001-10** — **Donada** una participació a una competició amb alguna data fora de la temporada del nedador, **quan** es carrega, **aleshores** dona un error.
+- **CA-001-11** — **Donats** dos ids de competició repetits al catàleg, **quan** es carrega, **aleshores** dona un error.
+- **CA-001-12** — **Donada** una competició amb `seu: null`, **quan** es carrega, **aleshores** es carrega correctament i genera un avís.
+- **CA-001-13** — **Donada** una participació de classe A sense cap inscripció principal, **quan** es valida, **aleshores** genera un avís i no bloqueja la planificació.
+- **CA-001-14** — **Donat** un nedador vàlid, no arxivat, sense cap test CSS acceptat i sense ritmes, amb una participació de classe A, **quan** es demana si és apte per planificar, **aleshores** la resposta és «sí» i genera l'avís «sense ritmes».
+- **CA-001-15** — **Donat** un nedador sense cap participació de classe A, **quan** es demana si és apte per planificar, **aleshores** la resposta és «no» i el motiu és «falta competició A».
+- **CA-001-16** — **Donat** un nedador amb participacions A, B i C, **quan** es demanen les proves objectiu, **aleshores** s'obtenen només les inscripcions de les participacions A.
+- **CA-001-17** — **Donat** un fitxer amb un `versio_esquema` desconegut, **quan** es carrega, **aleshores** dona un error.
+- **CA-001-18** — **Donada** una competició en una data qualsevol, **quan** es demana la setmana, **aleshores** es calcula a partir de la data (any ISO + setmana) i no es llegeix del fitxer.
+- **CA-001-19** — **Donada** una participació amb un `id_competicio` que no és al catàleg, **quan** es carrega, **aleshores** dona un error.
+- **CA-001-20** — **Donats** dos nedadors que participen a la mateixa competició amb classes diferents (A i C), **quan** es carreguen, **aleshores** tots dos són vàlids i cadascun conserva la seva classe.
+- **CA-001-21** — **Donada** una competició del catàleg amb participacions, **quan** s'intenta esborrar, **aleshores** dona un error.
+- **CA-001-22** — **Donat** un canvi de data d'una competició al catàleg, **quan** es consulten les participacions dels nedadors, **aleshores** totes veuen la data nova.
+- **CA-001-23** — **Donat** un nedador amb dues participacions a la mateixa competició, **quan** es carrega, **aleshores** dona un error.
+- **CA-001-24** — **Donats** dos nedadors amb el mateix nom i cognoms, **quan** es creen, **aleshores** reben ids diferents i tots dos són vàlids.
+- **CA-001-25** — **Donat** un nedador existent, **quan** se'n canvia el nom, **aleshores** l'id no canvia.
+- **CA-001-26** — **Donats** dos nedadors amb el mateix `alias`, **quan** es valida el model, **aleshores** dona un error.
+- **CA-001-27** — **Donada** una carpeta de nedador amb un nom que no té el format `n` + 4 dígits, **quan** es carrega, **aleshores** dona un error.
+- **CA-001-28** — **Donat** un nedador arxivat, **quan** es demana si és apte per planificar, **aleshores** la resposta és «no» i el motiu és «arxivat».
+- **CA-001-29** — **Donada** una participació amb la mateixa prova inscrita en dos dies diferents de la competició, **quan** es carrega, **aleshores** dona un error (RN-016).
+- **CA-001-30** — **Donat** un nedador amb un test acceptat vigent, **quan** es registra un test nou de la mateixa piscina, **aleshores** el test nou té `acceptat: false` i el vigent no canvia; **quan** el coach l'accepta, **aleshores** el test nou passa a ser el vigent.
+- **CA-001-31** — **Donat** un test amb `detall_400` i `detall_200` amb tots els camps a `null`, **quan** es carrega i es torna a desar, **aleshores** el fitxer resultant és idèntic.
+- **CA-001-32** — **Donat** un test amb `notes` i tots els camps de detall a `null`, **quan** es carrega, **aleshores** no genera cap avís (principi V).
+- **CA-001-33** [PENDENT spec 004] — **Donat** un nedador amb l'últim test acceptat d'una piscina de fa més de 8 setmanes i cap test planificat d'aquella piscina, **quan** es planifica, **aleshores** genera l'avís de test caducat (RN-028).
+- **CA-001-34** [PENDENT spec 004] — **Donat** un període de piscina que comença sense cap test acceptat ni planificat d'aquella piscina, **quan** es planifica, **aleshores** genera l'avís de canvi de període sense test (RN-029).
+- **CA-001-35** — **Donat** un test sense el camp `acceptat`, **quan** es carrega, **aleshores** dona un error de càrrega.
