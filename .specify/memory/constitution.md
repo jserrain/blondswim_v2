@@ -34,6 +34,8 @@ entre elles.
 - Cap guarda retalla, corregeix o descarta una dada o un pla sense avisar-ne.
 - Una regla bloquejant atura el procés i diu per què. Una regla d'avís deixa continuar i
   ho comunica.
+- Els avisos es registren de manera persistent i consultable. El format el decideix la spec
+  que correspongui.
 - L'LLM només actua en els punts de judici, i cadascun és una regla de tipus judici LLM a
   `docs/regles.md`. Tota la resta és determinista.
 - Tota regla de tipus judici LLM indica les seves entrades, la sortida esperada i la
@@ -43,7 +45,7 @@ entre elles.
 ### V. Dades honestes
 - Un valor derivat no es desa mai: es calcula quan cal.
 - Una dada obligatòria que falta és un error. Una dada opcional desconeguda es desa com a
-  `null` i genera un avís.
+  `null`; genera avís només si la spec ho indica.
 - Els paràmetres vénen de les dades o de la spec, mai de constants al codi.
 
 ### VI. El pla es persisteix i es versiona
@@ -109,4 +111,4 @@ a `docs/regles.md`.
 - El *Constitution Check* de `/speckit-plan` i `/speckit-analyze` verifica el compliment.
   Una violació s'ha de justificar o corregir abans d'implementar.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-18 | **Last Amended**: 2026-10-18
+**Version**: 1.1.0 | **Ratified**: 2026-10-18 | **Last Amended**: 2026-10-22
