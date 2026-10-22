@@ -20,6 +20,7 @@ vigents són als ADR acceptats de `docs/decisions/`; no les canviïs sense un AD
 - ADR-0006 — Catàleg comú de competicions i inscripcions per nedador
 - ADR-0007 — Excel com a format d'entrada
 - ADR-0008 — Sèries prescrites com a zona + descans
+- ADR-0011 — Sessió de test CSS sense tècnica
 
 ## Regles de treball
 - Treballa sempre a partir d'una spec de `specs/`. Si no n'hi ha, atura't i demana-la.

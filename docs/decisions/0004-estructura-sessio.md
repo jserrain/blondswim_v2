@@ -1,6 +1,6 @@
 # ADR-0004 — Estructura de la sessió
 
-**Estat:** Acceptat. Substitueix l'estructura fixa de 4 parts.
+**Estat:** Acceptat. Substitueix l'estructura fixa de 4 parts. Esmenat per l'ADR-0011 (sessió de test CSS sense tècnica).
 
 ## Context
 Un nedador pot tenir més d'una prova objectiu, i l'estructura amb un sol nucli no permet entrenar-ne dues amb qualitat a la mateixa sessió.
