@@ -95,7 +95,7 @@ Les decisions vigents són als ADR de `docs/decisions/`. Aquest mapa no en repet
 8. Ritmes de zona (spec 004), model híbrid. Sense test CSS, el coach entra els ritmes; amb test CSS, el sistema els calcula. Proposta, pendent de confirmar a l'ADR-0010:
    a) Deriven del CSS: A0–A3. TOLA: ritme de prova objectiu o millor marca de la piscina del bloc. MPLA: [NEEDS CLARIFICATION] (proposta: ritme de prova o millor marca de 50/100, com TOLA). Vel: sense ritme.
    b) Precedència: valor del coach (per zona) > calculat CSS > estimat. L'estimat sempre requereix confirmació del coach.
-   c) Avís de test caducat a les 8 setmanes.
+   c) Avís de test caducat a les 8 setmanes: resolt (RN-028). Les zones surten de l'últim test acceptat de la piscina del període (spec 001).
    d) Ritmes per piscina: un conjunt per a 25 m i un per a 50 m. Sense conjunt de la piscina del bloc → estimat amb factor configurable i avís.
    e) Estils diferents del lliure: offset a partir de les millors marques de 100, sobreescrivible pel coach.
    f) Validació del test (ràtio T400/T200, 200 no màxim): avís, no bloqueig.

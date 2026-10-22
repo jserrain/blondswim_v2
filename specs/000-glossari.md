@@ -22,27 +22,38 @@ Fora d'abast:
 | MPLA | Màxima producció de lactat | Esforços màxims de 25–50 m amb descans molt llarg |
 | Vel | Velocitat (alàctica) | Esforços màxims de ≤ 25 m amb recuperació completa |
 
-**Màx** = esforç màxim a la distància de la repetició. Només es fa servir com a darrer pas d'una seqüència AeM (§2).
+**Màx**: marcador d'esforç màxim a la distància de la repetició. No és una zona de l'escala i no es solapa amb Vel. On és vàlid: RN-027.
+
+**CSS** (Critical Swim Speed): ritme que s'aproxima a la frontera entre el domini intens i el sever, per sobre del llindar anaerobi. No és el llindar aeròbic. Es calcula a partir del test CSS (§9) a la spec 004.
 
 ## 2. Patró de ritme dins d'una sèrie
-- **constant**: el mateix ritme a totes les repeticions. És el valor quan no se n'indica cap.
-- **progressiu**: es comença lent i s'acaba més ràpid.
-- **regressiu**: es comença ràpid i s'acaba més lent.
-- **fartlek**: canvis de ritme dins de la sèrie.
+El patró s'aplica sempre dins d'una sola zona.
+- **Constant** (sense codi): el mateix ritme de la zona durant tota la sèrie. Quan no s'indica cap patró, el patró és constant; és semàntica de la notació, no una dada que falta.
+- **Progressiu** (`prog`): la velocitat augmenta gradualment, bloc a bloc (dins d'una distància o entre repeticions). Comença per sota del ritme de la zona i acaba per sobre, sense arribar al ritme de la zona superior.
+  - *Exemple:* `4x100 Cr A2 prog d/0:20`.
+- **Negatiu** (`neg`): la distància es divideix en dues meitats iguals, i la segona és més ràpida que la primera.
+  - *Exemple:* `1x400 Cr A2 neg d/1:00`.
+- Els marges de ritme de `prog` i `neg` no es defineixen en aquesta versió.
 
-**AeM (Aeròbic mix):** sèrie progressiva per zones. Cada repetició té la seva zona, en ordre creixent, i la seqüència té tantes zones com repeticions. AeM no és una zona de l'escala.
+**Trams:** canvis de zona dins d'una repetició, per simular els canvis de ritme d'una prova.
+- *Exemple:* `4x100 Cr trams(25 A2, 25 A3, 25 A2, 25 Vel) d/0:30`.
+- Cada tram té una distància i una zona de l'escala (mai `Màx`). La suma dels trams és la distància de la repetició.
+- Una sèrie amb trams no porta patró.
+
+**AeM (Aeròbic mix):** sèrie progressiva per zones. Cada repetició té la seva zona, en ordre creixent, i la seqüència té tantes zones com repeticions. No és un patró, ni una zona, ni trams.
 - És una forma només d'entrada: pot aparèixer en dades importades, però el sistema no la prescriu. La conversió és de la spec 002.
 - *Exemple:* `4x100 Cr AeM (A1-A2-A3-Màx) c/2:00`. Són quatre repeticions de 100 m de crol: la primera a A1, la segona a A2, la tercera a A3 i la quarta al màxim. Cada repetició comença cada 2 minuts.
 
 ## 3. Descans
 - **`d/m:ss`**: descans fix entre repeticions.
   - *Exemple:* `12x25 Cr (subaquàtic 15 m) A1 d/0:45`.
-- **`d/×N`**: ràtio treball:descans. El descans és N vegades la durada de la repetició, amb N enter positiu. Només s'admet a TOLA, MPLA i Vel. La conversió a segons és de la spec 004.
+- **`d/×N`**: ràtio treball:descans. El descans és N vegades la durada de la repetició, amb N enter positiu. Zones on s'admet: RN-024. La conversió a segons és de la spec 004.
   - *Exemple:* `6x50 Cr TOLA d/×2`.
-- `d/m:ss` i `d/×N` són les úniques formes de descans que prescriu el sistema.
+- `d/m:ss` i `d/×N` són les úniques formes de descans que prescriu el sistema (RN-023).
 - **`c/m:ss`**: cicle. Cada repetició comença a l'interval indicat, i el descans és el temps que sobra. Si el nedador va més ràpid, descansa més; si va més lent, descansa menys.
   - *Exemple:* `4x100 Cr A1 c/1:45`. Si el nedador fa cada 100 m en 1:27, descansa 18 s.
   - El sistema només l'accepta en dades importades o introduïdes pel coach.
+  - El render el pot mostrar a A0–A2 (ADR-0008).
 - **Durades:** sempre en format `m:ss`.
 - **Temps de registre** (marques): format `m:ss.cc`, amb centèsimes; per exemple, `1:05.32`.
 
@@ -88,11 +99,11 @@ Les lletres soltes C/E/B/P i «IM» (= Ei) no són codis canònics; només són 
 
 ## 6. Prescripció d'una sèrie
 
-`<rep>x<dist> <estil|Ps estil> [(detall)] <zona> [patró] <d/m:ss|d/×N> [r/N] [material]`
+`<rep>x<dist> <estil|Ps estil> [(detall)] <zona [patró]|trams(…)> <d/m:ss|d/×N> [r/N] [material]`
 
 - La zona i el descans són obligatoris.
 - Les dades importades poden portar una seqüència AeM en lloc de la zona (§2).
-- *Exemple:* `8x50 Cr progressiu A2 d/0:20 Pb`.
+- *Exemple:* `8x50 Cr A2 prog d/0:20 Pb`.
 
 ## 7. Competició i proves
 - **Competició**: element del catàleg comú; té data o dates, piscina (25 m o 50 m) i seu. Té un programa de proves, que el sistema no desa.
@@ -119,6 +130,14 @@ Les lletres soltes C/E/B/P i «IM» (= Ei) no són codis canònics; només són 
 - **Part**: escalfament, tècnica, principal I, principal II (opcional) o tornada a la calma (ADR-0004).
 - **Sèrie**: la unitat de prescripció dins d'una part.
 - **Exercici de tècnica**: un element de la biblioteca de tècnica del coach (ADR-0005).
+- **Sessió de test CSS**: segueix l'estructura de l'ADR-0004 sense bloc de tècnica (ADR-0011). El sistema n'ofereix la plantilla fixa (spec 006) quan el coach la insereix al pla del nedador (spec 001).
+  - **Escalfament:** 400–800 m suau amb tècnica i 2–4 progressions de 25 m. El contingut el fixa el coach a la plantilla de test i es repeteix igual a cada test. La tècnica forma part de l'escalfament; no hi ha bloc de tècnica.
+  - **Principal I:** 400 Cr Màx, al màxim ritme que es pot mantenir de manera constant.
+  - **Recuperació entre principals:** A0, 10 min.
+  - **Principal II:** 200 Cr Màx.
+  - **Tornada a la calma:** 100–200 m molt suau.
+  - Els rangs de l'escalfament i de la tornada a la calma són orientatius; el sistema no els valida.
+  - Sortida des de l'aigua, sense salt.
 
 ## Criteris d'acceptació
 1. **Donat** el catàleg de zones, **quan** es llista, **aleshores** conté exactament A0, A1, A2, A3, TOLA, MPLA i Vel.
@@ -133,7 +152,7 @@ Les lletres soltes C/E/B/P i «IM» (= Ei) no són codis canònics; només són 
 10. **Donat** un millor registre sense piscina, **quan** es valida, **aleshores** és invàlid.
 11. **Donada** una sèrie AeM de 4 repeticions amb una seqüència de 3 zones, **quan** es valida, **aleshores** és invàlida.
 12. **Donada** una sèrie AeM amb una seqüència que no és creixent (per exemple, A2-A1-A3-Màx), **quan** es valida, **aleshores** és invàlida.
-13. **Donada** una sèrie amb zona `Màx` fora d'una seqüència AeM, **quan** es valida, **aleshores** és invàlida.
+13. **Donada** una sèrie amb `Màx` fora d'una seqüència AeM i fora de la sessió de test CSS, **quan** es valida, **aleshores** és invàlida.
 14. **Donada** una sèrie generada pel sistema amb una seqüència AeM, **quan** es valida, **aleshores** és invàlida.
 15. **Donada** una sèrie a A0, A1, A2 o A3 amb descans `d/×N`, **quan** es valida, **aleshores** és invàlida.
 16. **Donat** el descans `d/×0`, **quan** es llegeix, **aleshores** es rebutja.

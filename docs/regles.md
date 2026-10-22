@@ -35,10 +35,13 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-020 | Sense ritmes | avís | planificació | spec 001 |
 | RN-021 | Cobertura de la biblioteca de tècnica | bloquejant | planificació | ADR-0005 |
 | RN-022 | La importació no modifica plans | avís | importació | ADR-0007 |
-| RN-023 | Sèrie per zona i descans | bloquejant | composició | ADR-0008 |
+| RN-023 | Sèrie per zona i descans | bloquejant | composició | ADR-0008, spec 000 |
 | RN-024 | Ràtio treball:descans | bloquejant | composició | ADR-0008, spec 000 |
-| RN-025 | Ordre de les parts de la sessió | bloquejant | composició | ADR-0004 |
-| RN-026 | Una sola part de tècnica | bloquejant | composició | ADR-0005 |
+| RN-025 | Ordre de les parts de la sessió | bloquejant | composició | ADR-0004, ADR-0011 |
+| RN-026 | Una sola part de tècnica | bloquejant | composició | ADR-0005, ADR-0011 |
+| RN-027 | Ús de «Màx» | bloquejant | càrrega, composició | spec 000 |
+| RN-028 | Test caducat | avís | planificació | spec 004 |
+| RN-029 | Canvi de període de piscina sense test | avís | planificació | spec 004 |
 
 ## Nedador
 
@@ -181,10 +184,10 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 ### RN-020 — Sense ritmes
 - **Tipus:** avís · **Moment:** planificació
-- **Regla:** un nedador sense cap test CSS i sense ritmes introduïts pel coach és apte per planificar i genera un avís. El format dels ritmes introduïts pel coach és de la spec 004.
+- **Regla:** un nedador sense cap test CSS acceptat i sense ritmes introduïts pel coach és apte per planificar i genera un avís. El format dels ritmes introduïts pel coach és de la spec 004.
 - **Missatge:** «sense ritmes».
 - **Font:** spec 001.
-- **Coherència:** revisada contra RN-006, RN-018 i RN-023; RN-023 fa que la planificació no depengui dels ritmes. Sense conflicte.
+- **Coherència:** revisada contra RN-006, RN-018, RN-023 i RN-029. RN-023 fa que la planificació no depengui dels ritmes. Si el nedador té ritmes d'una altra piscina, RN-020 no salta i RN-029 sí: és el comportament volgut. Sense conflicte.
 
 ### RN-021 — Cobertura de la biblioteca de tècnica
 - **Tipus:** bloquejant · **Moment:** planificació
@@ -206,24 +209,47 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 ### RN-023 — Sèrie per zona i descans
 - **Tipus:** bloquejant · **Moment:** composició
-- **Regla:** tota sèrie que genera el sistema porta una zona i un descans de tipus `d/`, i no porta cap ritme ni cap temps.
-- **Font:** ADR-0008.
-- **Coherència:** revisada contra RN-024; `d/×N` és una forma de `d/` (spec 000, §3). Sense conflicte.
+- **Regla:** tota sèrie que genera el sistema porta una zona de l'escala, o trams, i un descans de tipus `d/`. No porta mai AeM, `c/`, ritme ni temps. L'única excepció són els principals de la sessió de test CSS (RN-027).
+- **Font:** ADR-0008, spec 000.
+- **Coherència:** revisada contra RN-024 i RN-027; `d/×N` és una forma de `d/` (spec 000, §3), i AeM i `c/` només poden venir de dades importades. Sense conflicte.
 
 ### RN-024 — Ràtio treball:descans
 - **Tipus:** bloquejant · **Moment:** composició
-- **Regla:** el descans `d/×N` només s'admet a TOLA, MPLA i Vel.
+- **Regla:** el descans `d/×N` només s'admet a TOLA, MPLA i Vel. En una sèrie amb trams, s'admet si algun tram és a TOLA, MPLA o Vel; si no, el descans és `d/m:ss`.
 - **Font:** ADR-0008, spec 000.
 - **Coherència:** revisada contra RN-023; sense conflicte.
 
 ### RN-025 — Ordre de les parts de la sessió
 - **Tipus:** bloquejant · **Moment:** composició
-- **Regla:** la sessió segueix l'ordre de parts de l'ADR-0004. El principal II és opcional.
-- **Font:** ADR-0004.
+- **Regla:** la sessió segueix l'ordre de parts de l'ADR-0004. El principal II és opcional. La sessió de test CSS no té tècnica (ADR-0011).
+- **Font:** ADR-0004, ADR-0011.
 - **Coherència:** revisada contra RN-026; sense conflicte.
 
 ### RN-026 — Una sola part de tècnica
 - **Tipus:** bloquejant · **Moment:** composició
-- **Regla:** la tècnica és una sola part de la sessió; no es desdobla.
-- **Font:** ADR-0005.
+- **Regla:** a les sessions d'entrenament, la tècnica és una sola part i no es desdobla. Els exercicis els defineix el coach. La sessió de test CSS no té tècnica.
+- **Font:** ADR-0005, ADR-0011.
 - **Coherència:** revisada contra RN-025; sense conflicte.
+
+### RN-027 — Ús de «Màx»
+- **Tipus:** bloquejant · **Moment:** càrrega, composició
+- **Regla:** «Màx» només és vàlid dins d'una seqüència AeM (dades importades) i als principals de la sessió de test CSS. Fora d'aquests casos, la sèrie és invàlida.
+- **Missatge:** identifica la sèrie.
+- **Font:** spec 000.
+- **Coherència:** revisada contra RN-023 i RN-025; sense conflicte.
+
+## Test CSS
+
+### RN-028 — Test caducat
+- **Tipus:** avís · **Moment:** planificació
+- **Regla:** han passat 8 setmanes des de l'últim test acceptat d'una piscina i no hi ha cap test planificat d'aquella piscina.
+- **Missatge:** identifica la piscina i la data de l'últim test acceptat.
+- **Font:** spec 004 (pendent).
+- **Coherència:** revisada contra RN-020 i RN-029. Sense cap test acceptat, salta RN-020 i RN-028 no s'aplica. Sense solapament.
+
+### RN-029 — Canvi de període de piscina sense test
+- **Tipus:** avís · **Moment:** planificació
+- **Regla:** un període de piscina (25 m o 50 m) comença i el nedador no té cap test acceptat ni planificat d'aquella piscina.
+- **Missatge:** identifica el període i la piscina.
+- **Font:** spec 004 (pendent). La definició de període de piscina està pendent (mapa, pregunta 9).
+- **Coherència:** revisada contra RN-020 i RN-028. RN-029 mira l'inici del període i RN-028, el temps des de l'últim test. Poden saltar juntes sense contradir-se.
