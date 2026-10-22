@@ -45,10 +45,20 @@ data/
 - `estils_preferents`: un o més codis, sense repetir. Admesos: Cr, Esq, Br, Pap, Ei.
 - `dies_entrenament`: un o més dies de la setmana (dl, dt, dc, dj, dv, ds, dg), sense repetir. Les competicions no hi compten.
 - `volum_setmanal`: `{min, max}` en metres (RN-005).
-- `tests_css`: llista de `{data, t400, t200}` (RN-006).
-  - El coach registra els tests manualment; el sistema no els planifica.
-  - El CSS i les zones es calculen (spec 004); no es desen.
-  - **Test vigent:** el de data més recent. Es precisarà per piscina del bloc a la spec 004.
+- `tests_css`: llista de tests (RN-006). Cada test té:
+  - `data`, `piscina` (25 o 50), `t400` i `t200` (`m:ss.cc`): obligatoris.
+  - `acceptat`: booleà, obligatori. En registrar el test val `false`.
+  - `detall_400` i `detall_200`: obligatoris. Cada un és un objecte amb aquests camps, tots opcionals (`null` sense avís):
+    - `parcials`: temps `m:ss.cc` de cada 100 m (4 al 400, 2 al 200);
+    - `bracades_per_llarg`: cicles per llarg, mitjana de la prova (nombre positiu);
+    - `sr`: cicles per minut, mitjana de la prova (nombre positiu);
+    - `rpe`: enter de 0 a 10 (escala CR-10 modificada de Foster).
+  - `notes`: text o `null` (opcional, sense avís).
+  - Sempre en crol. Protocol: spec 000 (§9) i ADR-0011.
+  - El coach col·loca la sessió de test a mà al pla del nedador i en registra el resultat a mà. El sistema no col·loca mai el test. Afegir-la al pla genera una versió nova del pla (principi VI); la mecànica la decideix la spec del pla.
+  - **Test vigent:** l'últim test acceptat de la piscina del període. Registrar un test no canvia els ritmes fins que el coach l'accepta.
+  - Les validacions del test (ràtio T400/T200, 200 no màxim, regularitat del 400) són de la spec 004. Avisos del test: RN-028 i RN-029.
+  - El CSS i les zones es calculen a partir del test vigent (spec 004); no es desen. SWOLF i longitud de braçada són derivats: no es desen.
 - `millors_registres`: llista de `{estil, distancia, piscina, temps, data, competicio}`.
   - `competicio` és un text lliure, perquè pot ser d'una temporada anterior.
   - Unicitat: RN-007.
@@ -90,14 +100,14 @@ data/
 - Cada fitxer porta `versio_esquema`.
 - Dates en format `AAAA-MM-DD`.
 - Temps de registre en format `m:ss.cc` (spec 000).
-- No hi ha valors per defecte: un camp que falta i és obligatori provoca un error. Un camp opcional desconegut es desa com a `null` i genera un avís.
+- No hi ha valors per defecte: un camp que falta i és obligatori provoca un error. Un camp opcional desconegut es desa com a `null`. Només genera avís on aquesta spec ho indica (RN-009).
 
 ## Criteris d'acceptació
 1. **Donat** un `nedador.json` vàlid, **quan** es carrega i es torna a desar, **aleshores** el fitxer resultant és idèntic.
 2. **Donat** un catàleg de competicions i un `inscripcions.json` vàlids, **quan** es carreguen i es tornen a desar, **aleshores** els fitxers resultants són idèntics.
 3. **Donat** un nedador sense estils preferents, sense dies d'entrenament o amb `volum_setmanal.min > max`, **quan** es carrega, **aleshores** dona un error que identifica el camp.
 4. **Donat** un test CSS amb t400 ≤ t200, **quan** es carrega, **aleshores** dona un error.
-5. **Donats** dos tests CSS, **quan** es demana el vigent, **aleshores** s'obté el de data més recent.
+5. **Donats** dos tests CSS acceptats de la mateixa piscina i un de més recent no acceptat, **quan** es demana el vigent per a aquella piscina, **aleshores** s'obté l'acceptat de data més recent.
 6. **Donats** dos millors registres amb el mateix estil, distància i piscina, **quan** es carrega, **aleshores** dona un error.
 7. **Donat** un millor registre amb temps `1:05.3`, **quan** es carrega, **aleshores** dona un error de format.
 8. **Donada** una participació sense inscripcions, **quan** es carrega, **aleshores** dona un error.
@@ -106,7 +116,7 @@ data/
 11. **Donats** dos ids de competició repetits al catàleg, **quan** es carrega, **aleshores** dona un error.
 12. **Donada** una competició amb `seu: null`, **quan** es carrega, **aleshores** es carrega correctament i genera un avís.
 13. **Donada** una participació de classe A sense cap inscripció principal, **quan** es valida, **aleshores** genera un avís i no bloqueja la planificació.
-14. **Donat** un nedador vàlid, no arxivat, sense cap test CSS i sense ritmes, amb una participació de classe A, **quan** es demana si és apte per planificar, **aleshores** la resposta és «sí» i genera l'avís «sense ritmes».
+14. **Donat** un nedador vàlid, no arxivat, sense cap test CSS acceptat i sense ritmes, amb una participació de classe A, **quan** es demana si és apte per planificar, **aleshores** la resposta és «sí» i genera l'avís «sense ritmes».
 15. **Donat** un nedador sense cap participació de classe A, **quan** es demana si és apte per planificar, **aleshores** la resposta és «no» i el motiu és «falta competició A».
 16. **Donat** un nedador amb participacions A, B i C, **quan** es demanen les proves objectiu, **aleshores** s'obtenen només les inscripcions de les participacions A.
 17. **Donat** un fitxer amb un `versio_esquema` desconegut, **quan** es carrega, **aleshores** dona un error.
