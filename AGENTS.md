@@ -35,6 +35,9 @@ vigents són als ADR acceptats de `docs/decisions/`; no les canviïs sense un AD
   no bloqueja. Es canvia a `"bloquejant"` en el commit que comença la implementació de la
   primera spec, i no es torna a canviar. Els marcadors òrfens i els errors d'ID bloquegen
   sempre.
+- No executis scripts ni ordres de consola (`verify.sh`, tests, git, uv). Dona l'ordre
+  exacta perquè l'executi l'usuari. Només les executes si t'ho demana.
+- Respostes breus: només el diff i les decisions. Sense resums de context.
 
 ## Ordres
 - Verificació completa: `bash scripts/verify.sh`
