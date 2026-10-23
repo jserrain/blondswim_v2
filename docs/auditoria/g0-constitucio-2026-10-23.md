@@ -72,8 +72,8 @@ FETS: taula verificada als fitxers citats. INFERÈNCIA: la clau API de `verify.s
 - **G0-P07:** «branca» només cobreix VCS, no aïllament. Correcte com a pista; deixar-ho.
 
 ## Aprovació
-- Veredicte:
-- Aprovador:
-- Data:
-- Falsos positius marcats:
-- Condicions i terminis:
+- Veredicte: Passa amb condicions
+- Aprovador: Josep M. Serrainat
+- Data: 2026-10-23
+- Falsos positius marcats: G0-P08 (registren = avisos)
+- Condicions i terminis: esmena 1.3.0 (dades a l'LLM, Q01, raons, fora d'abast) abans de la primera spec amb judici LLM; settings.json alineat amb AGENTS.md abans del merge a main
