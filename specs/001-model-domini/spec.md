@@ -179,3 +179,5 @@ data/
 - **CA-001-42** — **Donada** una inscripció o un millor registre amb una prova que no és oficial per a la seva piscina (p. ex. `100 Ei` en piscina de 50 m), **quan** es carrega, **aleshores** dona un error que identifica la prova i la piscina (RN-030).
 - **CA-001-43** — **Donada** una carpeta de temporada amb un nom que no segueix RN-031 (p. ex. `2026-28`), **quan** es carrega, **aleshores** dona un error que identifica la carpeta.
 - **CA-001-44** — **Donat** un nedador sense `correu`, amb `correu: null`, buit o amb espais, **quan** es carrega, **aleshores** dona un error que identifica el camp (RN-032).
+- **CA-001-45** — **Donats** dos nedadors amb ids `n0001` i `n0003`, aquest arxivat, **quan** es crea un nedador nou, **aleshores** rep l'id `n0004` (RN-002).
+- **CA-001-46** — **Donat** un nedador amb un `alias` que no compleix RN-003 (p. ex. `""` o `n0002`), **quan** es carrega, **aleshores** dona un error que identifica el camp.
