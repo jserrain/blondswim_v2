@@ -100,7 +100,7 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 - [ ] T021 [P] [US3] [infrastructure] Tests a `tests/integration/test_inscripcions_json.py`: CA-001-02, 43
 - [ ] T022 [US3] [domain] `Participacio` i `Inscripcio` a `src/blondswim/domain/inscripcions.py`. `proves`: «≥ 1» (RN-014); una participació per competició (RN-012); una inscripció per prova (RN-016)
 - [ ] T023 [US3] [domain] Validació creuada amb el catàleg (RN-011, RN-013, RN-015, RN-030 segons la piscina de la competició) a `src/blondswim/domain/validacio.py`
-- [ ] T024 [US3] [infrastructure] DTO, mapper i lectura de `temporades/<AAAA-AA>/inscripcions.json`; una carpeta que no segueix RN-031 → error
+- [ ] T024 [US3] [infrastructure] DTO, mapper i lectura de `temporades/<AAAA-AA>/inscripcions.json` a `src/blondswim/infrastructure/mappers.py` i `repositoris.py`; una carpeta que no segueix RN-031 → error
 
 ---
 
@@ -129,7 +129,7 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 - [ ] T030 [P] [US6] [infrastructure] Tests a `tests/integration/test_registre_avisos.py`, amb `tmp_path` i rellotge fix: CA-001-47, 48
 - [ ] T031 [US6] [infrastructure] `data/avisos.jsonl` en mode afegir a `src/blondswim/infrastructure/registre_avisos.py` (camps `data_hora`, `rn`, `fitxer`, `camp`, `valor`, `missatge`, `id_nedador`) i rellotge del sistema a `src/blondswim/infrastructure/rellotge.py`
-- [ ] T032 [US6] [application] Cas d'ús de càrrega que registra els avisos a `src/blondswim/application/carrega.py`
+- [ ] T032 [US6] [application] Casos d'ús de càrrega i d'aptitud per planificar que registren els avisos (RN-009, RN-019, RN-020) a `src/blondswim/application/carrega.py`
 
 ---
 

@@ -15,7 +15,7 @@ Model del domini (`src/blondswim/domain/`). L'ordre dels camps és el de l'escri
 | `Temps` | centèsimes (int) ↔ `m:ss.cc` | research R4; CA-001-07 |
 | `Prova` | `{distancia: int, estil: Estil}` | oficial per a la piscina: RN-030 |
 | `Classe` | enum A, B, C | |
-| `Prioritat` | enum `principal`, `secundaria` | |
+| `Prioritat` | enum `principal`, `secundària` | spec 000 §7 |
 | `CodiTemporada` | text `AAAA-AA` | RN-031; deriva `inici` i `fi` |
 | Definicions | proves oficials (RN-030), inici de temporada (RN-031) | constants a `domain/definicions.py` (research R2) |
 

@@ -51,7 +51,7 @@ data/
     - `bracades_per_llarg`: cicles per llarg, mitjana de la prova (nombre positiu);
     - `sr`: cicles per minut, mitjana de la prova (nombre positiu);
     - `rpe`: enter de 0 a 10 (escala CR-10 modificada de Foster).
-  - `notes`: text o `null` (opcional, sense avís).
+  - `notes`: text o `null` (informatiu).
   - Sempre en crol. Protocol: spec 000 (§9) i ADR-0011.
   - El coach col·loca la sessió de test a mà al pla del nedador i en registra el resultat a mà. El sistema no col·loca mai el test. Afegir-la al pla genera una versió nova del pla (principi VI); la mecànica la decideix la spec del pla.
   - **Test vigent:** l'últim test acceptat de la piscina del període. Registrar un test no canvia els ritmes fins que el coach l'accepta.
@@ -156,7 +156,7 @@ data/
 - **CA-001-09** — **Donada** una inscripció amb un dia que no és de la competició, **quan** es carrega, **aleshores** dona un error.
 - **CA-001-10** — **Donada** una participació a una competició amb alguna data fora de la temporada del nedador, **quan** es carrega, **aleshores** dona un error.
 - **CA-001-11** — **Donats** dos ids de competició repetits al catàleg, **quan** es carrega, **aleshores** dona un error.
-- **CA-001-12** — **Donada** una competició amb `seu: null`, **quan** es carrega, **aleshores** es carrega correctament i genera un avís.
+- **CA-001-12** — **Donada** una competició amb `seu: null` o sense el camp `seu`, **quan** es carrega, **aleshores** es carrega correctament i genera un avís.
 - **CA-001-13** — **Donada** una participació de classe A sense cap inscripció principal, **quan** es valida, **aleshores** genera un avís i no bloqueja la planificació.
 - **CA-001-14** — **Donat** un nedador vàlid, no arxivat, sense cap test CSS acceptat i sense ritmes, amb una participació de classe A, **quan** es demana si és apte per planificar, **aleshores** la resposta és «sí» i genera l'avís «sense ritmes».
 - **CA-001-15** — **Donat** un nedador sense cap participació de classe A, **quan** es demana si és apte per planificar, **aleshores** la resposta és «no» i el motiu és «falta competició A».

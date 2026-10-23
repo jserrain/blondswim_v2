@@ -1,6 +1,6 @@
 # Procediment d'auditoria de specs (Spec Kit + Claude Code)
 
-> Versió 2.0 · 2026-10-23 · Document de suport, no normatiu (constitució, «Fonts normatives»).
+> Versió 2.1 · 2026-10-23 · Document de suport, no normatiu (constitució, «Fonts normatives»).
 > Referència de criteris: **constitució de BlondSwim v2** (obligatoris) + **pilars d'AprenIA** (recomanats, admeten N/A justificat).
 
 ---
@@ -19,7 +19,7 @@ Flux: `constitution → specify → clarify → checklist → plan → tasks →
 |---|---|---|---|
 | **G0 Constitució** | Després de `/speckit-constitution` o d'una esmena | `.specify/memory/constitution.md`, fonts normatives, plantilles, configuració | `/speckit-specify` |
 | **G1 Spec** | Després de `specify` + `clarify` (+ `checklist`) | `specs/NNN-nom/spec.md` | `/speckit-plan` |
-| **G2 Pla** *(futur)* | Després de `plan` + `tasks` + `analyze` | `plan.md`, `tasks.md` | `/speckit-implement` |
+| **G2 Pla** | Després de `plan` + `tasks` (inclou l'anàlisi de `/speckit-analyze`) | `plan.md`, `research.md`, `data-model.md`, `contracts/`, `quickstart.md`, `tasks.md` | `/speckit-implement` |
 
 ---
 
@@ -45,17 +45,19 @@ Columna **Qui**: **A** = consola sola · **A→B** = consola dona pista, Claude 
 ```bash
 bash scripts/auditar.sh constitution                  # → docs/auditoria/g0-mecanic-AAAA-MM-DD.txt
 bash scripts/auditar.sh spec specs/001-model-domini   # → docs/auditoria/g1-001-mecanic-AAAA-MM-DD.txt
+bash scripts/auditar.sh plan specs/001-model-domini   # → docs/auditoria/g2-001-mecanic-AAAA-MM-DD.txt
 echo $?                                               # 0 = cap FALLA · 1 = alguna FALLA
 ```
-L'script desa la sortida ell mateix (no cal `tee`) i conserva el codi de sortida. `BASE=<branca>` canvia la branca base de G1-S04 (per defecte `main`).
+L'script desa la sortida ell mateix (no cal `tee`) i conserva el codi de sortida. `BASE=<branca>` canvia la branca base de G1-S04 i G2-S05 (per defecte `main`).
 
 ### Part B — Claude Code
 En una **sessió nova** (no la que ha generat l'artefacte), en mode normal (no *plan mode*: cal escriure l'informe):
 ```
 /auditar constitution
 /auditar spec specs/001-model-domini
+/auditar plan specs/001-model-domini
 ```
-La comanda només pot llegir i escriure a `docs/auditoria/`. Genera `docs/auditoria/g0-constitucio-AAAA-MM-DD.md` o `docs/auditoria/g1-NNN-AAAA-MM-DD.md`.
+La comanda només pot llegir i escriure a `docs/auditoria/`. Genera `docs/auditoria/g0-constitucio-AAAA-MM-DD.md`, `g1-NNN-AAAA-MM-DD.md` o `g2-NNN-AAAA-MM-DD.md`. Una re-auditoria afegeix el sufix `-rN`.
 
 ### Part C — Humà
 1. Llegir l'informe i marcar falsos positius.
@@ -149,7 +151,7 @@ La consola mostra les paraules trobades (`PISTA`). Claude Code decideix si el pi
 | G1-S01 | Carpeta `specs/NNN-nom/spec.md` i branca igual al nom de la carpeta | O | A |
 | G1-S02 | Clarify registrat: secció `## Clarifications` (també si es va fer fora de la comanda) | O | A |
 | G1-S03 | Checklist a `checklists/` (A); ítems pendents resolts o justificats (B) | R | A→B |
-| G1-S04 | Sense `plan.md`, `tasks.md` ni canvis a `src/` o `tests/` respecte de la branca base | O | A |
+| G1-S04 | Sense `plan.md`, `tasks.md` ni canvis a `src/` o `tests/` respecte de la branca base. En re-auditoria (hi ha un informe G1 anterior), el pla i les tasques donen AVÍS | O | A |
 | G1-S05 | Línia `**Estat:**` present (A); coherent amb el moment del gate (B) | O | A→B |
 | G1-Q01 | Històries prioritzades P1, P2… provables de manera independent | R | A→B |
 | G1-Q02 | Criteris `- **CA-NNN-nn**` amb Donat/quan/aleshores (A); escenaris complets i casos límit (B) | O | A→B |
@@ -165,12 +167,51 @@ La consola mostra les paraules trobades (`PISTA`). Claude Code decideix si el pi
 
 ---
 
-## 7. Registre
+## 7. Criteris del Gate 2 — Pla i tasques
+
+Inclou l'anàlisi de coherència de `/speckit-analyze` (duplicats, ambigüitats, buits de cobertura, inconsistències i alineació amb la constitució).
+
+### 7.1 Estructura i seqüència
+
+| ID | Criteri | Tipus | Qui |
+|---|---|---|---|
+| G2-S01 | Existeixen `plan.md`, `tasks.md`, `research.md` i `data-model.md` (O); `quickstart.md` i `contracts/` (R) | O/R | A |
+| G2-S02 | Zero `NEEDS CLARIFICATION` al pla, la recerca i el data model; spec `Aprovada` | O | A |
+| G2-S03 | *Constitution Check* sense caselles buides i amb tots els principis (A); cada ✓ és cert segons el pla (B) | O | A→B |
+| G2-S04 | Tota violació o compliment parcial està justificat a *Complexity Tracking* | O | A→B |
+| G2-S05 | Sense canvis a `src/` ni `tests/` respecte de la branca base | O | A |
+
+### 7.2 Tasques
+
+| ID | Criteri | Tipus | Qui |
+|---|---|---|---|
+| G2-T01 | Format `- [ ] TNNN [P?] [USn?] [capa] descripció`, amb una sola capa per tasca (principi VII) | O | A |
+| G2-T02 | IDs únics (O) i consecutius (R) | O/R | A |
+| G2-T03 | Cada tasca indica el fitxer o la comanda | R | A→B |
+| G2-T04 | Ordre correcte: tests abans de la implementació; dependències entre blocs coherents | O | B |
+| G2-T05 | Cada element del data model i de l'estructura del pla té almenys una tasca | R | A→B |
+
+### 7.3 Traçabilitat i coherència
+
+| ID | Criteri | Tipus | Qui |
+|---|---|---|---|
+| G2-Q01 | Cada CA no pendent té almenys una tasca de test | O | A |
+| G2-Q02 | Cap tasca cita un CA inexistent o pendent | O | A |
+| G2-Q03 | Les RN citades al pla, la recerca, el data model i les tasques existeixen | O | A |
+| G2-Q04 | Les capes del pla tenen tasques | R | A |
+| G2-Q05 | El pla no afegeix regles ni requisits que no siguin a la spec, a `regles.md` o als ADR (principi II) | O | B |
+| G2-Q06 | El data model és coherent amb la spec: camps, obligatorietat, `null`, derivats | O | B |
+| G2-Q07 | Cada decisió de `research.md` té raó i alternatives | R | B |
+| G2-Q08 | Terminologia coherent entre spec, glossari, pla i tasques; sense duplicats ni contradiccions | R | B |
+
+---
+
+## 8. Registre
 
 | Fitxer | Generat per |
 |---|---|
-| `docs/auditoria/g0-mecanic-AAAA-MM-DD.txt` · `g1-NNN-mecanic-AAAA-MM-DD.txt` | Part A |
-| `docs/auditoria/g0-constitucio-AAAA-MM-DD.md` · `g1-NNN-AAAA-MM-DD.md` | Part B |
+| `docs/auditoria/g0-mecanic-AAAA-MM-DD.txt` · `g1-NNN-mecanic-AAAA-MM-DD.txt` · `g2-NNN-mecanic-AAAA-MM-DD.txt` | Part A |
+| `docs/auditoria/g0-constitucio-AAAA-MM-DD.md` · `g1-NNN-AAAA-MM-DD.md` · `g2-NNN-AAAA-MM-DD.md` | Part B |
 | Secció `## Aprovació` de l'informe | Part C |
 
 ```markdown
@@ -184,9 +225,9 @@ La consola mostra les paraules trobades (`PISTA`). Claude Code decideix si el pi
 
 ---
 
-## 8. Manteniment
+## 9. Manteniment
 
-- Quan la constitució s'esmeni, revisar 5.2–5.5 i 6 perquè segueixin els principis vigents.
+- Quan la constitució s'esmeni, revisar 5.2–5.5, 6 i 7 perquè segueixin els principis vigents.
 - Si un criteri **B** es pot comprovar amb una regla fixa, passar-lo a **A**.
 - Si un criteri **A** dona falsos positius sovint, passar-lo a **A→B** (sortida `PISTA`).
 - Provar `auditar.sh` a macOS (bash 3.2, grep BSD) després de cada canvi.

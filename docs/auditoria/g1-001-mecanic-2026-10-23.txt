@@ -3,7 +3,7 @@
   OK     G1-S01 Branca = carpeta: 001-model-domini
   OK     G1-S02 ## Clarifications
   AVÍS   G1-S03 Sense checklist
-  FALLA  G1-S04 Ja existeix plan.md o tasks.md
+  AVÍS   G1-S04 Ja existeix plan.md o tasks.md (re-auditoria: hi ha un informe G1 anterior)
   OK     G1-S04 Sense codi nou respecte de main
   INFO   G1-S05 Estat: Aprovada
   OK     G1-Q02 Criteris d'acceptació definits: 49
@@ -14,10 +14,10 @@
   OK     G1-Q04 25 RN referenciades, totes definides
   OK     G1-Q05 Zero [NEEDS CLARIFICATION]
   OK     G1-Q05 ## Assumptions
-  PISTA  G1-Q07 Dates concretes a revisar: 2026-10-20 2026-10-22 2026-10-23 
+  OK     G1-Q07 Sense dates concretes
   AVÍS   G1-Q01 Sense històries P1/P2
   INFO   G1-Q08 FR-NNN: 0 · SC-NNN: 0
-  AVÍS   G1-A02 Sense secció de dades/accions sensibles
+  PISTA  G1-A02 Esmenta dades o accions sensibles
   INFO   G1-A03 Sense punts de judici LLM
 
-Resultat: 1 FALLA(ES)
+Resultat: cap FALLA
