@@ -4,7 +4,7 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
 
 ## R1. Lectura JSON amb Pydantic estricte
 - **Decision:** Pydantic v2 només a `infrastructure`, amb models de lectura (DTO) en mode estricte: `ConfigDict(strict=True, extra="forbid", frozen=True)` i `model_validate_json`. Cada DTO es converteix a les dataclasses del domini, que continua sense dependències (principi I).
-- **Rationale (verificat amb Pydantic 2.14):** en mode estricte, `"25"` o `25.0` a `piscina`, `"yes"` o `1` a `acceptat` i camps desconeguts són error. Les dates ISO s'accepten perquè en JSON una data és text. Un camp absent és error i `X | None` sense valor per defecte admet `null`, que és la semàntica de la spec (principi V). Les rutes d'error (`tests_css.0.t400`) identifiquen el camp. `model_dump_json` respecta l'ordre dels camps (R3).
+- **Rationale (verificat amb Pydantic 2.14):** en mode estricte, `"25"` o `25.0` a `piscina`, `"yes"` o `1` a `acceptat` i camps desconeguts són error. Les dates ISO s'accepten perquè en JSON una data és text. Camps obligatoris sense valor per defecte (absent o `null` → error); camps informatius i opcionals amb avís com a `X | None = None` (absent ≡ `null`), que és la semàntica de la spec (§ Format JSON). En desar s'escriuen tots els camps (`exclude_none=False`). Les rutes d'error (`tests_css.0.t400`) identifiquen el camp. `model_dump_json` respecta l'ordre dels camps (R3).
 - **Missatges:** catàleg en català per `type` d'error (`missing`, `int_type`, `bool_type`, `enum`, `extra_forbidden`…).
 - **Alternatives considered:**
   - Mappers manuals: més codi per obtenir el mateix.

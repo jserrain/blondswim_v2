@@ -36,7 +36,7 @@ Sense LLM. El rellotge només s'injecta per registrar avisos.
 
 **Constraints**: domini sense I/O, LLM, rellotge ni dependències externes; escriptura estable byte a byte (CA-001-36); errors en català amb fitxer, camp i valor
 
-**Scale/Scope**: desenes de nedadors i de competicions per temporada; 48 CA, 3 dels quals pendents
+**Scale/Scope**: desenes de nedadors i de competicions per temporada; 49 CA, 3 dels quals pendents
 
 ## Constitution Check
 

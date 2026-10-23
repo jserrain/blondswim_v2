@@ -46,7 +46,7 @@ data/
 - `tests_css`: llista de tests (RN-006). Cada test té:
   - `data`, `piscina` (25 o 50), `t400` i `t200` (`m:ss.cc`): obligatoris.
   - `acceptat`: booleà, obligatori. En registrar el test val `false`.
-  - `detall_400` i `detall_200`: obligatoris. Cada un és un objecte amb aquests camps, tots opcionals (`null` sense avís):
+  - `detall_400` i `detall_200`: informatius. Cada un és un objecte amb aquests camps, tots informatius:
     - `parcials`: temps `m:ss.cc` de cada 100 m (4 al 400, 2 al 200);
     - `bracades_per_llarg`: cicles per llarg, mitjana de la prova (nombre positiu);
     - `sr`: cicles per minut, mitjana de la prova (nombre positiu);
@@ -99,7 +99,11 @@ data/
 - Cada fitxer porta `versio_esquema`.
 - Dates en format `AAAA-MM-DD`.
 - Temps de registre en format `m:ss.cc` (spec 000).
-- No hi ha valors per defecte: un camp que falta i és obligatori provoca un error. Un camp opcional desconegut es desa com a `null`. Només genera avís on aquesta spec ho indica (RN-009).
+- Hi ha tres tipus de camp:
+  - **Obligatori:** ha de ser-hi amb un valor vàlid. Si falta o és `null`, és error.
+  - **Informatiu** (`alias`, `notes`, `detall_400`, `detall_200` i els seus camps): no intervé en cap regla de planificació. Pot faltar o ser `null`; tots dos casos volen dir «sense valor» i no generen avís.
+  - **Opcional amb avís** (`seu`): com un informatiu, però sense valor genera l'avís que indica la spec (RN-009).
+- En desar, el sistema escriu tots els camps; un camp sense valor s'escriu `null`. No hi ha cap altre valor per defecte.
 
 ## Registre d'avisos
 - Tot avís (RN-009, RN-019, RN-020 i els que defineixin altres specs) s'afegeix a `data/avisos.jsonl`, una línia JSON per avís, amb `data_hora`, `rn`, `fitxer`, `camp`, `valor`, `missatge` i `id_nedador` (o `null`).
@@ -123,7 +127,7 @@ data/
 - P: Es pot planificar un nedador sense test CSS? → Sí: és apte i es genera l'avís «sense ritmes» (CA-001-14).
 - P: Quin test CSS s'aplica? → El test vigent: l'últim acceptat de la piscina del període. Registrar-ne un no canvia els ritmes fins que el coach l'accepta.
 - P: Qui col·loca la sessió de test CSS al pla? → El coach, a mà; el sistema no ho fa mai (ADR-0011).
-- P: Quins camps del test són opcionals? → Els de `detall_400` i `detall_200` i `notes`: es desen com a `null` sense avís.
+- P: Quins camps poden faltar? → Només els informatius (`alias`, `notes`, `detall_400`, `detall_200` i els seus camps) i `seu`; en desar s'escriuen com a `null` (§ Format JSON).
 - P: Com es defineix la setmana? → Setmana ISO 8601; és un valor derivat i no es desa.
 - P: A què s'inscriu un nedador? → A proves individuals del programa de la competició, una inscripció per prova (RN-016), sense límit màxim al sistema. Els relleus i el programa de proves no es modelen.
 - P: La spec repeteix el text de les regles? → No: s'hi refereix per ID a `docs/regles.md` (principi III).
@@ -131,7 +135,7 @@ data/
 
 ### Sessió 2026-10-23 (auditoria G1)
 
-- P: Què vol dir que un fitxer desat sigui «idèntic»? → Contingut equivalent a l'original (mateixes claus, valors i `null`); desar dues vegades seguides dona fitxers idèntics byte a byte.
+- P: Què vol dir que un fitxer desat sigui «idèntic»? → Contingut equivalent a l'original (mateixos valors; un camp informatiu absent equival a `null`); desar dues vegades seguides dona fitxers idèntics byte a byte.
 - P: Què passa si es demana esborrar un nedador? → Error que indica que s'ha d'arxivar; una importació que no l'inclou no l'esborra ni l'arxiva.
 - P: Quins estils preferents s'admeten? → Cr, Esq, Br, Pap i Ei. `EP` i els codis de sèrie (FRIM, PEB, Ei inv) no.
 - P: Quines piscines s'admeten? → 25 m i 50 m; no hi ha altres mides oficials.
@@ -141,7 +145,7 @@ data/
 - P: On es registren els avisos? → A `data/avisos.jsonl`, que només creix (§ Registre d'avisos).
 
 ## Criteris d'acceptació
-- **CA-001-01** — **Donat** un `nedador.json` vàlid, **quan** es carrega i es torna a desar, **aleshores** el contingut desat és equivalent a l'original (mateixes claus, valors i `null`).
+- **CA-001-01** — **Donat** un `nedador.json` vàlid, **quan** es carrega i es torna a desar, **aleshores** el contingut desat és equivalent a l'original (mateixos valors; un camp informatiu absent equival a `null`).
 - **CA-001-02** — **Donat** un catàleg de competicions i un `inscripcions.json` vàlids, **quan** es carreguen i es tornen a desar, **aleshores** el contingut desat és equivalent a l'original.
 - **CA-001-03** — **Donat** un nedador sense estils preferents, sense dies d'entrenament o amb `volum_setmanal.min > max`, **quan** es carrega, **aleshores** dona un error que identifica el camp.
 - **CA-001-04** — **Donat** un test CSS amb t400 ≤ t200, **quan** es carrega, **aleshores** dona un error.
@@ -189,3 +193,4 @@ data/
 - **CA-001-46** — **Donat** un nedador amb un `alias` que no compleix RN-003 (p. ex. `""` o `n0002`), **quan** es carrega, **aleshores** dona un error que identifica el camp.
 - **CA-001-47** — **Donada** una competició amb `seu: null`, **quan** es carrega, **aleshores** `data/avisos.jsonl` té una línia nova amb `rn: "RN-009"`, el fitxer, el camp `seu` i la data i hora.
 - **CA-001-48** — **Donat** un registre d'avisos amb línies, **quan** es registra un avís nou, **aleshores** les línies anteriors es conserven sense canvis.
+- **CA-001-49** — **Donat** un nedador sense `alias` i amb un test sense `notes` ni `detall_400`, **quan** es carrega i es torna a desar, **aleshores** es carrega sense error ni avís i el fitxer desat té aquests camps a `null`.

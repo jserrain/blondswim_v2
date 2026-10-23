@@ -13,7 +13,7 @@ bash scripts/verify.sh                       # porta única: ha d'acabar «LLEST
 ```
 
 ## Resultats esperats
-- 45 CA amb almenys un test. CA-001-33, 34 i 38 estan pendents de les specs 004 i 002 i no es comproven.
+- 46 CA amb almenys un test. CA-001-33, 34 i 38 estan pendents de les specs 004 i 002 i no es comproven.
 - `import-linter`: `domain` no importa cap altra capa ni cap dependència externa.
 - `mypy --strict` sense errors.
 

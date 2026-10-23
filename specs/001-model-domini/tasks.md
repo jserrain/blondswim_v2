@@ -9,13 +9,13 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/fitxers-json.md
 
-**Tests**: obligatoris. Cada CA no pendent té almenys una tasca de test amb `@pytest.mark.ca("CA-001-nn")`. CA-001-33, 34 i 38 són `[PENDENT]` i no tenen tasca. En total, 45 CA amb test.
+**Tests**: obligatoris. Cada CA no pendent té almenys una tasca de test amb `@pytest.mark.ca("CA-001-nn")`. CA-001-33, 34 i 38 són `[PENDENT]` i no tenen tasca. En total, 46 CA amb test.
 
 **Organization**: la spec 001 no té històries d'usuari (§ Assumptions). Les fases s'organitzen per **blocs funcionals** independents, amb les etiquetes US1–US5:
 
 | Etiqueta | Bloc | CA |
 |---|---|---|
-| US1 | Nedador: càrrega, validació i desament | 01, 03, 04, 06, 07, 17, 24, 26, 27, 31, 32, 35, 36, 39, 40, 41 (test, millor registre), 42 (millor registre), 44, 46 |
+| US1 | Nedador: càrrega, validació i desament | 49, 01, 03, 04, 06, 07, 17, 24, 26, 27, 31, 32, 35, 36, 39, 40, 41 (test, millor registre), 42 (millor registre), 44, 46 |
 | US2 | Catàleg de competicions | 11, 12, 41 (competició) |
 | US3 | Inscripcions de temporada | 02, 08, 09, 10, 19, 20, 22, 23, 29, 42 (inscripció), 43 |
 | US4 | Derivats i aptitud per planificar | 05, 13, 14, 15, 16, 18, 28 |
@@ -67,13 +67,13 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 ### Tests (s'escriuen primer i han de fallar)
 
 - [ ] T011 [P] [US1] [domain] Tests de validació del nedador a `tests/unit/test_nedador.py`: CA-001-03, 04, 06, 24, 26, 32, 35, 39, 40, 41 (test i millor registre), 42 (millor registre), 44, 46
-- [ ] T012 [P] [US1] [infrastructure] Tests de fitxer a `tests/integration/test_nedador_json.py`: CA-001-01, 07, 17, 27, 31, 36
+- [ ] T012 [P] [US1] [infrastructure] Tests de fitxer a `tests/integration/test_nedador_json.py`: CA-001-01, 07, 17, 27, 31, 36, 49
 
 ### Implementació
 
 - [ ] T013 [US1] [domain] `Nedador`, `TestCss`, `DetallProva` i `MillorRegistre` a `src/blondswim/domain/nedador.py`. `estils_preferents` i `dies_entrenament`: «≥ 1, sense repetir»; `volum_setmanal`: RN-005; `t400 > t200`: RN-006; `rpe` «enter 0–10 \| null»; `parcials` «4 al 400 i 2 al 200 \| null»
 - [ ] T014 [US1] [domain] Validació del nedador i entre nedadors (RN-003, RN-007, RN-030, RN-032) a `src/blondswim/domain/validacio.py`
-- [ ] T015 [US1] [infrastructure] DTO de `nedador.json` a `dto.py` i mapper DTO ↔ `Nedador` a `src/blondswim/infrastructure/mappers.py`: camp obligatori absent → error; `versio_esquema` ≠ 1 → error (CA-001-17); errors amb fitxer, camp i valor
+- [ ] T015 [US1] [infrastructure] DTO de `nedador.json` a `dto.py` i mapper DTO ↔ `Nedador` a `src/blondswim/infrastructure/mappers.py`: camp obligatori absent o `null` → error; camp informatiu absent ≡ `null` sense avís (CA-001-49); `versio_esquema` ≠ 1 → error (CA-001-17); errors amb fitxer, camp i valor
 - [ ] T016 [US1] [infrastructure] `RepositoriNedadors` sobre `data/nedadors/<id>/` a `src/blondswim/infrastructure/repositoris.py`. L'id és el nom de la carpeta (RN-001)
 
 **Checkpoint**: US1 verda

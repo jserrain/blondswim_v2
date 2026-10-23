@@ -21,12 +21,14 @@ Model del domini (`src/blondswim/domain/`). L'ordre dels camps és el de l'escri
 
 ## Entitats
 
+Tipus de camp (spec, § Format JSON): **obligatori** (ha de ser-hi amb valor), **informatiu** (pot faltar o ser `null`, sense avís) i **opcional amb avís**. En desar s'escriuen tots els camps.
+
 ### Nedador (`nedadors/<id>/nedador.json`)
 | Camp | Tipus | Obligatori | Regla / CA |
 |---|---|---|---|
 | `versio_esquema` | int | sí | CA-001-17 |
 | `correu` | `Correu` | sí | RN-032; CA-001-24, 44 |
-| `alias` | `Alias` \| null | sí (pot ser `null`) | RN-003; CA-001-26, 46 |
+| `alias` | `Alias` \| null | informatiu | RN-003; CA-001-26, 46, 49 |
 | `arxivat` | bool | sí | RN-017; `false` en crear-lo |
 | `estils_preferents` | llista d'`Estil`, ≥ 1, sense repetir | sí | CA-001-03, 39 |
 | `dies_entrenament` | llista de `Dia`, ≥ 1, sense repetir | sí | CA-001-03, 40 |
@@ -43,8 +45,8 @@ L'id no és al fitxer: és el nom de la carpeta.
 | `piscina` | `Piscina` | sí |
 | `t400`, `t200` | `Temps` | sí; t400 > t200 (RN-006) |
 | `acceptat` | bool | sí (CA-001-35); `false` en registrar-lo |
-| `detall_400`, `detall_200` | `DetallProva` | sí |
-| `notes` | text \| null | sí (pot ser `null`) |
+| `detall_400`, `detall_200` | `DetallProva` \| null | informatiu |
+| `notes` | text \| null | informatiu |
 
 **DetallProva:** `parcials` (llista de `Temps`: 4 al 400 i 2 al 200 \| null), `bracades_per_llarg` (> 0 \| null), `sr` (> 0 \| null), `rpe` (enter 0–10 \| null). Un `null` no genera cap avís (CA-001-32).
 
@@ -59,7 +61,7 @@ Fitxer: `{versio_esquema, competicions: [...]}`.
 | `nom` | text no buit | |
 | `dates` | llista de dates, ≥ 1 | |
 | `piscina` | `Piscina` | |
-| `seu` | text \| null | RN-009 (avís) |
+| `seu` | text \| null | opcional amb avís (RN-009) |
 
 ### Inscripcions de temporada (`nedadors/<id>/temporades/<AAAA-AA>/inscripcions.json`)
 Fitxer: `{versio_esquema, participacions: [...]}`.
