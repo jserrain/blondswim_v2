@@ -1,0 +1,39 @@
+== Gate 0: Constitució (2026-10-23) ==
+  OK     G0-E01 Existeix .specify/memory/constitution.md
+  OK     G0-E02 Sense marcadors de plantilla
+  OK     G0-E03 Versió semver: 1.2.1
+  OK     G0-E03 Ratificació: 2026-10-18
+  OK     G0-E03 Última esmena: 2026-10-23
+  PISTA  G0-E04 Hi ha secció de governança
+  OK     G0-E05 Historial git del fitxer: 6 commits
+  INFO   Principis (### I., II., …): 8
+  INFO   Principis amb línia 'Raó:'/'Rationale:': 2
+  PISTA  G0-Q02 6 principi(s) sense raó explícita
+-- Fonts normatives (G0-C05) --
+  OK     G0-C05 docs/regles.md
+  OK     G0-C05 docs/decisions/ amb ADR
+  OK     G0-C05 Glossari (spec 000)
+-- Portes de qualitat (G0-C06): el que la constitució diu que comprova verify.sh --
+  OK     G0-C06 verify.sh inclou: ruff check
+  OK     G0-C06 verify.sh inclou: ruff format
+  OK     G0-C06 verify.sh inclou: mypy
+  OK     G0-C06 verify.sh inclou: lint-imports
+  OK     G0-C06 verify.sh inclou: pytest
+  OK     G0-C06 verify.sh inclou: tracabilitat
+-- Pilars d'AprenIA (pistes; decideix la Part B, admet N/A justificat) --
+  PISTA  G0-P01 SDD trobat: spec,specs
+  PISTA  G0-P02 Schemas trobat: comprovació determinista
+  AVÍS   G0-P03 MCP cap paraula clau
+  AVÍS   G0-P04 Dades local/núvol cap paraula clau
+  AVÍS   G0-P05 PII cap paraula clau
+  PISTA  G0-P06 HITL trobat: avisa,coach decideix
+  PISTA  G0-P07 Aïllament/VCS trobat: branca
+  PISTA  G0-P08 Observabilitat trobat: registren
+  AVÍS   G0-P09 Avaluació cap paraula clau
+  PISTA  G0-P10 Proves trobat: pytest,test,tests
+-- Coherència --
+  PISTA  G0-C01 Remet a la constitució: AGENTS.md
+  PISTA  G0-C02 .specify/templates/overrides/plan-template.md té Constitution Check
+  PISTA  G0-C04 .claude/settings.json vàlid
+
+Resultat: cap FALLA

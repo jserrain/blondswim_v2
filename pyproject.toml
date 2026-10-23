@@ -41,7 +41,14 @@ mypy_path = "src"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q --cov=blondswim --cov-report=term-missing"
+addopts = "-q --strict-markers --cov=blondswim --cov-report=term-missing"
+markers = [
+    "ca(id): lliga el test a un criteri d'acceptació CA-NNN-nn",
+]
+
+[tool.blondswim]
+# Traçabilitat dels criteris d'acceptació: "avis" o "bloquejant" (AGENTS.md).
+tracabilitat = "avis"
 
 [tool.importlinter]
 root_package = "blondswim"

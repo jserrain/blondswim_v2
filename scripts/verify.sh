@@ -14,6 +14,19 @@ check() {
   fi
 }
 
+# Com check, però el codi 2 és un avís: es mostra i no bloqueja.
+check_avis() {
+  local name="$1"; shift
+  local out status
+  out=$("$@" 2>&1); status=$?
+  case $status in
+    0) printf "OK    %s\n" "$name" ;;
+    2) printf "AVÍS  %s\n%s\n" "$name" "$(echo "$out" | tail -n 15 | sed 's/^/      /')" ;;
+    *) printf "FAIL  %s\n%s\n" "$name" "$(echo "$out" | tail -n 15 | sed 's/^/      /')"
+       fails=$((fails + 1)) ;;
+  esac
+}
+
 # Entorn
 check "uv.lock sincronitzat"   uv lock --check
 check "Python 3.12"            uv run python -c "import sys; assert sys.version_info[:2] == (3, 12)"
@@ -29,6 +42,7 @@ check "ruff format"    uv run ruff format --check .
 check "mypy strict"    uv run mypy src
 check "import-linter"  uv run lint-imports
 check "pytest"         uv run pytest
+check_avis "Traçabilitat CA" uv run python scripts/check_tracabilitat.py
 
 # Seguretat
 check ".gitignore (.venv, .env)" bash -c 'grep -qxE "\.venv/?" .gitignore && grep -qx ".env" .gitignore'

@@ -1,15 +1,22 @@
 {
   "permissions": {
-    "allow": ["Bash(bash scripts/verify.sh)", "Bash(uv run:*)"],
-    "deny": ["Read(~/.secrets/**)", "Read(./.env)", "Bash(cat:~/.secrets/*)"]
+    "deny": [
+      "Read(~/.secrets/**)",
+      "Read(./.env)",
+      "Bash(cat:~/.secrets/*)",
+      "Edit(~/projectes/ws_blondswim/**)"
+    ]
   },
   "hooks": {
-    "Stop": [{
-        "hooks": [{
+    "Stop": [
+      {
+        "hooks": [
+          {
             "type": "command",
             "command": "out=$(uv run ruff check . 2>&1 && uv run mypy src 2>&1 && uv run lint-imports 2>&1) || { echo \"$out\" | tail -n 20 >&2; exit 2; }"
-          }]
-      }]
+          }
+        ]
+      }
+    ]
   }
 }
-
