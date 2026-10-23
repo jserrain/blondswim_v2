@@ -42,6 +42,9 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-027 | Ús de «Màx» | bloquejant | càrrega, composició | spec 000 |
 | RN-028 | Test caducat | avís | planificació | spec 004 |
 | RN-029 | Canvi de període de piscina sense test | avís | planificació | spec 004 |
+| RN-030 | Prova oficial segons la piscina | bloquejant | càrrega | spec 001 |
+| RN-031 | Temporada de natació | bloquejant | càrrega | spec 001 |
+| RN-032 | Correu del nedador | bloquejant | càrrega | spec 001 |
 
 ## Nedador
 
@@ -54,7 +57,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 ### RN-002 — Assignació i immutabilitat de l'id
 - **Tipus:** bloquejant · **Moment:** gestió
-- **Regla:** l'id l'assigna el sistema en crear el nedador: el més alt existent (arxivats inclosos) + 1. Un id no canvia mai (tampoc quan canvia el nom) i no es reutilitza.
+- **Regla:** l'id l'assigna el sistema en crear el nedador: el més alt existent (arxivats inclosos) + 1. Un id no canvia mai (tampoc quan canvia el correu) i no es reutilitza.
 - **Font:** spec 001.
 - **Coherència:** revisada contra RN-001 i RN-004. Que no es reutilitzi depèn de RN-004: com que no s'esborra cap nedador, el més alt existent és sempre el més alt assignat.
 
@@ -91,6 +94,13 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Missatge:** identifica la combinació repetida.
 - **Font:** spec 001.
 - **Coherència:** sense regles relacionades.
+
+### RN-032 — Correu del nedador
+- **Tipus:** bloquejant · **Moment:** càrrega
+- **Regla:** tot nedador té un `correu` no buit i sense espais. El correu és únic entre tots els nedadors, arxivats inclosos, sense distingir majúscules.
+- **Missatge:** identifica el camp, o els ids dels nedadors que comparteixen correu.
+- **Font:** spec 001.
+- **Coherència:** revisada contra RN-002 (l'id no depèn del correu), RN-003 (l'alias és un identificador a part) i RN-004 (els arxivats compten). Sense conflicte.
 
 ## Catàleg de competicions
 
@@ -158,6 +168,23 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Missatge:** identifica la prova i els dies de les inscripcions repetides.
 - **Font:** spec 001.
 - **Coherència:** revisada contra RN-012 i RN-014. Com que RN-012 admet una sola participació per competició, n'hi ha prou de comprovar-la dins de cada participació. Sense conflicte.
+
+### RN-030 — Prova oficial segons la piscina
+- **Tipus:** bloquejant · **Moment:** càrrega
+- **Regla:** la prova d'una inscripció o d'un millor registre és una prova individual oficial per a la piscina:
+  - Cr: 50, 100, 200, 400, 800 i 1500, a 25 m i a 50 m. La prova d'estil lliure s'identifica amb `Cr`.
+  - Esq, Br i Pap: 50, 100 i 200, a 25 m i a 50 m.
+  - Ei: 100 només a 25 m; 200 i 400 a 25 m i a 50 m.
+- **Missatge:** identifica la prova i la piscina.
+- **Font:** spec 001.
+- **Coherència:** revisada contra RN-007, RN-014, RN-015 i RN-016. Els relleus no es modelen (spec 000). Sense conflicte.
+
+### RN-031 — Temporada de natació
+- **Tipus:** bloquejant · **Moment:** càrrega
+- **Regla:** la temporada `AAAA-AA` va de l'1 d'octubre d'`AAAA` al 30 de setembre de l'any següent; `AA` són els dos últims dígits de l'any següent. La carpeta de temporada del nedador i el catàleg de competicions segueixen aquest nom.
+- **Missatge:** identifica la carpeta o el fitxer.
+- **Font:** spec 001.
+- **Coherència:** revisada contra RN-013, que calcula la temporada del nedador amb aquesta regla. Sense conflicte.
 
 ## Aptitud per planificar
 

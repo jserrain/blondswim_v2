@@ -6,15 +6,15 @@
   OK     G1-S04 Sense plan/tasks
   OK     G1-S04 Sense codi nou respecte de main
   INFO   G1-S05 Estat: Aprovada
-  OK     G1-Q02 Criteris d'acceptació definits: 35
+  OK     G1-Q02 Criteris d'acceptació definits: 44
   OK     G1-Q03 CA únics
   OK     G1-Q03 Tots els CA són de la spec 001
   OK     G1-Q02 Tots els CA en format Donat/quan/aleshores
-  INFO   G1-Q02 CA marcats [PENDENT spec NNN]: 2
-  OK     G1-Q04 22 RN referenciades, totes definides
+  INFO   G1-Q02 CA marcats [PENDENT spec NNN]: 3
+  OK     G1-Q04 25 RN referenciades, totes definides
   OK     G1-Q05 Zero [NEEDS CLARIFICATION]
-  AVÍS   G1-Q05 Sense ## Assumptions
-  PISTA  G1-Q07 Dates concretes a revisar: 2026-10-20 2026-10-22 
+  OK     G1-Q05 ## Assumptions
+  PISTA  G1-Q07 Dates concretes a revisar: 2026-10-20 2026-10-22 2026-10-23 
   AVÍS   G1-Q01 Sense històries P1/P2
   INFO   G1-Q08 FR-NNN: 0 · SC-NNN: 0
   AVÍS   G1-A02 Sense secció de dades/accions sensibles
