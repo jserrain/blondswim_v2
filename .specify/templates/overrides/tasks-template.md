@@ -18,6 +18,7 @@ description: "Task list template for feature implementation"
 - **[P]**: Can run in parallel (different files, no dependencies)
 - **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
 - **[Layer]**: domain | application | infrastructure | interfaces | project (constitució, principi VII)
+- Una tasca que afecta diverses capes es divideix en una tasca per capa.
 - Include exact file paths in descriptions
 
 ## Path Conventions
@@ -152,10 +153,7 @@ Examples of foundational tasks (adjust based on your project):
 **Purpose**: Improvements that affect multiple user stories
 
 - [ ] TXXX [P] [project] Documentation updates in docs/
-- [ ] TXXX [<layer>] Code cleanup and refactoring
-- [ ] TXXX [<layer>] Performance optimization across all stories
 - [ ] TXXX [P] [domain] Additional unit tests in tests/unit/
-- [ ] TXXX [<layer>] Security hardening
 - [ ] TXXX [project] Run quickstart.md validation
 
 ---
