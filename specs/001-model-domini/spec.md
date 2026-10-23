@@ -102,6 +102,21 @@ data/
 - Temps de registre en format `m:ss.cc` (spec 000).
 - No hi ha valors per defecte: un camp que falta i és obligatori provoca un error. Un camp opcional desconegut es desa com a `null`. Només genera avís on aquesta spec ho indica (RN-009).
 
+## Clarifications
+
+### Sessions 2026-10-20 a 2026-10-22 (fora de `/speckit-clarify`; detall a l'historial git de la spec)
+
+- P: Què identifica un nedador? → Un id opac, que és el nom de la carpeta (RN-001, RN-002). Nom i cognoms són dades de `nedador.json`; l'alias és opcional (RN-003).
+- P: Es pot esborrar un nedador? → No: s'arxiva (RN-004, RN-017).
+- P: Es pot planificar un nedador sense test CSS? → Sí: és apte i es genera l'avís «sense ritmes» (CA-001-14).
+- P: Quin test CSS s'aplica? → El test vigent: l'últim acceptat de la piscina del període. Registrar-ne un no canvia els ritmes fins que el coach l'accepta.
+- P: Qui col·loca la sessió de test CSS al pla? → El coach, a mà; el sistema no ho fa mai (ADR-0011).
+- P: Quins camps del test són opcionals? → Els de `detall_400` i `detall_200` i `notes`: es desen com a `null` sense avís.
+- P: Com es defineix la setmana? → Setmana ISO 8601; és un valor derivat i no es desa.
+- P: A què s'inscriu un nedador? → A proves individuals del programa de la competició, una inscripció per prova (RN-016), sense límit màxim al sistema. Els relleus i el programa de proves no es modelen.
+- P: La spec repeteix el text de les regles? → No: s'hi refereix per ID a `docs/regles.md` (principi III).
+- P: Què passa amb els criteris que depenen d'una spec futura? → Porten `[PENDENT spec NNN]` i no es comproven fins que aquella spec és Aprovada.
+
 ## Criteris d'acceptació
 - **CA-001-01** — **Donat** un `nedador.json` vàlid, **quan** es carrega i es torna a desar, **aleshores** el fitxer resultant és idèntic.
 - **CA-001-02** — **Donat** un catàleg de competicions i un `inscripcions.json` vàlids, **quan** es carreguen i es tornen a desar, **aleshores** els fitxers resultants són idèntics.
