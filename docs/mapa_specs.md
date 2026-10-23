@@ -11,7 +11,7 @@ Aquest document és genèric: no conté dades de cap nedador ni de cap temporada
 5. Les competicions A són els objectius; les B i les C serveixen per avaluar la progressió.
 6. L'objectiu de la planificació és el màxim rendiment en les proves on participa el nedador.
 7. Planificació per cicles inspirada en TrainingPeaks: macrocicle (temporada), mesocicles (fases i blocs), microcicle (setmana).
-8. Les sessions s'adapten a cada nedador i a les seves proves objectiu. Es composen amb plantilla i metodologia; la tècnica surt de la biblioteca d'exercicis del coach (ADR-0003, ADR-0005).
+8. Les sessions s'adapten a cada nedador i a les seves proves objectiu. Es composen amb plantilla i metodologia; la tècnica surt de la biblioteca d'exercicis del coach (ADR-0004, ADR-0005).
 
 ## Principis (lliçons de la v1)
 
@@ -53,7 +53,7 @@ Convencions de noms:
 
 ## Composició de sessions
 
-- L'històric d'entrenaments és un arxiu per al coach; no és font de sessions ni es passa a l'LLM (ADR-0003).
+- L'històric d'entrenaments no s'importa ni és font de sessions (ADR-0012).
 - La sessió es construeix: plantilla (rol + fase) → parts segons l'ADR-0004 → tècnica de la biblioteca del coach (ADR-0005) → principals segons les proves objectiu i la seva prioritat → volum ajustat. L'LLM només redacta i adapta dins d'aquests límits.
 - Abans de planificar un nedador, la biblioteca de tècnica ha de cobrir els seus estils (ADR-0005).
 
@@ -70,7 +70,7 @@ Convencions de noms:
 |---|---|---|---|
 | 000 | Glossari | Zones (A0, A1, A2, A3, Vel, MPLA, TOLA), notació (`c/`, `d/`, `r/N`), abreviatures, termes de cicle (macro, meso, micro, fase, bloc), classes A/B/C | — (aprovada) |
 | 001 | Model de domini | Nedador (estils preferents, disponibilitat, zones), Temporada, Competició (del nedador), Prova, Inscripció per dia, Prova objectiu (prioritat, marca, objectiu), Setmana (derivada de la data). Invariants i roundtrip JSON | — (aprovada) |
-| 002 | Importació i normalització | Excel de calendari → catàleg; Excel d'inscripcions → inscripcions del nedador (ADR-0007); Excel d'entrenaments → arxiu, sense etiquetar (ADR-0003). Regles per a cada irregularitat de `fonts_dades.md`. Informe d'errors; mai valors inventats | Ubicació dels Excels d'entrada; conversió `c/` → `d/`; identificació del nedador en importar (id o alias com a argument) i, si l'Excel porta el nom, validar-lo contra `nedador.json` i avisar si no coincideix |
+| 002 | Importació i normalització | Excel de calendari → catàleg; Excel d'inscripcions → inscripcions del nedador (ADR-0007). Regles per a cada irregularitat de `fonts_dades.md`. Informe d'errors; mai valors inventats | Ubicació dels Excels d'entrada; conversió `c/` → `d/`; identificació del nedador en importar (id o alias com a argument) i, si l'Excel porta el nom, validar-lo contra `nedador.json` i avisar si no coincideix |
 | 002b | Biblioteca d'exercicis de tècnica | Exercicis per estil confeccionats pel coach, format, metres per exercici, cobertura per estil (ADR-0005) | Format de l'exercici; com es tria per a les proves objectiu |
 | 003 | Periodització | Fases cap enrere des de cada A, blocs càrrega:recuperació, doble pic, finestra insuficient, activació quan la competició és en cap de setmana, tractament de B i C, períodes no disponibles | Model de taper; mínims de fase; regla de doble pic |
 | 004 | Zones i càrrega | CSS → zones; nedador sense CSS; càrrega per RPE de sessió (pendent d'ADR-0009) | Model de càrrega; mode sense zones |
