@@ -19,7 +19,7 @@ Aquest document és genèric: no conté dades de cap nedador ni de cap temporada
 |---|---|
 | Un valor derivat no es desa mai (setmana ISO, volum d'una sèrie, temps estimat) | Setmana sense any, columnes desplaçades, ordenació errònia al canvi d'any |
 | Cap valor per defecte que amagui una dada que falta: dada desconeguda = `null` + avís | Metres buits → 0, fitxa amb valors per defecte que activaven lògica antiga |
-| Els paràmetres són del nedador o de la spec, mai constants al codi | Temporada i volums fixos per a tothom |
+| Els paràmetres ajustables són dades; les definicions, constants del domini amb l'ID de la font | Temporada i volums fixos per a tothom |
 | Cada regla té una sola font | 18 grups de regles duplicades amb valors diferents |
 | Tota regla té tipus: bloquejant, avís o judici LLM | Regles «dures» que no es comprovaven o que esgotaven reintents |
 | Abans d'acceptar una regla nova, es comprova contra les existents | Regles apilades que es bloquejaven entre elles |
