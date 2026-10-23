@@ -101,6 +101,11 @@ data/
 - Temps de registre en format `m:ss.cc` (spec 000).
 - No hi ha valors per defecte: un camp que falta i és obligatori provoca un error. Un camp opcional desconegut es desa com a `null`. Només genera avís on aquesta spec ho indica (RN-009).
 
+## Registre d'avisos
+- Tot avís (RN-009, RN-019, RN-020 i els que defineixin altres specs) s'afegeix a `data/avisos.jsonl`, una línia JSON per avís, amb `data_hora`, `rn`, `fitxer`, `camp`, `valor`, `missatge` i `id_nedador` (o `null`).
+- El registre només creix: no s'hi esborra ni s'hi modifica cap línia.
+- La data i hora la dona el rellotge del sistema en el moment de registrar l'avís.
+
 ## Assumptions
 - Un sol coach gestiona totes les dades.
 - Els fitxers de `data/` són locals i no es versionen.
@@ -133,6 +138,7 @@ data/
 - P: Quines proves s'admeten? → Només les proves individuals oficials per a la piscina (RN-030).
 - P: Com es defineix la temporada? → De l'1/10 al 30/09 de l'any següent; es deriva del nom de la carpeta (RN-031).
 - P: Com s'identifica la persona? → Pel correu, obligatori i únic; no es desen nom ni cognoms (RN-032).
+- P: On es registren els avisos? → A `data/avisos.jsonl`, que només creix (§ Registre d'avisos).
 
 ## Criteris d'acceptació
 - **CA-001-01** — **Donat** un `nedador.json` vàlid, **quan** es carrega i es torna a desar, **aleshores** el contingut desat és equivalent a l'original (mateixes claus, valors i `null`).
@@ -181,3 +187,5 @@ data/
 - **CA-001-44** — **Donat** un nedador sense `correu`, amb `correu: null`, buit o amb espais, **quan** es carrega, **aleshores** dona un error que identifica el camp (RN-032).
 - **CA-001-45** — **Donats** dos nedadors amb ids `n0001` i `n0003`, aquest arxivat, **quan** es crea un nedador nou, **aleshores** rep l'id `n0004` (RN-002).
 - **CA-001-46** — **Donat** un nedador amb un `alias` que no compleix RN-003 (p. ex. `""` o `n0002`), **quan** es carrega, **aleshores** dona un error que identifica el camp.
+- **CA-001-47** — **Donada** una competició amb `seu: null`, **quan** es carrega, **aleshores** `data/avisos.jsonl` té una línia nova amb `rn: "RN-009"`, el fitxer, el camp `seu` i la data i hora.
+- **CA-001-48** — **Donat** un registre d'avisos amb línies, **quan** es registra un avís nou, **aleshores** les línies anteriors es conserven sense canvis.

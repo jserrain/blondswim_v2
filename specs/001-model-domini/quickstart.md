@@ -4,7 +4,6 @@ Guia per comprovar que la implementació compleix la spec. No inclou codi d'impl
 
 ## Prerequisits
 - `uv` instal·lat i entorn sincronitzat (`uv sync`).
-- `config/parametres.json` present (contracts/fitxers-json.md).
 
 ## Validació
 ```bash
@@ -14,7 +13,7 @@ bash scripts/verify.sh                       # porta única: ha d'acabar «LLEST
 ```
 
 ## Resultats esperats
-- 43 CA amb almenys un test. CA-001-33, 34 i 38 estan pendents de les specs 004 i 002 i no es comproven.
+- 45 CA amb almenys un test. CA-001-33, 34 i 38 estan pendents de les specs 004 i 002 i no es comproven.
 - `import-linter`: `domain` no importa cap altra capa ni cap dependència externa.
 - `mypy --strict` sense errors.
 

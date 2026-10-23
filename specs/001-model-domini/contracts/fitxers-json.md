@@ -62,16 +62,8 @@ Interfície externa: fitxers que el coach edita i que genera la importació (spe
 }
 ```
 
-## `config/parametres.json` (versionat; research R2)
+## `data/avisos.jsonl`
+Una línia per avís; només s'hi afegeix.
 ```json
-{
-  "versio_esquema": 1,
-  "RN-030": {
-    "proves_oficials": {
-      "25": {"Cr": [50, 100, 200, 400, 800, 1500], "Esq": [50, 100, 200], "Br": [50, 100, 200], "Pap": [50, 100, 200], "Ei": [100, 200, 400]},
-      "50": {"Cr": [50, 100, 200, 400, 800, 1500], "Esq": [50, 100, 200], "Br": [50, 100, 200], "Pap": [50, 100, 200], "Ei": [200, 400]}
-    }
-  },
-  "RN-031": {"inici_temporada": {"mes": 10, "dia": 1}}
-}
+{"data_hora": "2000-03-04T10:15:00", "rn": "RN-009", "fitxer": "competicions/1999-00.json", "camp": "competicions.0.seu", "valor": null, "missatge": "Seu desconeguda", "id_nedador": null}
 ```

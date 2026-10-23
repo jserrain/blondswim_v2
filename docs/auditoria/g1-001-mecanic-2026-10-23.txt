@@ -3,10 +3,10 @@
   OK     G1-S01 Branca = carpeta: 001-model-domini
   OK     G1-S02 ## Clarifications
   AVÍS   G1-S03 Sense checklist
-  OK     G1-S04 Sense plan/tasks
+  FALLA  G1-S04 Ja existeix plan.md o tasks.md
   OK     G1-S04 Sense codi nou respecte de main
   INFO   G1-S05 Estat: Aprovada
-  OK     G1-Q02 Criteris d'acceptació definits: 46
+  OK     G1-Q02 Criteris d'acceptació definits: 48
   OK     G1-Q03 CA únics
   OK     G1-Q03 Tots els CA són de la spec 001
   OK     G1-Q02 Tots els CA en format Donat/quan/aleshores
@@ -20,4 +20,4 @@
   AVÍS   G1-A02 Sense secció de dades/accions sensibles
   INFO   G1-A03 Sense punts de judici LLM
 
-Resultat: cap FALLA
+Resultat: 1 FALLA(ES)

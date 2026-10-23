@@ -17,7 +17,7 @@ Model del domini (`src/blondswim/domain/`). L'ordre dels camps és el de l'escri
 | `Classe` | enum A, B, C | |
 | `Prioritat` | enum `principal`, `secundaria` | |
 | `CodiTemporada` | text `AAAA-AA` | RN-031; deriva `inici` i `fi` |
-| `Parametres` | proves oficials (RN-030), inici de temporada (RN-031) | llegit de `config/parametres.json` (research R2) |
+| Definicions | proves oficials (RN-030), inici de temporada (RN-031) | constants a `domain/definicions.py` (research R2) |
 
 ## Entitats
 
@@ -80,6 +80,9 @@ Fitxer: `{versio_esquema, participacions: [...]}`.
 2. **Aptitud per planificar:** RN-017 i RN-018 són motius de bloqueig; RN-019 i RN-020 són avisos.
 
 Resultat: `Resultat(errors, avisos)` (research R5).
+
+## Registre d'avisos (`data/avisos.jsonl`)
+Una línia JSON per avís: `data_hora` (ISO 8601), `rn`, `fitxer`, `camp`, `valor`, `missatge`, `id_nedador` (o `null`). Només s'hi afegeix (CA-001-47, 48).
 
 ## Transicions d'estat
 | Entitat | Transició | Regla |
