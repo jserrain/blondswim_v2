@@ -62,8 +62,9 @@ entre elles.
 - Un test es lliga a un criteri amb el marcador pytest `@pytest.mark.ca("<ID>")`. Un test
   pot portar diversos marcadors i un criteri pot tenir diversos tests.
 - Tot criteri d'una spec aprovada té almenys un test amb el seu marcador, i
-  `scripts/verify.sh` ho ha de comprovar (pendent d'implementar). Se n'exclouen els
-  criteris marcats `[PENDENT spec NNN]`, que depenen d'una spec que encara no existeix.
+  `scripts/verify.sh` ho comprova. Mentre no hi ha implementació, la comprovació només
+  avisa (AGENTS.md). Se n'exclouen els criteris marcats `[PENDENT spec NNN]`, que depenen
+  d'una spec que encara no existeix.
 - Una tasca no s'acaba fins que `bash scripts/verify.sh` passa en verd.
 
 ### VIII. Documents genèrics i sense història
@@ -99,8 +100,7 @@ a `docs/regles.md`.
 
 - Tot s'executa amb `uv run`, i les dependències només s'afegeixen amb `uv add`.
 - `bash scripts/verify.sh` és la porta única: lint, format, mypy estricte, import-linter,
-  tests i comprovacions de seguretat. També ha de comprovar la traçabilitat dels criteris
-  d'acceptació (pendent d'implementar).
+  tests, traçabilitat dels criteris d'acceptació i comprovacions de seguretat.
 - Els secrets només els llegeix `infrastructure`, i no es versionen mai.
 - La v1 només es pot llegir.
 
@@ -116,4 +116,4 @@ a `docs/regles.md`.
 - El *Constitution Check* de `/speckit-plan` i `/speckit-analyze` verifica el compliment.
   Una violació s'ha de justificar o corregir abans d'implementar.
 
-**Version**: 1.2.0 | **Ratified**: 2026-10-18 | **Last Amended**: 2026-10-22
+**Version**: 1.2.1 | **Ratified**: 2026-10-18 | **Last Amended**: 2026-10-23
