@@ -36,7 +36,8 @@ vigents són als ADR acceptats de `docs/decisions/`; no les canviïs sense un AD
   primera spec, i no es torna a canviar. Els marcadors òrfens i els errors d'ID bloquegen
   sempre.
 - No executis scripts ni ordres de consola (`verify.sh`, tests, git, uv). Dona l'ordre
-  exacta perquè l'executi l'usuari. Només les executes si t'ho demana.
+  exacta perquè l'executi l'usuari. Només les executes si t'ho demana. Els hooks de
+  `.claude/settings.json` (p. ex. `Stop`) s'executen sols i no compten com a ordre teva.
 - Respostes breus: només el diff i les decisions. Sense resums de context.
 
 ## Ordres

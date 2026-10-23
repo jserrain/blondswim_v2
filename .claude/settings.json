@@ -1,13 +1,10 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(bash scripts/verify.sh)",
-      "Bash(uv run:*)"
-    ],
     "deny": [
       "Read(~/.secrets/**)",
       "Read(./.env)",
-      "Bash(cat:~/.secrets/*)"
+      "Bash(cat:~/.secrets/*)",
+      "Edit(~/projectes/ws_blondswim/**)"
     ]
   },
   "hooks": {
