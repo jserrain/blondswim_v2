@@ -42,8 +42,9 @@ done
 ids=$(grep -viE 'no facis|no executis' "$P" | grep -oE 'T[0-9]{3}' | sort -u)
 rang=$(grep -viE 'no facis' "$P" | grep -oE 'T[0-9]{3}–T[0-9]{3}' | head -1)
 if [[ -n "$rang" ]]; then
-  a=$(echo "$rang" | cut -c2-4); z=$(echo "$rang" | cut -c10-12)
-  for i in $(seq "$((10#$a))" "$((10#$z))"); do ids="$ids $(printf 'T%03d' "$i")"; done
+  # els números es treuen amb grep: cut -c compta caràcters o bytes segons el sistema (el guió – és multibyte)
+  a=$(echo "$rang" | grep -oE '[0-9]{3}' | head -1); z=$(echo "$rang" | grep -oE '[0-9]{3}' | tail -1)
+  i=$((10#$a)); while [[ "$i" -le "$((10#$z))" ]]; do ids="$ids $(printf 'T%03d' "$i")"; i=$((i+1)); done
 fi
 for t in $(echo $ids | tr ' ' '\n' | sort -u); do
   grep -qE "^- \[ \] $t " "$S/tasks.md" && ok "$t pendent a tasks.md" \
