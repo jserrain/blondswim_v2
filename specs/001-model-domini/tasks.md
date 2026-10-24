@@ -32,10 +32,9 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 ## Phase 1: Setup
 
-**Purpose**: dependència i traçabilitat activa
+**Purpose**: dependència
 
 - [ ] T001 [project] Afegir Pydantic v2: `uv add pydantic` (research R1)
-- [ ] T002 [project] Canviar `tracabilitat = "avis"` per `"bloquejant"` a `pyproject.toml` (`[tool.blondswim]`), en el mateix commit que la primera tasca de codi (AGENTS.md)
 
 ---
 
@@ -135,6 +134,7 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 ## Phase 9: Polish
 
+- [ ] T002 [project] Canviar `tracabilitat = "avis"` per `"bloquejant"` a `pyproject.toml` (`[tool.blondswim]`) quan tots els CA no pendents de la 001 tinguin test, després de T032 (AGENTS.md)
 - [ ] T033 [project] Executar quickstart.md: `bash scripts/verify.sh` ha d'acabar «LLEST PER SEGUIR», amb la traçabilitat bloquejant
 - [ ] T034 [project] Actualitzar `docs/mapa_specs.md`: la spec 001 és implementada
 
@@ -144,7 +144,7 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 - Setup → Foundational → US1 i US2 en paral·lel → US3 i US6 → US4 i US5 en paral·lel → Polish.
 - Dins de cada bloc: tests (vermell) → domini → infraestructura o aplicació.
-- T002 va en el mateix commit que la primera tasca de codi (T004).
+- T002 s'executa al final (Polish): amb mode bloquejant, `verify.sh` fallaria mentre quedin CA sense test.
 
 ## Parallel Example: US1
 

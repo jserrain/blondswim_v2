@@ -5,7 +5,8 @@ Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és norm
 ## On som
 - Branca: `001-model-domini`. Spec 001 amb G1 i G2 passats; pla i tasques llestos (34 tasques, 46 CA amb test).
 - Constitució 1.3.0 (G0 r2: passa amb condicions).
-- Següent pas: implementar la spec 001, fase 1 (T001–T010), amb `docs/prompts/001-fase1.md`.
+- Següent pas: implementar la spec 001, fase 1 (T001, T003–T010), amb `docs/prompts/001-fase1.md`.
+- Durant la implementació, `verify.sh` mostra «Traçabilitat CA» com a AVÍS (CA sense test encara). Passa a bloquejant amb T002, al final.
 
 ## Decisions recents (detall als ADR i a la spec)
 - Nedador identificat pel correu, únic; no es desen nom ni cognoms (RN-032).

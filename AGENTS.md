@@ -32,8 +32,8 @@ vigents són als ADR acceptats de `docs/decisions/`; no les canviïs sense un AD
 - Abans de donar una tasca per acabada: `bash scripts/verify.sh` en verd.
 - Traçabilitat CA → test: `tracabilitat` a `[tool.blondswim]` de `pyproject.toml`.
   Val `"avis"` mentre no hi ha implementació: `verify.sh` mostra els criteris sense test i
-  no bloqueja. Es canvia a `"bloquejant"` en el commit que comença la implementació de la
-  primera spec, i no es torna a canviar. Els marcadors òrfens i els errors d'ID bloquegen
+  no bloqueja. Es canvia a `"bloquejant"` quan tots els criteris de la primera spec
+  implementada tenen test, i no es torna a canviar. Els marcadors òrfens i els errors d'ID bloquegen
   sempre.
 - No executis scripts ni ordres de consola (`verify.sh`, tests, git, uv). Dona l'ordre
   exacta perquè l'executi l'usuari. Només les executes si t'ho demana. Els hooks de
