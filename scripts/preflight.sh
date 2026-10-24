@@ -80,5 +80,5 @@ echo "$out" | grep -q 'LLEST PER SEGUIR' && ok "verify.sh en verd abans de comen
   || { falla "verify.sh no és verd:"; echo "$out" | grep -E '^FAIL' | sed 's/^/         /'; }
 
 echo
-[[ "$F" -eq 0 ]] && echo "LLEST: obre Claude Code amb «Segueix @$P»" || echo "NO LLEST: $F FALLA(ES)"
+[[ "$F" -eq 0 ]] && echo "LLEST: obre Claude Code amb «Segueix @${P}»" || echo "NO LLEST: $F FALLA(ES)"
 [[ "$F" -eq 0 ]]
