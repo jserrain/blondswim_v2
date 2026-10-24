@@ -24,6 +24,7 @@ Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és norm
 1. Xat nou per bloc, començant per aquest fitxer i la spec en curs.
 2. Spec, clarify, pla i tasques al xat, en format Spec Kit.
 3. Auditoria: Part A a consola (`bash scripts/auditar.sh …`); Part B al xat, només sobre el que ha canviat.
-4. Implementació a Claude Code: una sessió per fase, `/clear` entre fases, model econòmic i prompt de `docs/prompts/`.
-5. Verificació a consola: `bash scripts/verify.sh 2>&1 | grep -E 'FAIL|AVÍS|LLEST|BLOQUEJAT' -A5`.
-6. Patches: `bash scripts/aplicar.sh <fitxer.patch>`.
+4. Abans d'obrir Claude Code: `bash scripts/preflight.sh docs/prompts/<spec>-<fase>.md` ha d'acabar «LLEST».
+5. Implementació a Claude Code: una sessió per fase, `/clear` entre fases, model econòmic i prompt de `docs/prompts/`.
+6. Verificació a consola: `bash scripts/verify.sh 2>&1 | grep -E 'FAIL|AVÍS|LLEST|BLOQUEJAT' -A5`.
+7. Patches: `bash scripts/aplicar.sh <fitxer.patch>`.
