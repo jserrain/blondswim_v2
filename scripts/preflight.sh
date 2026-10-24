@@ -23,8 +23,15 @@ git fetch -q 2>/dev/null
 
 # 2. Gates
 for g in "constitution" "spec $S" "plan $S"; do
-  if bash scripts/auditar.sh $g >/dev/null 2>&1; then ok "Auditoria Part A ($g): cap FALLA"
-  else falla "Auditoria Part A ($g) amb FALLA: bash scripts/auditar.sh $g"; fi
+  out=$(bash scripts/auditar.sh $g 2>&1)
+  # L'informe mecànic no es versiona aquí: si és nou, s'esborra
+  f=$(sed -n 's/^Desat a //p' <<<"$out")
+  [[ -n "$f" ]] && ! git ls-files --error-unmatch "$f" >/dev/null 2>&1 && rm -f "$f"
+  # G1-S04 i G2-S05 (codi respecte de main) només valen abans d'implementar;
+  # aquí ja hi ha gates signats, que es comproven a part
+  fl=$(grep -E '^  FALLA' <<<"$out" | grep -vE 'G1-S04|G2-S05' || true)
+  if [[ -z "$fl" ]]; then ok "Auditoria Part A ($g): cap FALLA"
+  else falla "Auditoria Part A ($g): $(head -1 <<<"$fl" | sed 's/^ *FALLA *//')"; fi
 done
 git checkout -q -- docs/auditoria 2>/dev/null; git clean -qf docs/auditoria 2>/dev/null
 for g in "g1-$nnn" "g2-$nnn"; do
