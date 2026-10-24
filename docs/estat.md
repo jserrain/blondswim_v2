@@ -28,3 +28,4 @@ Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és norm
 5. Implementació a Claude Code: una sessió per fase, `/clear` entre fases, model econòmic i prompt de `docs/prompts/`.
 6. Verificació a consola: `bash scripts/verify.sh 2>&1 | grep -E 'FAIL|AVÍS|LLEST|BLOQUEJAT' -A5`.
 7. Patches: `bash scripts/aplicar.sh <fitxer.patch>`.
+- 24 CA de la spec 000 sense tasca: decidir si s'afegeix un bloc US7 a la 001 o es marquen com a pendents, abans de T002.
