@@ -5,7 +5,7 @@ Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és norm
 ## On som
 - Branca: `001-model-domini`. Spec 001 amb G1 i G2 passats; pla i tasques llestos (34 tasques, 46 CA amb test).
 - Constitució 1.3.0 (G0 r2: passa amb condicions).
-- Fase 1 feta (e237467). Següent pas: fase 2, US1 (T011–T016), amb `docs/prompts/001-fase2.md`.
+- Fases 1 i 2 (US1) fetes. Següent pas: fase 3, US2 (T017–T019); el prompt està per preparar.
 - Durant la implementació, `verify.sh` mostra «Traçabilitat CA» com a AVÍS (CA sense test encara). Passa a bloquejant amb T002, al final.
 
 ## Decisions recents (detall als ADR i a la spec)

@@ -3,18 +3,19 @@
 from datetime import datetime
 from typing import Protocol
 
+from blondswim.domain.nedador import Nedador
 from blondswim.domain.validacio import Avis
 from blondswim.domain.valors import CodiTemporada, IdNedador
 
 
-class RepositoriNedadors[N, I](Protocol):
-    """`N`: `Nedador`; `I`: inscripcions d'una temporada."""
+class RepositoriNedadors[I](Protocol):
+    """`I`: inscripcions d'una temporada."""
 
     def ids(self) -> list[IdNedador]: ...
 
-    def carrega(self, id_nedador: IdNedador) -> N: ...
+    def carrega(self, id_nedador: IdNedador) -> Nedador: ...
 
-    def desa(self, id_nedador: IdNedador, nedador: N) -> None: ...
+    def desa(self, id_nedador: IdNedador, nedador: Nedador) -> None: ...
 
     def carrega_inscripcions(self, id_nedador: IdNedador, temporada: CodiTemporada) -> I: ...
 
