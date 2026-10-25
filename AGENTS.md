@@ -22,6 +22,7 @@ vigents són als ADR acceptats de `docs/decisions/`; no les canviïs sense un AD
 - ADR-0012 — Sense importació de l'històric d'entrenaments
 - ADR-0013 — CSV com a format d'entrada
 - ADR-0014 — L'id del nedador és un UUID
+- ADR-0015 — Contacte del nedador: correu i mòbil obligatoris
 
 ## Regles de treball
 - Treballa sempre a partir d'una spec de `specs/`. Si no n'hi ha, atura't i demana-la.

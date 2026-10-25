@@ -45,6 +45,9 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-030 | Prova oficial segons la piscina | bloquejant | càrrega | spec 001 |
 | RN-031 | Temporada de natació | bloquejant | càrrega | spec 001 |
 | RN-032 | Correu del nedador | bloquejant | càrrega | spec 001 |
+| RN-033 | Mòbil del nedador | bloquejant | càrrega | spec 001 |
+| RN-034 | Mòbil compartit | avís | càrrega | spec 001 |
+| RN-035 | Canal preferent | avís | càrrega | spec 001 |
 
 ## Nedador
 
@@ -101,6 +104,27 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Missatge:** identifica el camp, o els ids dels nedadors que comparteixen correu.
 - **Font:** spec 001.
 - **Coherència:** revisada contra RN-002 (l'id no depèn del correu), RN-003 (l'alias és un identificador a part) i RN-004 (els arxivats compten). Sense conflicte.
+
+### RN-033 — Mòbil del nedador
+- **Tipus:** bloquejant · **Moment:** càrrega
+- **Regla:** tot nedador té un `mobil` en format E.164: `+` seguit de 8 a 15 dígits, sense espais ni separadors.
+- **Missatge:** identifica el camp i el valor.
+- **Font:** spec 001, ADR-0015.
+- **Coherència:** revisada contra RN-032 (el correu continua sent l'única dada de contacte única) i RN-034. Sense conflicte.
+
+### RN-034 — Mòbil compartit
+- **Tipus:** avís · **Moment:** càrrega
+- **Regla:** si dos o més nedadors, arxivats inclosos, tenen el mateix `mobil`, es genera un avís. No bloqueja.
+- **Missatge:** identifica el mòbil i els ids dels nedadors que el comparteixen.
+- **Font:** spec 001, ADR-0015.
+- **Coherència:** revisada contra RN-004 (els arxivats compten, com a RN-032) i RN-033. Sense conflicte.
+
+### RN-035 — Canal preferent
+- **Tipus:** avís · **Moment:** càrrega
+- **Regla:** `canal_preferent` és opcional amb avís: si hi és, val `correu` o `mobil`; un altre valor és error de càrrega. Sense valor, es genera un avís.
+- **Missatge:** identifica el nedador i el camp.
+- **Font:** spec 001, ADR-0015.
+- **Coherència:** revisada contra RN-032 i RN-033: tots dos canals existeixen sempre, de manera que qualsevol valor admès és utilitzable. Sense conflicte.
 
 ## Catàleg de competicions
 

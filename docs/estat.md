@@ -9,7 +9,7 @@ Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és norm
 - Durant la implementació, `verify.sh` mostra «Traçabilitat CA» com a AVÍS (CA sense test encara). Passa a bloquejant amb T002, al final.
 
 ## Decisions recents (detall als ADR i a la spec)
-- Identitat = `IdNedador`. Contacte: correu i/o mòbil, almenys un; cadascun únic si hi és (correu sense distingir majúscules); mòbil en E.164, `+34` per defecte; mòbil compartit → avís; `canal_preferent` opcional amb avís. Pendent d'ADR i esmena de RN-032 (decidit el 25/10).
+- Identitat = `IdNedador`, UUID v4 (ADR-0014); alias obligatori i immutable `<part>_<sufix>` (RN-003). Contacte: correu i mòbil obligatoris (ADR-0015, RN-032 a RN-035). Pendent: G1 de l'esmena, tasques US1b i implementació.
 - Nedador identificat pel correu, únic; no es desen nom ni cognoms (RN-032).
 - Temporada 1/10–30/09, derivada del nom de la carpeta (RN-031); proves oficials per piscina (RN-030).
 - Tres tipus de camp: obligatori, informatiu (pot faltar) i opcional amb avís (spec 001, § Format JSON).
