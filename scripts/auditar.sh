@@ -168,7 +168,15 @@ gate_spec() {
   local base="${BASE:-main}" canvis
   if git rev-parse --verify -q "$base" >/dev/null; then
     canvis=$(git diff --name-only "$base"...HEAD -- src tests 2>/dev/null | wc -l | tr -d ' ')
-    [[ "$canvis" -gt 0 ]] && falla "G1-S04 $canvis fitxer(s) de src/ o tests/ canviats respecte de $base" || ok "G1-S04 Sense codi nou respecte de $base"
+    if [[ "$canvis" -gt 0 ]]; then
+      if ls docs/auditoria/g1-"$nnn"-20*.md >/dev/null 2>&1; then
+        avis "G1-S04 $canvis fitxer(s) de src/ o tests/ respecte de $base (re-auditoria: usa BASE=<commit previ a l'esmena>)"
+      else
+        falla "G1-S04 $canvis fitxer(s) de src/ o tests/ canviats respecte de $base"
+      fi
+    else
+      ok "G1-S04 Sense codi nou respecte de $base"
+    fi
   else
     avis "G1-S04 No existeix la branca base $base: no es comprova el codi"
   fi
