@@ -30,7 +30,7 @@ data/
 - Les proves objectiu no es desen enlloc: es deriven de les participacions de classe A.
 
 ## Identificador del nedador
-- L'id del nedador és el nom de la carpeta (`nedadors/<id>/`); per exemple, `n0001`. Format: RN-001.
+- L'id del nedador és el nom de la carpeta (`nedadors/<id>/`); per exemple, `3f2a9c1e-7b4d-4e8a-9c2f-1d6b5e0a8f47`. Format: RN-001 (ADR-0014).
 - Assignació i immutabilitat: RN-002. Els nedadors no s'esborren, s'arxiven: RN-004.
 - El nom i els cognoms són dades de `nedador.json`, no formen part de l'id.
 - `nedador.json` pot tenir un `alias` opcional per a ús del coach a la CLI (RN-003).
@@ -129,7 +129,7 @@ data/
 - **CA-001-24** — **Donats** dos nedadors amb el mateix nom i cognoms, **quan** es creen, **aleshores** reben ids diferents i tots dos són vàlids.
 - **CA-001-25** — **Donat** un nedador existent, **quan** se'n canvia el nom, **aleshores** l'id no canvia.
 - **CA-001-26** — **Donats** dos nedadors amb el mateix `alias`, **quan** es valida el model, **aleshores** dona un error.
-- **CA-001-27** — **Donada** una carpeta de nedador amb un nom que no té el format `n` + 4 dígits, **quan** es carrega, **aleshores** dona un error.
+- **CA-001-27** — **Donada** una carpeta de nedador amb un nom que no és un UUID v4 en forma canònica en minúscules, **quan** es carrega, **aleshores** dona un error.
 - **CA-001-28** — **Donat** un nedador arxivat, **quan** es demana si és apte per planificar, **aleshores** la resposta és «no» i el motiu és «arxivat».
 - **CA-001-29** — **Donada** una participació amb la mateixa prova inscrita en dos dies diferents de la competició, **quan** es carrega, **aleshores** dona un error (RN-016).
 - **CA-001-30** — **Donat** un nedador amb un test acceptat vigent, **quan** es registra un test nou de la mateixa piscina, **aleshores** el test nou té `acceptat: false` i el vigent no canvia; **quan** el coach l'accepta, **aleshores** el test nou passa a ser el vigent.

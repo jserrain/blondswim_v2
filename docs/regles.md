@@ -47,23 +47,23 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 ### RN-001 — Format de l'id del nedador
 - **Tipus:** bloquejant · **Moment:** càrrega
-- **Regla:** el nom de la carpeta del nedador és el seu id i té el format `n` + 4 dígits.
+- **Regla:** el nom de la carpeta del nedador és el seu id i és un UUID v4 en forma canònica en minúscules.
 - **Missatge:** identifica la carpeta.
-- **Font:** spec 001.
+- **Font:** spec 001, ADR-0014.
 - **Coherència:** revisada contra RN-002 i RN-003; sense conflicte.
 
 ### RN-002 — Assignació i immutabilitat de l'id
 - **Tipus:** bloquejant · **Moment:** gestió
-- **Regla:** l'id l'assigna el sistema en crear el nedador: el més alt existent (arxivats inclosos) + 1. Un id no canvia mai (tampoc quan canvia el nom) i no es reutilitza.
-- **Font:** spec 001.
-- **Coherència:** revisada contra RN-001 i RN-004. Que no es reutilitzi depèn de RN-004: com que no s'esborra cap nedador, el més alt existent és sempre el més alt assignat.
+- **Regla:** l'id el genera el sistema en crear el nedador (UUID v4 aleatori, diferent de tots els existents, arxivats inclosos). Un id no canvia mai (tampoc quan canvia el nom) i no es reutilitza.
+- **Font:** spec 001, ADR-0014.
+- **Coherència:** revisada contra RN-001 i RN-004. Com que no s'esborra cap nedador (RN-004), la comprovació contra els existents garanteix que no es reutilitza.
 
 ### RN-003 — Alias del nedador
 - **Tipus:** bloquejant · **Moment:** càrrega
-- **Regla:** l'alias és opcional. Si hi és, és únic entre tots els nedadors, només conté `[a-z0-9-]`, té de 2 a 20 caràcters i no té la forma d'un id (`n` + 4 dígits).
+- **Regla:** l'alias és opcional. Si hi és, és únic entre tots els nedadors, només conté `[a-z0-9-]`, té de 2 a 20 caràcters.
 - **Missatge:** identifica l'alias i, si està repetit, els nedadors que el tenen.
 - **Font:** spec 001.
-- **Coherència:** revisada contra RN-001; la restricció de forma evita que un alias es confongui amb un id. Sense conflicte.
+- **Coherència:** revisada contra RN-001; un alias (màxim 20 caràcters) no pot tenir la forma d'un id (36 caràcters). Sense conflicte.
 
 ### RN-004 — Els nedadors no s'esborren
 - **Tipus:** bloquejant · **Moment:** gestió
