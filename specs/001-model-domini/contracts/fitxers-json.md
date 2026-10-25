@@ -13,7 +13,7 @@ Interfície externa: fitxers que el coach edita i que genera la importació (spe
 {
   "versio_esquema": 1,
   "correu": "nedador@example.com",
-  "alias": "exemple",
+  "alias": "exemple_3f2a9c1",
   "arxivat": false,
   "estils_preferents": ["Cr", "Ei"],
   "dies_entrenament": ["dl", "dc", "dv"],

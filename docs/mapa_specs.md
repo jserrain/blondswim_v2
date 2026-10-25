@@ -49,7 +49,7 @@ Convencions de noms:
 - **Dins de l'espai del nedador, el nom del fitxer no porta l'id**: la carpeta ja l'identifica (una sola font).
 - La temporada és una carpeta (`2026-27`), no un sufix: inscripcions, pla i registre d'una temporada van junts i les temporades anteriors es conserven.
 - **Els fitxers que surten del sistema** (full de piscina, informe) sí que porten l'id i la setmana: `<tipus>_<id>_<AAAA>-W<ss>.xlsx`, perquè viatgen sols.
-- On es desen els Excels d'entrada (ADR-0007) ho decideix la spec 002.
+- On es desen els CSV d'entrada (ADR-0013) ho decideix la spec 002.
 
 ## Composició de sessions
 
@@ -70,7 +70,7 @@ Convencions de noms:
 |---|---|---|---|
 | 000 | Glossari | Zones (A0, A1, A2, A3, Vel, MPLA, TOLA), notació (`c/`, `d/`, `r/N`), abreviatures, termes de cicle (macro, meso, micro, fase, bloc), classes A/B/C | — (aprovada) |
 | 001 | Model de domini | Nedador (estils preferents, disponibilitat, zones), Temporada, Competició (del nedador), Prova, Inscripció per dia, Prova objectiu (prioritat, marca, objectiu), Setmana (derivada de la data). Invariants i roundtrip JSON | — (aprovada) |
-| 002 | Importació i normalització | Excel de calendari → catàleg; Excel d'inscripcions → inscripcions del nedador (ADR-0007). Regles per a cada irregularitat de `fonts_dades.md`. Informe d'errors; mai valors inventats | Ubicació dels Excels d'entrada; conversió `c/` → `d/`; identificació del nedador en importar (id o alias com a argument) i, si l'Excel porta el nom, validar-lo contra `nedador.json` i avisar si no coincideix |
+| 002 | Importació i normalització | CSV de calendari → catàleg; CSV d'inscripcions → inscripcions del nedador (ADR-0013). Regles per a cada irregularitat de `fonts_dades.md`. Informe d'errors; mai valors inventats | Ubicació dels CSV d'entrada; identificació del nedador en importar (id o alias com a argument) |
 | 002b | Biblioteca d'exercicis de tècnica | Exercicis per estil confeccionats pel coach, format, metres per exercici, cobertura per estil (ADR-0005) | Format de l'exercici; com es tria per a les proves objectiu |
 | 003 | Periodització | Fases cap enrere des de cada A, blocs càrrega:recuperació, doble pic, finestra insuficient, activació quan la competició és en cap de setmana, tractament de B i C, períodes no disponibles | Model de taper; mínims de fase; regla de doble pic |
 | 004 | Zones i càrrega | CSS → zones; nedador sense CSS; càrrega per RPE de sessió (pendent d'ADR-0009) | Model de càrrega; mode sense zones |

@@ -6,7 +6,7 @@ Model del domini (`src/blondswim/domain/`). L'ordre dels camps és el de l'escri
 
 | Objecte | Representació | Validació |
 |---|---|---|
-| `IdNedador` | text `nNNNN` | RN-001 |
+| `IdNedador` | text, UUID v4 canònic en minúscules | RN-001, ADR-0014 |
 | `Correu` | text | RN-032 (no buit, sense espais); igualtat sense distingir majúscules |
 | `Alias` | text | RN-003 |
 | `Estil` | enum `Cr`, `Esq`, `Br`, `Pap`, `Ei` | spec 000 §4; als estils preferents només aquests cinc (CA-001-39) |
@@ -28,7 +28,7 @@ Tipus de camp (spec, § Format JSON): **obligatori** (ha de ser-hi amb valor), *
 |---|---|---|---|
 | `versio_esquema` | int | sí | CA-001-17 |
 | `correu` | `Correu` | sí | RN-032; CA-001-24, 44 |
-| `alias` | `Alias` \| null | informatiu | RN-003; CA-001-26, 46, 49 |
+| `alias` | `Alias` | obligatori | RN-003; CA-001-26, 46, 50–53 |
 | `arxivat` | bool | sí | RN-017; `false` en crear-lo |
 | `estils_preferents` | llista d'`Estil`, ≥ 1, sense repetir | sí | CA-001-03, 39 |
 | `dies_entrenament` | llista de `Dia`, ≥ 1, sense repetir | sí | CA-001-03, 40 |

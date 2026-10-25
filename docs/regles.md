@@ -15,7 +15,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 |---|---|---|---|---|
 | RN-001 | Format de l'id del nedador | bloquejant | càrrega | spec 001 |
 | RN-002 | Assignació i immutabilitat de l'id | bloquejant | gestió | spec 001 |
-| RN-003 | Alias del nedador | bloquejant | càrrega | spec 001 |
+| RN-003 | Alias del nedador | bloquejant | càrrega, gestió | spec 001 |
 | RN-004 | Els nedadors no s'esborren | bloquejant | gestió | spec 001 |
 | RN-005 | Rang de volum setmanal | bloquejant | càrrega | spec 001 |
 | RN-006 | Coherència del test CSS | bloquejant | càrrega | spec 001 |
@@ -34,7 +34,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-019 | Participació A sense prova principal | avís | planificació | spec 001 |
 | RN-020 | Sense ritmes | avís | planificació | spec 001 |
 | RN-021 | Cobertura de la biblioteca de tècnica | bloquejant | planificació | ADR-0005 |
-| RN-022 | La importació no modifica plans | avís | importació | ADR-0007 |
+| RN-022 | La importació no modifica plans | avís | importació | ADR-0013 |
 | RN-023 | Sèrie per zona i descans | bloquejant | composició | ADR-0008, spec 000 |
 | RN-024 | Ràtio treball:descans | bloquejant | composició | ADR-0008, spec 000 |
 | RN-025 | Ordre de les parts de la sessió | bloquejant | composició | ADR-0004, ADR-0011 |
@@ -50,23 +50,23 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 ### RN-001 — Format de l'id del nedador
 - **Tipus:** bloquejant · **Moment:** càrrega
-- **Regla:** el nom de la carpeta del nedador és el seu id i té el format `n` + 4 dígits.
+- **Regla:** el nom de la carpeta del nedador és el seu id i és un UUID v4 en forma canònica en minúscules.
 - **Missatge:** identifica la carpeta.
-- **Font:** spec 001.
+- **Font:** spec 001, ADR-0014.
 - **Coherència:** revisada contra RN-002 i RN-003; sense conflicte.
 
 ### RN-002 — Assignació i immutabilitat de l'id
 - **Tipus:** bloquejant · **Moment:** gestió
-- **Regla:** l'id l'assigna el sistema en crear el nedador: el més alt existent (arxivats inclosos) + 1. Un id no canvia mai (tampoc quan canvia el correu) i no es reutilitza.
-- **Font:** spec 001.
-- **Coherència:** revisada contra RN-001 i RN-004. Que no es reutilitzi depèn de RN-004: com que no s'esborra cap nedador, el més alt existent és sempre el més alt assignat.
+- **Regla:** l'id el genera el sistema en crear el nedador: un UUID v4 aleatori, diferent de tots els existents (arxivats inclosos). Un id no canvia mai (tampoc quan canvia el correu) i no es reutilitza.
+- **Font:** spec 001, ADR-0014.
+- **Coherència:** revisada contra RN-001 i RN-004. Com que no s'esborra cap nedador (RN-004), la comprovació contra els existents garanteix que no es reutilitza.
 
 ### RN-003 — Alias del nedador
-- **Tipus:** bloquejant · **Moment:** càrrega
-- **Regla:** l'alias és opcional. Si hi és, és únic entre tots els nedadors, només conté `[a-z0-9-]`, té de 2 a 20 caràcters i no té la forma d'un id (`n` + 4 dígits).
+- **Tipus:** bloquejant · **Moment:** càrrega, gestió
+- **Regla:** l'alias és obligatori, únic entre tots els nedadors (arxivats inclosos) i immutable. Té la forma `<part>_<sufix>`: `<part>` l'escull el coach i és `[a-z0-9-]` de 2 a 12 caràcters; `<sufix>` són els 7 primers caràcters de l'id del nedador i l'afegeix sempre el sistema. Longitud màxima: 20 caràcters. En crear el nedador, el sistema mostra l'alias definitiu i demana confirmació. Només es fa servir per identificar el nedador a la CLI: no apareix en rutes, noms de fitxer, sortides ni prompts de l'LLM.
 - **Missatge:** identifica l'alias i, si està repetit, els nedadors que el tenen.
 - **Font:** spec 001.
-- **Coherència:** revisada contra RN-001; la restricció de forma evita que un alias es confongui amb un id. Sense conflicte.
+- **Coherència:** revisada contra RN-001, RN-002 i RN-004. Un alias (màxim 20 caràcters) no pot tenir la forma d'un id (36 caràcters). El sufix deriva de l'id, que és immutable (RN-002), i com que els nedadors no s'esborren (RN-004) l'alias no es reutilitza. Sense conflicte.
 
 ### RN-004 — Els nedadors no s'esborren
 - **Tipus:** bloquejant · **Moment:** gestió
@@ -229,7 +229,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Tipus:** avís · **Moment:** importació
 - **Regla:** la importació no modifica mai un pla. Si un canvi importat afecta un pla existent, el sistema avisa.
 - **Missatge:** identifica el pla afectat i el canvi.
-- **Font:** ADR-0007.
+- **Font:** ADR-0013.
 - **Coherència:** aplica el principi VI de la constitució; sense conflicte.
 
 ## Composició de sessions
