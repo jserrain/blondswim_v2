@@ -9,7 +9,7 @@ Fora d'abast:
 - Pla i registre (specs 003–008).
 - Zones derivades del CSS (spec 004).
 - Períodes no disponibles i canvis de disponibilitat (spec 003).
-- Importació des de l'Excel (spec 002).
+- Importació des del CSV (spec 002).
 - Aigües obertes (AAOO).
 - Relleus: no es modelen (spec 000).
 - Programa de proves de la competició: no es desa al catàleg.

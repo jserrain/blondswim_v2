@@ -34,7 +34,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-019 | Participació A sense prova principal | avís | planificació | spec 001 |
 | RN-020 | Sense ritmes | avís | planificació | spec 001 |
 | RN-021 | Cobertura de la biblioteca de tècnica | bloquejant | planificació | ADR-0005 |
-| RN-022 | La importació no modifica plans | avís | importació | ADR-0007 |
+| RN-022 | La importació no modifica plans | avís | importació | ADR-0012 |
 | RN-023 | Sèrie per zona i descans | bloquejant | composició | ADR-0008, spec 000 |
 | RN-024 | Ràtio treball:descans | bloquejant | composició | ADR-0008, spec 000 |
 | RN-025 | Ordre de les parts de la sessió | bloquejant | composició | ADR-0004, ADR-0011 |
@@ -202,7 +202,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Tipus:** avís · **Moment:** importació
 - **Regla:** la importació no modifica mai un pla. Si un canvi importat afecta un pla existent, el sistema avisa.
 - **Missatge:** identifica el pla afectat i el canvi.
-- **Font:** ADR-0007.
+- **Font:** ADR-0012.
 - **Coherència:** aplica el principi VI de la constitució; sense conflicte.
 
 ## Composició de sessions

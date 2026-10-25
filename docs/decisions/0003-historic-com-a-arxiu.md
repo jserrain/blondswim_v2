@@ -1,6 +1,6 @@
 # ADR-0003 — Històric d'entrenaments com a arxiu de referència
 
-**Estat:** Acceptat. Substitueix la «biblioteca de blocs comuna».
+**Estat:** Substituït per l'ADR-0013.
 
 ## Context
 L'històric d'entrenaments disponible es va fer sense una metodologia explícita i està esbiaixat cap a les proves d'un sol nedador.
