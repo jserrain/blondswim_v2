@@ -5,10 +5,11 @@ Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és norm
 ## On som
 - Branca: `001-model-domini`. Spec 001 amb G1 i G2 passats; pla i tasques llestos (34 tasques, 46 CA amb test).
 - Constitució 1.3.0 (G0 r2: passa amb condicions).
-- Fases 1 i 2 (US1) fetes. Següent pas: fase 3, US2 (T017–T019); el prompt està per preparar.
+- Fases 1 i 2 (US1) fetes. Següent pas: esmena «contacte del nedador» (ADR, RN-032, CA i tasques US1b, implementació); després, fase 3 (US2, T017–T019).
 - Durant la implementació, `verify.sh` mostra «Traçabilitat CA» com a AVÍS (CA sense test encara). Passa a bloquejant amb T002, al final.
 
 ## Decisions recents (detall als ADR i a la spec)
+- Identitat = `IdNedador`. Contacte: correu i/o mòbil, almenys un; cadascun únic si hi és (correu sense distingir majúscules); mòbil en E.164, `+34` per defecte; mòbil compartit → avís; `canal_preferent` opcional amb avís. Pendent d'ADR i esmena de RN-032 (decidit el 25/10).
 - Nedador identificat pel correu, únic; no es desen nom ni cognoms (RN-032).
 - Temporada 1/10–30/09, derivada del nom de la carpeta (RN-031); proves oficials per piscina (RN-030).
 - Tres tipus de camp: obligatori, informatiu (pot faltar) i opcional amb avís (spec 001, § Format JSON).
@@ -17,6 +18,7 @@ Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és norm
 - L'històric d'entrenaments no s'importa (ADR-0012).
 
 ## Pendents
+- Spec de pagaments (Bizum): pagador com a entitat pròpia amb nedadors associats. Per decidir: Bizum comerços o particular, rebuts, quotes mensuals o per sessió.
 - Esmena 1.4.0: ADR de dades cap a l'LLM, «canvis petits» (II), raons de II, IV, VI, VII i VIII, secció «Fora d'abast». Abans de la primera spec amb judici LLM.
 - Spec 002: abast reduït (sense històric), àlies «lliure» → `Cr`, CSV o Excel.
 
