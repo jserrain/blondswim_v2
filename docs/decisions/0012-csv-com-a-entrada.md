@@ -20,4 +20,4 @@ L'ADR-0007 fixava l'Excel com a format d'entrada per al calendari i les inscripc
 
 ## Conseqüències
 - La spec 002 defineix les columnes de cada CSV i les regles d'importació.
-- Format del fitxer (codificació, separador, separador decimal): [NEEDS CLARIFICATION]. Es fixa a la spec 002.
+- Format del fitxer: codificació UTF-8, separador de camps `;` i coma decimal.

@@ -15,7 +15,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 |---|---|---|---|---|
 | RN-001 | Format de l'id del nedador | bloquejant | càrrega | spec 001 |
 | RN-002 | Assignació i immutabilitat de l'id | bloquejant | gestió | spec 001 |
-| RN-003 | Alias del nedador | bloquejant | càrrega | spec 001 |
+| RN-003 | Alias del nedador | bloquejant | càrrega, gestió | spec 001 |
 | RN-004 | Els nedadors no s'esborren | bloquejant | gestió | spec 001 |
 | RN-005 | Rang de volum setmanal | bloquejant | càrrega | spec 001 |
 | RN-006 | Coherència del test CSS | bloquejant | càrrega | spec 001 |
@@ -59,11 +59,11 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Coherència:** revisada contra RN-001 i RN-004. Com que no s'esborra cap nedador (RN-004), la comprovació contra els existents garanteix que no es reutilitza.
 
 ### RN-003 — Alias del nedador
-- **Tipus:** bloquejant · **Moment:** càrrega
-- **Regla:** l'alias és opcional. Si hi és, és únic entre tots els nedadors, només conté `[a-z0-9-]`, té de 2 a 20 caràcters.
+- **Tipus:** bloquejant · **Moment:** càrrega, gestió
+- **Regla:** l'alias és obligatori, únic entre tots els nedadors (arxivats inclosos) i immutable. Té la forma `<part>_<sufix>`: `<part>` l'escull el coach i és `[a-z0-9-]` de 2 a 12 caràcters; `<sufix>` són els 7 primers caràcters de l'id del nedador i l'afegeix sempre el sistema. Longitud màxima: 20 caràcters. En crear el nedador, el sistema mostra l'alias definitiu i demana confirmació. Només es fa servir per identificar el nedador a la CLI: no apareix en rutes, noms de fitxer, sortides ni prompts de l'LLM.
 - **Missatge:** identifica l'alias i, si està repetit, els nedadors que el tenen.
 - **Font:** spec 001.
-- **Coherència:** revisada contra RN-001; un alias (màxim 20 caràcters) no pot tenir la forma d'un id (36 caràcters). Sense conflicte.
+- **Coherència:** revisada contra RN-001, RN-002 i RN-004. Un alias (màxim 20 caràcters) no pot tenir la forma d'un id (36 caràcters). El sufix deriva de l'id, que és immutable (RN-002), i com que els nedadors no s'esborren (RN-004) l'alias no es reutilitza. Sense conflicte.
 
 ### RN-004 — Els nedadors no s'esborren
 - **Tipus:** bloquejant · **Moment:** gestió

@@ -33,14 +33,14 @@ data/
 - L'id del nedador és el nom de la carpeta (`nedadors/<id>/`); per exemple, `3f2a9c1e-7b4d-4e8a-9c2f-1d6b5e0a8f47`. Format: RN-001 (ADR-0014).
 - Assignació i immutabilitat: RN-002. Els nedadors no s'esborren, s'arxiven: RN-004.
 - El nom i els cognoms són dades de `nedador.json`, no formen part de l'id.
-- `nedador.json` pot tenir un `alias` opcional per a ús del coach a la CLI (RN-003).
+- `nedador.json` té un `alias` obligatori i immutable per a ús del coach a la CLI (RN-003).
 
 ## Entitats
 
 **Nedador** (`nedador.json`)
 - `nom`: text no buit.
 - `cognoms`: text no buit. Admet un o dos cognoms en el mateix camp.
-- `alias`: text o `null` (RN-003).
+- `alias`: text, `<part>_<sufix>` (RN-003).
 - `arxivat`: booleà. En crear el nedador val `false` (RN-017).
 - `estils_preferents`: un o més codis, sense repetir. Admesos: Cr, Esq, Br, Pap, Ei.
 - `dies_entrenament`: un o més dies de la setmana (dl, dt, dc, dj, dv, ds, dg), sense repetir. Les competicions no hi compten.
@@ -138,3 +138,7 @@ data/
 - **CA-001-33** [PENDENT spec 004] — **Donat** un nedador amb l'últim test acceptat d'una piscina de fa més de 8 setmanes i cap test planificat d'aquella piscina, **quan** es planifica, **aleshores** genera l'avís de test caducat (RN-028).
 - **CA-001-34** [PENDENT spec 004] — **Donat** un període de piscina que comença sense cap test acceptat ni planificat d'aquella piscina, **quan** es planifica, **aleshores** genera l'avís de canvi de període sense test (RN-029).
 - **CA-001-35** — **Donat** un test sense el camp `acceptat`, **quan** es carrega, **aleshores** dona un error de càrrega.
+- **CA-001-36** — **Donat** un `nedador.json` sense `alias` o amb `alias: null`, **quan** es carrega, **aleshores** dona un error de càrrega (RN-003).
+- **CA-001-37** — **Donat** un nedador amb un `alias` el sufix del qual no coincideix amb els 7 primers caràcters del seu id, **quan** es carrega, **aleshores** dona un error de càrrega (RN-003).
+- **CA-001-38** — **Donat** un nedador nou amb la part d'alias `marc` i un id que comença per `3f2a9c1`, **quan** es crea, **aleshores** l'alias proposat és `marc_3f2a9c1` i no es desa fins que el coach el confirma (RN-003).
+- **CA-001-39** — **Donat** un nedador existent, **quan** se'n vol canviar l'`alias`, **aleshores** el sistema ho rebutja (RN-003).

@@ -18,4 +18,4 @@ La spec 001 fixava l'id del nedador com `n` + 4 dígits, assignat de manera seq�
 ## Conseqüències
 - L'UUID no substitueix l'autorització: qualsevol endpoint futur ha de comprovar que l'usuari té accés a cada nedador. Es decidirà en un ADR propi quan hi hagi un endpoint (`BACKLOG.md`).
 - El format de l'id es valida abans de construir cap ruta de fitxer.
-- L'alias és la manera còmoda d'identificar el nedador a la CLI.
+- L'alias és obligatori, immutable i porta com a sufix els 7 primers caràcters de l'id (RN-003). És la manera còmoda d'identificar el nedador a la CLI.
