@@ -31,8 +31,8 @@ Tipus de camp (spec, § Format JSON): **obligatori** (ha de ser-hi amb valor), *
 | `versio_esquema` | int | sí | CA-001-17 |
 | `correu` | `Correu` | sí | RN-032; CA-001-24, 44 |
 | `mobil` | `Mobil` | sí | RN-033, RN-034; CA-001-54 a 56 |
-| `canal_preferent` | `Canal` \| null | opcional amb avís | RN-035; CA-001-57, 58 |
-| `alias` | `Alias` | sí | RN-003; CA-001-26, 46, 50 a 53 |
+| `canal_preferent` | `Canal` \| null | informatiu | RN-035; CA-001-57 a 60 |
+| `alias` | `Alias` | sí | RN-003; CA-001-26, 46, 50 a 53, 61 |
 | `arxivat` | bool | sí | RN-017; `false` en crear-lo |
 | `estils_preferents` | llista d'`Estil`, ≥ 1, sense repetir | sí | CA-001-03, 39 |
 | `dies_entrenament` | llista de `Dia`, ≥ 1, sense repetir | sí | CA-001-03, 40 |

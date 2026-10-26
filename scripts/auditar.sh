@@ -158,7 +158,7 @@ gate_spec() {
   # S04: res de plan/tasks ni codi
   if [[ -e "$F/plan.md" || -e "$F/tasks.md" ]]; then
     if ls docs/auditoria/g1-"$nnn"-20*.md >/dev/null 2>&1; then
-      avis "G1-S04 Ja existeix plan.md o tasks.md (re-auditoria: hi ha un informe G1 anterior)"
+      info "G1-S04 Ja existeix plan.md o tasks.md (re-auditoria: hi ha un informe G1 anterior)"
     else
       falla "G1-S04 Ja existeix plan.md o tasks.md"
     fi
@@ -170,7 +170,7 @@ gate_spec() {
     canvis=$(git diff --name-only "$base"...HEAD -- src tests 2>/dev/null | wc -l | tr -d ' ')
     if [[ "$canvis" -gt 0 ]]; then
       if ls docs/auditoria/g1-"$nnn"-20*.md >/dev/null 2>&1; then
-        avis "G1-S04 $canvis fitxer(s) de src/ o tests/ respecte de $base (re-auditoria: usa BASE=<commit previ a l'esmena>)"
+        info "G1-S04 $canvis fitxer(s) de src/ o tests/ respecte de $base (re-auditoria: usa BASE=<commit previ a l'esmena>)"
       else
         falla "G1-S04 $canvis fitxer(s) de src/ o tests/ canviats respecte de $base"
       fi

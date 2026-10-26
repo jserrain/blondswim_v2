@@ -151,7 +151,7 @@ La consola mostra les paraules trobades (`PISTA`). Claude Code decideix si el pi
 | G1-S01 | Carpeta `specs/NNN-nom/spec.md` i branca igual al nom de la carpeta | O | A |
 | G1-S02 | Clarify registrat: secció `## Clarifications` (també si es va fer fora de la comanda) | O | A |
 | G1-S03 | Checklist a `checklists/` (A); ítems pendents resolts o justificats (B) | R | A→B |
-| G1-S04 | Sense `plan.md`, `tasks.md` ni canvis a `src/` o `tests/` respecte de la branca base. En re-auditoria (hi ha un informe G1 anterior), el pla i les tasques donen AVÍS | O | A |
+| G1-S04 | Sense `plan.md`, `tasks.md` ni canvis a `src/` o `tests/` respecte de la branca base. En re-auditoria (hi ha un informe G1 anterior), el pla, les tasques i el codi existent donen INFO; per comprovar que l'esmena no toca codi, `BASE=<commit previ a l'esmena>` | O | A |
 | G1-S05 | Línia `**Estat:**` present (A); coherent amb el moment del gate (B) | O | A→B |
 | G1-Q01 | Històries prioritzades P1, P2… provables de manera independent | R | A→B |
 | G1-Q02 | Criteris `- **CA-NNN-nn**` amb Donat/quan/aleshores (A); escenaris complets i casos límit (B) | O | A→B |

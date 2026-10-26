@@ -9,7 +9,7 @@ La spec 001 identifica la persona pel correu (RN-032) i no en desa ni el nom ni 
 - Tot nedador té `correu` i `mobil`, tots dos obligatoris.
 - El correu continua sent únic entre tots els nedadors, sense distingir majúscules (RN-032).
 - El mòbil es desa en format E.164 (`+` i de 8 a 15 dígits) (RN-033). No ha de ser únic: si diversos nedadors el comparteixen (per exemple, el d'un pare o una mare), es genera un avís (RN-034).
-- `canal_preferent` (`correu` o `mobil`) és opcional amb avís: sense valor genera l'avís RN-035.
+- `canal_preferent` (`correu` o `mobil`) és informatiu: pot faltar sense avís. Un valor no admès és una incidència resoluble pel coach (RN-035).
 - Cap identificador del sistema no deriva del correu ni del mòbil: l'id és l'UUID (ADR-0014).
 
 ## Alternatives
