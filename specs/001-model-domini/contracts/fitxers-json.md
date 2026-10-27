@@ -68,5 +68,5 @@ Interfície externa: fitxers que el coach edita i que genera la importació (spe
 Una línia per avís; només s'hi afegeix. `decisio`: `confirmat` o `rebutjat` als avisos d'entrada; `null` als de càrrega i de planificació.
 ```json
 {"data_hora": "2000-03-04T10:15:00", "rn": "RN-009", "fitxer": "competicions/1999-00.json", "camp": "competicions.0.seu", "valor": null, "missatge": "Seu desconeguda", "id_nedador": null, "decisio": null}
-{"data_hora": "2000-03-04T10:20:00", "rn": "RN-034", "fitxer": "nedadors/3f2a9c1e-7b4d-4e8a-9c2f-1d6b5e0a8f47/nedador.json", "camp": "mobil", "valor": "+34600000000", "missatge": "Mòbil compartit amb un altre nedador", "id_nedador": "3f2a9c1e-7b4d-4e8a-9c2f-1d6b5e0a8f47", "decisio": "confirmat"}
+{"data_hora": "2000-03-04T10:20:00", "rn": "RN-034", "fitxer": "nedadors/3f2a9c1e-7b4d-4e8a-9c2f-1d6b5e0a8f47/nedador.json", "camp": "mobil", "valor": "+34600000000", "missatge": "Mòbil compartit amb el nedador 9d8c7b6a-1234-4abc-8def-0123456789ab", "id_nedador": "3f2a9c1e-7b4d-4e8a-9c2f-1d6b5e0a8f47", "decisio": "confirmat"}
 ```

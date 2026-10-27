@@ -9,7 +9,7 @@ Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és norm
 - Durant la implementació, `verify.sh` mostra «Traçabilitat CA» com a AVÍS (CA sense test encara). Passa a bloquejant amb T002, al final.
 
 ## Decisions recents (detall als ADR i a la spec)
-- Identitat = `IdNedador`, UUID v4 (ADR-0014); alias obligatori i immutable `<part>_<sufix>` (RN-003). Contacte: correu i mòbil obligatoris (ADR-0015, RN-032 a RN-035). Pendent: G1 de l'esmena, tasques US1b i implementació.
+- Identitat = `IdNedador`, UUID v4 (ADR-0014); alias obligatori i immutable `<part>_<sufix>` (RN-003). Contacte: correu i mòbil obligatoris (ADR-0016, RN-032 a RN-035). Pendent: G1 de l'esmena, tasques US1b i implementació.
 - Nedador identificat pel correu, únic; no es desen nom ni cognoms (RN-032).
 - Temporada 1/10–30/09, derivada del nom de la carpeta (RN-031); proves oficials per piscina (RN-030).
 - Tres tipus de camp: obligatori, informatiu (pot faltar) i opcional amb avís (spec 001, § Format JSON).
@@ -20,10 +20,12 @@ Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és norm
 ## Pendents
 - Spec de pagaments (Bizum): pagador com a entitat pròpia amb nedadors associats. Per decidir: Bizum comerços o particular, rebuts, quotes mensuals o per sessió.
 - Esmena 1.4.0: ADR de dades cap a l'LLM, «canvis petits» (II), raons de II, IV, VI, VII i VIII, secció «Fora d'abast». Abans de la primera spec amb judici LLM.
-- ADR de dades personals: supressió (dret de supressió del RGPD davant la regla d'arxivar sense esborrar). Es decidirà quan un nedador ho demani.
+- ADR de dades personals: supressió (dret de supressió del RGPD davant la regla d'arxivar sense esborrar) a `nedador.json` i al registre d'avisos (`avisos.jsonl`); es decidirà quan un nedador ho demani.
 - Tasques per al bloc US1b de `tasks.md` (encara no afegides):
   - adaptar la càrrega al criteri per nedador;
-  - camp «decisió» al registre d'avisos.
+  - camp «decisió» al registre d'avisos;
+  - unicitat amb nedadors exclosos;
+  - RN-035 només avís; valor no admès com a error de format.
 - Spec 002: abast reduït (sense històric), àlies «lliure» → `Cr`, CSV o Excel.
 
 ## Flux de treball

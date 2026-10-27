@@ -6,7 +6,7 @@
 
 ## Summary
 
-Implementar les entitats, els invariants i el format JSON de la spec 001: nedador (identificat per correu), tests CSS, millors registres, catàleg de competicions i inscripcions per temporada. També les operacions de gestió que els CA exigeixen i les dues validacions: model vàlid i aptitud per planificar.
+Implementar les entitats, els invariants i el format JSON de la spec 001: nedador (identificat per correu), tests CSS, millors registres, catàleg de competicions i inscripcions per temporada. També les operacions de gestió que els CA exigeixen i la validació per nedador i per nivell (ERROR i AVÍS) i l'aptitud per planificar.
 
 Enfocament:
 - Domini pur amb objectes de valor immutables.
@@ -36,7 +36,7 @@ Sense LLM. El rellotge només s'injecta per registrar avisos.
 
 **Constraints**: domini sense I/O, LLM, rellotge ni dependències externes; escriptura estable byte a byte (CA-001-36); errors en català amb fitxer, camp i valor
 
-**Scale/Scope**: desenes de nedadors i de competicions per temporada; 68 CA, 9 dels quals pendents
+**Scale/Scope**: desenes de nedadors i de competicions per temporada; 72 CA, 8 dels quals pendents
 
 ## Constitution Check
 

@@ -9,7 +9,7 @@ Model del domini (`src/blondswim/domain/`). L'ordre dels camps és el de l'escri
 | `IdNedador` | text, UUID v4 canònic en minúscules | RN-001, ADR-0014 |
 | `Correu` | text | RN-032 (no buit, sense espais); igualtat sense distingir majúscules |
 | `Mobil` | text E.164 (`+` i de 8 a 15 dígits) | RN-033 |
-| `Canal` | `correu` \| `mobil` | RN-035 |
+| `Canal` | `correu` \| `mobil` | un altre valor és un error de format; absent o `null`: RN-035 |
 | `Alias` | text | RN-003 |
 | `Estil` | enum `Cr`, `Esq`, `Br`, `Pap`, `Ei` | spec 000 §4; als estils preferents només aquests cinc (CA-001-39) |
 | `Dia` | enum `dl`…`dg` | CA-001-40 |
@@ -82,7 +82,7 @@ Fitxer: `{versio_esquema, participacions: [...]}`.
 - CSS i zones: spec 004.
 
 ## Validació (nivells)
-1. **ERROR / AVÍS per nedador** (entrada i càrrega; spec, § Validació). Inclou les regles que creuen fitxers: RN-003, RN-032 i RN-034 entre nedadors, RN-011 amb el catàleg. Un ERROR deixa fora aquell nedador (a la càrrega, tots els implicats en una col·lisió); un AVÍS no.
+1. **ERROR / AVÍS per nedador** (entrada i càrrega; spec, § Validació). Inclou les regles que creuen fitxers: RN-003, RN-032 i RN-034 entre nedadors, RN-011 amb el catàleg. Un ERROR en un fitxer del nedador deixa fora aquell nedador (a la càrrega, tots els implicats en una col·lisió); un nedador exclòs continua comptant per a la unicitat. Un ERROR en un fitxer del catàleg (RN-008) fa fallar TOTA la càrrega. Un AVÍS no exclou ningú.
 2. **Aptitud per planificar:** RN-017 i RN-018 són motius de bloqueig; RN-019 i RN-020 són avisos.
 
 Resultat: `Resultat(errors, avisos)` per nedador (research R5).

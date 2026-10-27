@@ -6,11 +6,11 @@
   INFO   G1-S04 Ja existeix plan.md o tasks.md (re-auditoria: hi ha un informe G1 anterior)
   INFO   G1-S04 13 fitxer(s) de src/ o tests/ respecte de main (re-auditoria: usa BASE=<commit previ a l'esmena>)
   INFO   G1-S05 Estat: Aprovada
-  OK     G1-Q02 Criteris d'acceptació definits: 68
+  OK     G1-Q02 Criteris d'acceptació definits: 72
   OK     G1-Q03 CA únics
   OK     G1-Q03 Tots els CA són de la spec 001
   OK     G1-Q02 Tots els CA en format Donat/quan/aleshores
-  INFO   G1-Q02 CA marcats [PENDENT spec NNN]: 9
+  INFO   G1-Q02 CA marcats [PENDENT spec NNN]: 8
   OK     G1-Q04 28 RN referenciades, totes definides
   OK     G1-Q05 Zero [NEEDS CLARIFICATION]
   OK     G1-Q05 ## Assumptions

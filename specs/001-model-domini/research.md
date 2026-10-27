@@ -26,7 +26,7 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
 
 ## R5. Errors, avisos i registre
 - **Decision:**
-  - La validació retorna `Resultat(errors, avisos)`. Cada element té `rn`, `fitxer`, `camp`, `valor` i `missatge`. La càrrega acumula tots els errors abans de fallar.
+  - La validació retorna `Resultat(errors, avisos)`. Cada element té `rn`, `fitxer`, `camp`, `valor` i `missatge`. La càrrega acumula els errors per nedador i exclou el nedador amb error; un error del catàleg fa fallar tota la càrrega.
   - `application` registra els avisos a través del port `RegistreAvisos`, amb la data i hora del port `Rellotge`.
   - `infrastructure` implementa el registre com a `data/avisos.jsonl` en mode afegir (spec 001, § Registre d'avisos).
 - **Rationale:** el principi IV demana avisos persistents i consultables; el domini continua sense I/O ni rellotge (principi I).
@@ -48,5 +48,5 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
 - **Decision:**
   - Un test o més per CA, amb `@pytest.mark.ca("CA-001-nn")`.
   - Els tests de domini van a `tests/unit/` i els de lectura i escriptura de fitxers, a `tests/integration/` amb `tmp_path`.
-  - CA-001-33, 34 i 38 queden exclosos fins que les specs 004 i 002 estiguin aprovades.
+  - CA-001-33, 34, 38, 58, 63, 64, 68 i 72 queden exclosos fins que les specs 004 i 002 estiguin aprovades.
 - **Rationale:** principi VII. La traçabilitat passa de «avis» a «bloquejant» en el primer commit d'implementació (AGENTS.md).
