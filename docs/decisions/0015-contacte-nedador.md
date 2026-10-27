@@ -9,8 +9,7 @@ La spec 001 identifica la persona pel correu (RN-032) i no en desa ni el nom ni 
 - Tot nedador té `correu` i `mobil`, tots dos obligatoris.
 - El correu continua sent únic entre tots els nedadors, sense distingir majúscules (RN-032).
 - El mòbil es desa en format E.164 (`+` i de 8 a 15 dígits) (RN-033). No ha de ser únic: si diversos nedadors el comparteixen (per exemple, el d'un pare o una mare), es genera un avís (RN-034).
-- `canal_preferent` (`correu` o `mobil`) és informatiu: pot faltar sense avís. Un valor no admès és una incidència resoluble pel coach (RN-035).
-- Cap identificador del sistema no deriva del correu ni del mòbil: l'id és l'UUID (ADR-0014).
+- `canal_preferent` (`correu` o `mobil`): si falta, és un avís; un valor no admès és un error (RN-035).- Cap identificador del sistema no deriva del correu ni del mòbil: l'id és l'UUID (ADR-0014).
 
 ## Alternatives
 - **Correu i/o mòbil, almenys un:** descartat, per simplicitat.
@@ -21,3 +20,6 @@ La spec 001 identifica la persona pel correu (RN-032) i no en desa ni el nom ni 
 - Al fitxer només hi ha mòbils en E.164. Afegir `+34` a un número sense prefix és feina de l'entrada de dades (importació o CLI), no de la càrrega.
 - La validació del format del correu i la verificació de tots dos canals queden fora d'abast d'aquesta versió.
 - Quines dades de contacte poden arribar a un LLM ho fixa l'ADR pendent de dades cap a l'LLM.
+
+## Historial
+- 2026-10-26: esmenat abans de fusionar la branca a main; versió vigent la que aprova la G1 de la spec 001.

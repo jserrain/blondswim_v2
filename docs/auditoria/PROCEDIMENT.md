@@ -232,3 +232,5 @@ Inclou l'anàlisi de coherència de `/speckit-analyze` (duplicats, ambigüitats,
 - Si un criteri **A** dona falsos positius sovint, passar-lo a **A→B** (sortida `PISTA`).
 - Provar `auditar.sh` a macOS (bash 3.2, grep BSD) després de cada canvi.
 - Referents: NIST AI RMF (Govern/Map), NIST SSDF (PO.1), OWASP Top 10 LLM i Agentic, CRISP-ML(Q).
+
+- Mentre la branca no s'ha fusionat a main, un ADR acceptat en aquesta branca s'esmena amb una entrada d'Historial. Un cop fusionat, qualsevol canvi requereix un ADR nou.

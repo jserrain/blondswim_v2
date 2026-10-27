@@ -31,7 +31,7 @@ Tipus de camp (spec, § Format JSON): **obligatori** (ha de ser-hi amb valor), *
 | `versio_esquema` | int | sí | CA-001-17 |
 | `correu` | `Correu` | sí | RN-032; CA-001-24, 44 |
 | `mobil` | `Mobil` | sí | RN-033, RN-034; CA-001-54 a 56 |
-| `canal_preferent` | `Canal` \| null | informatiu | RN-035; CA-001-57 a 60 |
+| `canal_preferent` | `Canal` \| null | opcional amb avís | RN-035; CA-001-57 a 60 |
 | `alias` | `Alias` | sí | RN-003; CA-001-26, 46, 50 a 53, 61 |
 | `arxivat` | bool | sí | RN-017; `false` en crear-lo |
 | `estils_preferents` | llista d'`Estil`, ≥ 1, sense repetir | sí | CA-001-03, 39 |
@@ -81,14 +81,14 @@ Fitxer: `{versio_esquema, participacions: [...]}`.
 - `test_vigent(nedador, piscina)`: l'últim test acceptat de la piscina (CA-001-05, 30).
 - CSS i zones: spec 004.
 
-## Validació (dos nivells)
-1. **Model vàlid** (càrrega). Inclou les regles que creuen fitxers: RN-003, RN-032 i RN-034 entre nedadors, RN-011 amb el catàleg.
+## Validació (nivells)
+1. **ERROR / AVÍS per nedador** (entrada i càrrega; spec, § Validació). Inclou les regles que creuen fitxers: RN-003, RN-032 i RN-034 entre nedadors, RN-011 amb el catàleg. Un ERROR deixa fora aquell nedador (a la càrrega, tots els implicats en una col·lisió); un AVÍS no.
 2. **Aptitud per planificar:** RN-017 i RN-018 són motius de bloqueig; RN-019 i RN-020 són avisos.
 
-Resultat: `Resultat(errors, avisos)` (research R5).
+Resultat: `Resultat(errors, avisos)` per nedador (research R5).
 
 ## Registre d'avisos (`data/avisos.jsonl`)
-Una línia JSON per avís: `data_hora` (ISO 8601), `rn`, `fitxer`, `camp`, `valor`, `missatge`, `id_nedador` (o `null`). Només s'hi afegeix (CA-001-47, 48).
+Una línia JSON per avís: `data_hora` (ISO 8601), `rn`, `fitxer`, `camp`, `valor`, `missatge`, `id_nedador` (o `null`), `decisio` (`confirmat`, `rebutjat` o `null`). `null` per als avisos de càrrega i de planificació. Només s'hi afegeix (CA-001-47, 48, 63, 64).
 
 ## Transicions d'estat
 | Entitat | Transició | Regla |

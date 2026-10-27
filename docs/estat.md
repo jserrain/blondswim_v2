@@ -20,6 +20,10 @@ Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és norm
 ## Pendents
 - Spec de pagaments (Bizum): pagador com a entitat pròpia amb nedadors associats. Per decidir: Bizum comerços o particular, rebuts, quotes mensuals o per sessió.
 - Esmena 1.4.0: ADR de dades cap a l'LLM, «canvis petits» (II), raons de II, IV, VI, VII i VIII, secció «Fora d'abast». Abans de la primera spec amb judici LLM.
+- ADR de dades personals: supressió (dret de supressió del RGPD davant la regla d'arxivar sense esborrar). Es decidirà quan un nedador ho demani.
+- Tasques per al bloc US1b de `tasks.md` (encara no afegides):
+  - adaptar la càrrega al criteri per nedador;
+  - camp «decisió» al registre d'avisos.
 - Spec 002: abast reduït (sense històric), àlies «lliure» → `Cr`, CSV o Excel.
 
 ## Flux de treball

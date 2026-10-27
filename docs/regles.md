@@ -4,7 +4,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 - **Frontera:** si el coach podria voler canviar-ho, és una regla (RN); si és estructura de dades, és model i va a la spec.
 - **Identificadors:** `RN-NNN`. No es reutilitzen; una regla que deixa de valer es marca «Retirada».
-- **Tipus:** bloquejant · avís · judici LLM.
+- **Tipus:** bloquejant · avís · judici LLM. Una regla bloquejant dona el nivell ERROR i una d'avís, el nivell AVÍS (spec 001, § Validació).
 - **Moment:** càrrega · gestió (crear, modificar, arxivar) · importació · planificació · composició · render.
 - **Coherència:** abans d'acceptar una regla, es comprova contra les existents (duplicats, contradiccions, solapaments) i el resultat s'escriu a la regla.
 - Tota regla de tipus judici LLM indica, a més, **Entrades**, **Sortida esperada** i **Comprovació determinista** (principi IV).
@@ -15,7 +15,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 |---|---|---|---|---|
 | RN-001 | Format de l'id del nedador | bloquejant | càrrega | spec 001 |
 | RN-002 | Assignació i immutabilitat de l'id | bloquejant | gestió | spec 001 |
-| RN-003 | Alias del nedador | bloquejant | càrrega, gestió | spec 001 |
+| RN-003 | Alias del nedador | bloquejant | càrrega, gestió, importació | spec 001 |
 | RN-004 | Els nedadors no s'esborren | bloquejant | gestió | spec 001 |
 | RN-005 | Rang de volum setmanal | bloquejant | càrrega | spec 001 |
 | RN-006 | Coherència del test CSS | bloquejant | càrrega | spec 001 |
@@ -47,7 +47,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-032 | Correu del nedador | bloquejant | càrrega | spec 001 |
 | RN-033 | Mòbil del nedador | bloquejant | càrrega | spec 001 |
 | RN-034 | Mòbil compartit | avís | càrrega | spec 001 |
-| RN-035 | Canal preferent | bloquejant (resoluble) | càrrega | spec 001 |
+| RN-035 | Canal preferent | avís, bloquejant | càrrega, importació | spec 001 |
 
 ## Nedador
 
@@ -65,8 +65,8 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Coherència:** revisada contra RN-001 i RN-004. Com que no s'esborra cap nedador (RN-004), la comprovació contra els existents garanteix que no es reutilitza.
 
 ### RN-003 — Alias del nedador
-- **Tipus:** bloquejant · **Moment:** càrrega, gestió
-- **Regla:** l'alias és obligatori, únic entre tots els nedadors (arxivats inclosos) i immutable. Té la forma `<part>_<sufix>`: `<part>` l'escull el coach i és `[a-z0-9-]` de 2 a 12 caràcters; `<sufix>` són els 7 primers caràcters de l'id del nedador i l'afegeix sempre el sistema. Longitud màxima: 20 caràcters. En crear el nedador, el sistema mostra l'alias definitiu i demana confirmació; si l'alias ja existeix, genera un id nou i en proposa un altre. La immutabilitat la garanteix la CLI (gestió); la càrrega només comprova que el sufix coincideix amb l'id. Només es fa servir per identificar el nedador a la CLI: no apareix en rutes, noms de fitxer, sortides ni prompts de l'LLM.
+- **Tipus:** bloquejant · **Moment:** càrrega, gestió, importació
+- **Regla:** l'alias és obligatori, únic entre tots els nedadors (arxivats inclosos) i immutable. Té la forma `<part>_<sufix>`: `<part>` l'escull el coach i és `[a-z0-9-]` de 2 a 12 caràcters; `<sufix>` són els 7 primers caràcters de l'id del nedador i l'afegeix sempre el sistema. Longitud màxima: 20 caràcters. En crear el nedador, el sistema genera l'id i l'alias definitiu; si l'alias ja existeix, genera un id nou i un altre alias. Cap operació permet canviar l'alias; la càrrega només comprova que el sufix coincideix amb l'id. Confirmació del coach (moment: importació, spec 002): el nedador no es desa fins que el coach confirma l'alias definitiu. Només es fa servir perquè el coach identifiqui el nedador: no apareix en rutes, noms de fitxer, sortides ni prompts de l'LLM.
 - **Missatge:** identifica l'alias i, si està repetit, els nedadors que el tenen.
 - **Font:** spec 001, ADR-0014.
 - **Coherència:** revisada contra RN-001, RN-002 i RN-004. Un alias (màxim 20 caràcters) no pot tenir la forma d'un id (36 caràcters). El sufix deriva de l'id, que és immutable (RN-002), i com que els nedadors no s'esborren (RN-004) l'alias no es reutilitza. Sense conflicte.
@@ -89,7 +89,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Regla:** a cada test CSS, t400 > t200.
 - **Missatge:** identifica el test.
 - **Font:** spec 001.
-- **Coherència:** revisada contra RN-020; un test incoherent no es carrega i no compta com a test. Sense conflicte.
+- **Coherència:** revisada contra RN-020; un test incoherent és un ERROR: el nedador no es carrega i el test no compta. Sense conflicte.
 
 ### RN-007 — Unicitat dels millors registres
 - **Tipus:** bloquejant · **Moment:** càrrega
@@ -120,11 +120,11 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Coherència:** revisada contra RN-004 (els arxivats compten, com a RN-032) i RN-033. Sense conflicte.
 
 ### RN-035 — Canal preferent
-- **Tipus:** bloquejant (incidència resoluble) · **Moment:** càrrega
-- **Regla:** `canal_preferent` és informatiu: pot faltar o ser `null` sense avís. Si té valor, ha de ser `correu` o `mobil`. Un altre valor és una incidència resoluble: el nedador no avança fins que el coach tria un valor admès, el deixa sense valor o cancel·la (spec 001, § Incidències resolubles).
-- **Missatge:** identifica el nedador, el camp, el valor i les opcions.
+- **Tipus:** avís (sense valor) i bloquejant (valor no admès) · **Moment:** càrrega, importació
+- **Regla:** `canal_preferent` és `correu` o `mobil`. Absent o `null` → AVÍS (a la càrrega o a la importació). Qualsevol altre valor → ERROR.
+- **Missatge:** identifica l'àlies, el camp i el valor; a l'error, també les opcions admeses.
 - **Font:** spec 001, ADR-0015.
-- **Coherència:** revisada contra RN-032 i RN-033: tots dos canals existeixen sempre, de manera que qualsevol valor admès és utilitzable. Sense conflicte.
+- **Coherència:** revisada contra RN-032 i RN-033: tots dos canals existeixen sempre, de manera que qualsevol valor admès és utilitzable. No hi ha cap valor per defecte (principi V). Sense conflicte.
 
 ## Catàleg de competicions
 
@@ -153,7 +153,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 ### RN-011 — Participació d'una competició del catàleg
 - **Tipus:** bloquejant · **Moment:** càrrega
-- **Regla:** cada participació apunta a una competició que existeix al catàleg de la mateixa temporada.
+- **Regla:** cada participació apunta a una competició que existeix al catàleg de la mateixa temporada. Si no hi existeix, és un ERROR només d'aquell nedador.
 - **Missatge:** identifica l'`id_competicio`.
 - **Font:** spec 001, ADR-0006.
 - **Coherència:** revisada contra RN-008 i RN-010; sense conflicte.
