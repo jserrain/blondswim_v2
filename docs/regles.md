@@ -19,7 +19,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-004 | Els nedadors no s'esborren | bloquejant | gestió | spec 001 |
 | RN-005 | Rang de volum setmanal | bloquejant | càrrega | spec 001 |
 | RN-006 | Coherència del test CSS | bloquejant | càrrega | spec 001 |
-| RN-007 | Unicitat dels millors registres | bloquejant | càrrega | spec 001 |
+| RN-007 | Unicitat dels millors registres (Retirada) | — | — | spec 001 |
 | RN-008 | Unicitat de l'id de competició | bloquejant | càrrega | spec 001, ADR-0006 |
 | RN-009 | Seu desconeguda | avís | càrrega | spec 001 |
 | RN-010 | Competició amb participacions | bloquejant | gestió | ADR-0006 |
@@ -91,12 +91,8 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Font:** spec 001.
 - **Coherència:** revisada contra RN-020; un test incoherent no compta com a test. Sense conflicte.
 
-### RN-007 — Unicitat dels millors registres
-- **Tipus:** bloquejant · **Moment:** càrrega
-- **Regla:** per a cada combinació d'estil, distància i piscina hi ha com a màxim un millor registre.
-- **Missatge:** identifica la combinació repetida.
-- **Font:** spec 001.
-- **Coherència:** sense regles relacionades.
+### RN-007 — Unicitat dels millors registres (Retirada)
+- **Estat:** Retirada (spec 001, G1 r2, 2026-10-28). Els `millors_registres` només s'afegeixen; pot haver-hi diversos registres de la mateixa prova i piscina. El millor registre per prova i piscina és un valor derivat (el millor temps de la llista) i no es desa. No es reutilitza l'ID.
 
 ### RN-032 — Correu del nedador
 - **Tipus:** bloquejant · **Moment:** càrrega
@@ -201,7 +197,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
   - Ei: 100 només a 25 m; 200 i 400 a 25 m i a 50 m.
 - **Missatge:** identifica la prova i la piscina.
 - **Font:** spec 001.
-- **Coherència:** revisada contra RN-007, RN-014, RN-015 i RN-016. Els relleus no es modelen (spec 000). Sense conflicte.
+- **Coherència:** revisada contra RN-014, RN-015 i RN-016. Els relleus no es modelen (spec 000). Sense conflicte.
 
 ### RN-031 — Temporada de natació
 - **Tipus:** bloquejant · **Moment:** càrrega

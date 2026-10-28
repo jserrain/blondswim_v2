@@ -36,7 +36,7 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
 - **Alternatives considered:** un registre per nedador. Descartat: els avisos del catàleg no són de cap nedador, i un sol fitxer es consulta millor.
 
 ## R6. Operacions de gestió
-- **Decision:** casos d'ús a `application`: crear nedador (RN-002), esborrar nedador (sempre error, RN-004), arxivar i desarxivar (RN-017), modificar nedador, afegir test, acceptar test (CA-001-30), afegir o actualitzar un millor registre, esborrar competició (RN-010).
+- **Decision:** casos d'ús a `application`: crear nedador (RN-002), esborrar nedador (sempre error, RN-004), arxivar i desarxivar (RN-017), modificar nedador, afegir test, acceptar test (CA-001-30), afegir un millor registre, esborrar competició (RN-010).
   - Immutables: `id`, `alias`, `versio_esquema`. La modificació no els rep com a dada.
   - Modificables: `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal`. Una modificació torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res.
   - Un test o un millor registre desat no s'edita.

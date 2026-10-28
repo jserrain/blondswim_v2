@@ -12,6 +12,7 @@
   OK     G1-Q02 Tots els CA en format Donat/quan/aleshores
   INFO   G1-Q02 CA marcats [PENDENT spec NNN]: 9
   OK     G1-Q04 28 RN referenciades, totes definides
+  AVÍS   G1-Q04 RN retirades referenciades: RN-007
   OK     G1-Q05 Zero [NEEDS CLARIFICATION]
   OK     G1-Q05 ## Assumptions
   PISTA  G1-Q07 Dates concretes a revisar: 2026-10-27 2026-10-28 

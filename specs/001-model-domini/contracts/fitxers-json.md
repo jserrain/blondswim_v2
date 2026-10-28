@@ -6,6 +6,7 @@ Interfície externa: fitxers que el coach edita i que genera la importació (spe
 - UTF-8, `indent=2`, salt de línia final, ordre de claus del data model (research R3).
 - `versio_esquema: 1`. Qualsevol altre valor és error (CA-001-17).
 - Dates `AAAA-MM-DD` i temps `m:ss.cc`.
+- `millors_registres` pot tenir diversos registres de la mateixa prova i piscina; el millor és un valor derivat i no es desa.
 - Un camp obligatori absent és error. Un opcional desconegut s'escriu `null`.
 
 ## `data/nedadors/<id>/nedador.json`

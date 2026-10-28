@@ -61,7 +61,7 @@ data/
   - El CSS i les zones es calculen a partir del test vigent (spec 004); no es desen. SWOLF i longitud de braçada són derivats: no es desen.
 - `millors_registres`: llista de `{estil, distancia, piscina, temps, data, competicio}`.
   - `competicio` és un text lliure, perquè pot ser d'una temporada anterior.
-  - Unicitat: RN-007.
+  - Només s'afegeixen registres; pot haver-hi diversos de la mateixa prova i piscina. El millor registre per prova i piscina és un valor derivat (vegeu «Valors derivats»).
   - La prova (`estil`, `distancia`) és oficial per a la `piscina` (RN-030).
 
 **Temporada** (carpeta `temporades/<AAAA-AA>/`)
@@ -88,13 +88,14 @@ data/
 **Valors derivats (no es desen mai)**
 - **Setmana:** setmana ISO 8601 (de dilluns a diumenge), identificada per l'any ISO i el número de setmana.
 - CSS i zones.
+- Millor registre per prova i piscina: el millor temps de la llista de `millors_registres`.
 - Dates d'inici i fi de la temporada (RN-031).
 - Proves objectiu.
 - Classe de cada prova (s'agafa de la participació).
 
 ## Validació: nivells
 - **ERROR:** s'incompleix un invariant de format d'aquesta spec o una regla bloquejant.
-  - Regles del nedador (aquell nedador queda exclòs): RN-001, RN-003, RN-005 a RN-007, RN-011 a RN-016, RN-030 (inscripcions i millors registres), RN-031 (carpeta de temporada), RN-032 i RN-033, i els invariants de format dels fitxers del nedador.
+  - Regles del nedador (aquell nedador queda exclòs): RN-001, RN-003, RN-005, RN-006, RN-011 a RN-016, RN-030 (inscripcions i millors registres), RN-031 (carpeta de temporada), RN-032 i RN-033, i els invariants de format dels fitxers del nedador.
   - Regles del catàleg (falla TOTA la càrrega): RN-008, RN-031 (nom del fitxer) i els invariants de format del catàleg.
 - **AVÍS:** RN-009, RN-034 i RN-035. No bloqueja. RN-019 i RN-020 són avisos de planificació.
 - **Apte per planificar:** continua regit per RN-017 i RN-018. Si no ho és, la planificació queda bloquejada i el missatge indica què falta.
@@ -133,7 +134,7 @@ data/
 **Amb operació pròpia:**
 - Arxivar i desarxivar: es permeten totes dues (RN-017).
 - `tests_css`: només s'hi afegeixen tests. Un test desat no s'edita; el coach l'accepta o no (`acceptat`).
-- `millors_registres`: només s'hi afegeixen registres o s'actualitzen per prova (RN-007). Un registre desat no s'edita.
+- `millors_registres`: només s'hi afegeixen registres. Un registre desat no s'edita. El millor per prova i piscina és un valor derivat i no es desa.
 
 ## Format JSON
 - Cada fitxer porta `versio_esquema`.
@@ -222,8 +223,12 @@ data/
 - N1 — P: Quins fitxers compten per a la unicitat? → Tots els que es poden llegir, vàlids o no (RN-032, RN-003, RN-034). Una col·lisió identifica tots els implicats. Un fitxer il·legible és un ERROR propi i no hi participa.
 - N3 — P: Quines dades no canvien mai? → `id`, `alias` i `versio_esquema` (només amb una migració). La modificació no els rep com a dada.
 - N3 — P: Què es pot modificar? → `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament` i `volum_setmanal`. La modificació torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res.
-- N3 — P: Quines dades tenen operació pròpia? → Arxivar i desarxivar; `tests_css` (només s'afegeixen; el coach accepta o no); `millors_registres` (s'afegeixen o s'actualitzen per prova). Un test o un registre desat no s'edita.
+- N3 — P: Quines dades tenen operació pròpia? → Arxivar i desarxivar; `tests_css` (només s'afegeixen; el coach accepta o no); `millors_registres` (només s'afegeixen; el millor per prova i piscina és derivat). Un test o un registre desat no s'edita.
 - N3 — P: Es pot canviar `dies_entrenament` o `volum_setmanal` a mitja temporada? → Sí. Replanificar és de la spec 005 (CA-001-84, `[PENDENT spec 005]`).
+- N3 — P: Els millors registres s'actualitzen? → No: només s'afegeixen. El millor per prova i piscina és un valor derivat (el millor temps de la llista) i no es desa. RN-007 (unicitat) queda retirada.
+- Decisió a — P: Es pot desarxivar? → Sí: un nedador pot tornar una temporada posterior (RN-017).
+- Decisió b — P: Es poden canviar `dies_entrenament` i `volum_setmanal` a mitja temporada? → Sí; es torna a planificar amb la configuració nova i la planificació passada es conserva com a registre (CA-001-84, spec 005).
+- Decisió c — P: S'editen els tests CSS i els millors registres desats? → No.
 
 ## Criteris d'acceptació
 - **CA-001-01** — **Donat** un `nedador.json` vàlid, **quan** es carrega i es torna a desar, **aleshores** el contingut desat és equivalent a l'original (mateixos valors; un camp informatiu absent equival a `null`).
@@ -231,7 +236,7 @@ data/
 - **CA-001-03** — **Donat** un nedador sense estils preferents, sense dies d'entrenament o amb `volum_setmanal.min > max`, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp.
 - **CA-001-04** — **Donat** un test CSS amb t400 ≤ t200, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error.
 - **CA-001-05** — **Donats** dos tests CSS acceptats de la mateixa piscina i un de més recent no acceptat, **quan** es demana el vigent per a aquella piscina, **aleshores** s'obté l'acceptat de data més recent.
-- **CA-001-06** — **Donats** dos millors registres amb el mateix estil, distància i piscina, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error.
+- **CA-001-06** — **Donats** dos millors registres amb el mateix estil, distància i piscina, **quan** es carrega, **aleshores** es carrega sense error i el millor registre d'aquella prova i piscina és el de temps menor.
 - **CA-001-07** — **Donat** un millor registre amb temps `1:05.3`, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error de format.
 - **CA-001-08** — **Donada** una participació sense inscripcions, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error.
 - **CA-001-09** — **Donada** una inscripció amb un dia que no és de la competició, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error.
@@ -308,5 +313,5 @@ data/
 - **CA-001-80** — **Donat** un nedador existent, **quan** es modifica amb un valor que dona un ERROR (p. ex. `volum_setmanal.min > max`), **aleshores** no es desa res i el nedador no canvia.
 - **CA-001-81** — **Donat** un nedador arxivat, **quan** es desarxiva, **aleshores** `arxivat` val `false` i la resta del nedador no canvia (RN-017). **Quan** s'arxiva un nedador no arxivat, **aleshores** `arxivat` val `true`.
 - **CA-001-82** — **Donat** un test CSS desat, **quan** s'intenta editar, **aleshores** no es permet i el test no canvia; només es pot afegir un test nou o acceptar-lo.
-- **CA-001-83** — **Donat** un millor registre desat, **quan** s'afegeix un registre d'una prova que ja en té, **aleshores** s'actualitza el de la prova (RN-007); **quan** s'intenta editar un registre desat, **aleshores** no es permet.
+- **CA-001-83** — **Donat** un millor registre desat, **quan** s'afegeix un registre d'una prova que ja en té, **aleshores** el desat es conserva i el nou s'afegeix a la llista; **quan** s'intenta editar un registre desat, **aleshores** no es permet.
 - **CA-001-84** [PENDENT spec 005] — **Donat** un nedador al qual es canvia `dies_entrenament` o `volum_setmanal` a mitja temporada, **quan** es planifica, **aleshores** es torna a planificar amb la configuració nova i la planificació passada es conserva com a registre (des de quina setmana: ho decideix la spec 005).

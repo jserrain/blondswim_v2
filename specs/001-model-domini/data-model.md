@@ -38,7 +38,7 @@ Tipus de camp (spec, § Format JSON): **obligatori** (ha de ser-hi amb valor), *
 | `dies_entrenament` | llista de `Dia`, ≥ 1, sense repetir | sí | CA-001-03, 40 |
 | `volum_setmanal` | `{min, max}` en metres | sí | RN-005 |
 | `tests_css` | llista de `TestCss` | sí (pot ser buida) | RN-006 |
-| `millors_registres` | llista de `MillorRegistre` | sí (pot ser buida) | RN-007, RN-030 |
+| `millors_registres` | llista de `MillorRegistre` | sí (pot ser buida) | RN-030; només s'afegeixen |
 
 L'id no és al fitxer: és el nom de la carpeta.
 
@@ -55,7 +55,7 @@ L'id no és al fitxer: és el nom de la carpeta.
 **DetallProva:** `parcials` (llista de `Temps`: 4 al 400 i 2 al 200 \| null), `bracades_per_llarg` (> 0 \| null), `sr` (> 0 \| null), `rpe` (enter 0–10 \| null). Un `null` no genera cap avís (CA-001-32).
 
 ### MillorRegistre
-`estil`, `distancia`, `piscina`, `temps`, `data` i `competicio` (text lliure). Únic per (estil, distància, piscina) (RN-007). La prova és oficial (RN-030).
+`estil`, `distancia`, `piscina`, `temps`, `data` i `competicio` (text lliure). Pot haver-hi diversos de la mateixa prova i piscina; el millor és derivat. La prova és oficial (RN-030).
 
 ### Competició (`competicions/<AAAA-AA>.json`, catàleg)
 Fitxer: `{versio_esquema, competicions: [...]}`.
@@ -77,6 +77,7 @@ Fitxer: `{versio_esquema, participacions: [...]}`.
 ## Valors derivats (no es desen)
 - `Temporada.inici` i `Temporada.fi` (RN-031).
 - `setmana_iso(data)` (CA-001-18).
+- `millor_registre(nedador, prova, piscina)`: el millor temps de la llista de `millors_registres` (CA-001-06, 83).
 - `proves_objectiu(nedador)`: inscripcions de les participacions A (CA-001-16).
 - `test_vigent(nedador, piscina)`: l'últim test acceptat de la piscina (CA-001-05, 30).
 - CSS i zones: spec 004.
@@ -98,7 +99,7 @@ Una línia JSON per avís: `data_hora` (ISO 8601), `rn`, `fitxer`, `camp`, `valo
 | Modificables | `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal` | torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res (CA-001-79, 80) |
 | Operació pròpia | `arxivat` | arxivar i desarxivar (RN-017; CA-001-81) |
 | Operació pròpia | `tests_css` | només s'afegeixen; un test desat no s'edita; el coach l'accepta (CA-001-30, 82) |
-| Operació pròpia | `millors_registres` | s'afegeixen o s'actualitzen per prova; un registre desat no s'edita (CA-001-83) |
+| Operació pròpia | `millors_registres` | només s'afegeixen; un registre desat no s'edita (CA-001-83) |
 
 Canvi de `dies_entrenament` o `volum_setmanal` a mitja temporada: la 001 el permet; la replanificació és de la spec 005 (CA-001-84).
 
