@@ -11,15 +11,15 @@
   OK     G2-S03 Constitution Check sense caselles buides
   OK     G2-S03 Els 8 principis avaluats
   OK     G2-S04 Cap violació a Complexity Tracking
-  FALLA  G2-S05 13 fitxer(s) de src/ o tests/ canviats respecte de main
+  OK     G2-S05 Sense codi respecte de 6dd0580
   INFO   Tasques: 47
-  FALLA  G2-T01 Format o capa incorrectes: T035 T036 T037 T038 T039 T040 T004 T041 T013 T042 T005 T014 T043 T010 T044 T015 T016 T045 T032 T046 T047 
+  OK     G2-T01 Totes amb ID, capa única i format correcte
   OK     G2-T02 IDs únics
   AVÍS   G2-T02 IDs no consecutius a: 003 035 017 002 033 
   PISTA  G2-T03 Tasques sense ruta de fitxer: T044 T015 T016 
-  FALLA  G2-Q01 CA sense tasca de test: CA-001-55
+  OK     G2-Q01 Tots els CA no pendents tenen tasca de test (75)
   OK     G2-Q02 Cap tasca amb CA inexistent
   OK     G2-Q03 27 RN citades, totes definides
   OK     G2-Q04 Totes les capes del pla tenen tasques
 
-Resultat: 3 FALLA(ES)
+Resultat: cap FALLA
