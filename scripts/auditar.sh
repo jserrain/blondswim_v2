@@ -280,8 +280,8 @@ gate_plan() {
   tasques=$(grep -E '^- \[[ xX]\] T[0-9]' "$T")
   n=$(echo "$tasques" | grep -c 'T')
   info "Tasques: $n"
-  mal=$(echo "$tasques" | grep -vE '^- \[[ xX]\] T[0-9]{3} (\[P\] )?(\[US[0-9]+\] )?\[(domain|application|infrastructure|interfaces|project)\] ' \
-        | grep -oE 'T[0-9]+' | tr '\n' ' ')
+  mal=$(echo "$tasques" | grep -vE '^- \[[ xX]\] T[0-9]{3} (\[P\] )?(\[US[0-9]+[a-z]?\] )?\[(domain|application|infrastructure|interfaces|project)\] ' \
+        | grep -oE '^- \[[ xX]\] T[0-9]+' | grep -oE 'T[0-9]+' | tr '\n' ' ')
   [[ -n "$mal" ]] && falla "G2-T01 Format o capa incorrectes: $mal" || ok "G2-T01 Totes amb ID, capa única i format correcte"
   ids=$(echo "$tasques" | grep -oE '^- \[[ xX]\] T[0-9]{3}' | grep -oE '[0-9]{3}$')
   dup=$(echo "$ids" | sort | uniq -d | tr '\n' ' ')
@@ -295,7 +295,10 @@ gate_plan() {
   local ca_spec ca_pend ca_test c falten="" sobren=""
   ca_spec=$(grep -oE '^[[:space:]]*- \*\*CA-[0-9]{3}[a-z]?-[0-9]{2}\*\*' "$S" | grep -oE '[0-9]{2}\*\*' | tr -d '*' | sort -u)
   ca_pend=$(grep -E '^[[:space:]]*- \*\*CA-.*\[PENDENT spec' "$S" | grep -oE 'CA-[0-9]{3}[a-z]?-[0-9]{2}' | grep -oE '[0-9]{2}$' | sort -u)
-  ca_test=$(echo "$tasques" | grep -E 'Tests? ' | grep "CA-$nnn-" | sed -E "s/.*CA-$nnn-//" | tr -cs '0-9' '\n' | grep -E '^[0-9]{2}$' | sort -u)
+  # Tot el que ve després del primer CA de la línia, sense codi entre `...`, RN, tasques ni prefixos +NN
+  ca_test=$(echo "$tasques" | grep -E 'Tests? ' | grep "CA-$nnn-" \
+            | perl -ne 'if (/CA-'"$nnn"'-(.*)$/) { $_ = $1; s/`[^`]*`//g; s/CA-\d{3}-//g; s/\b(RN|T)-?\d+//g; s/\+\d+//g; print "$_\n" }' \
+            | tr -cs '0-9' '\n' | grep -E '^[0-9]{2}$' | sort -u)
   for c in $ca_spec; do
     echo "$ca_pend" | grep -qx "$c" && continue
     echo "$ca_test" | grep -qx "$c" || falten="$falten CA-$nnn-$c"
