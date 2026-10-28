@@ -288,7 +288,7 @@ gate_plan() {
   [[ -n "$dup" ]] && falla "G2-T02 IDs repetits: $dup" || ok "G2-T02 IDs únics"
   salts=$(echo "$ids" | awk 'NR>1 && $1+0 != prev+1 {printf "%s ", $1} {prev=$1+0}')
   [[ -n "$salts" ]] && avis "G2-T02 IDs no consecutius a: $salts" || ok "G2-T02 IDs consecutius"
-  local sense; sense=$(echo "$tasques" | grep -vE 'src/|tests/|scripts/|docs/|specs/|pyproject|uv add|verify\.sh|quickstart' | grep -oE 'T[0-9]{3}' | tr '\n' ' ')
+  local sense; sense=$(echo "$tasques" | grep -vE 'src/|tests/|scripts/|docs/|specs/|pyproject|uv add|verify\.sh|quickstart' | grep -oE '^- \[[ xX]\] T[0-9]{3}' | grep -oE 'T[0-9]{3}' | tr '\n' ' ')
   [[ -n "$sense" ]] && pista "G2-T03 Tasques sense ruta de fitxer: $sense" || ok "G2-T03 Totes amb ruta"
 
   # Q01-Q02: traçabilitat CA → tasques de test
