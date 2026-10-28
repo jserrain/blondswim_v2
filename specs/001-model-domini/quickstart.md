@@ -13,7 +13,7 @@ bash scripts/verify.sh                       # porta única: ha d'acabar «LLEST
 ```
 
 ## Resultats esperats
-- 46 CA amb almenys un test. CA-001-33, 34 i 38 estan pendents de les specs 004 i 002 i no es comproven.
+- 75 CA amb almenys un test. CA-001-33, 34, 38, 58, 63, 64, 68, 72 i 84 estan pendents de les specs 002, 004 i 005 i no es comproven.
 - `import-linter`: `domain` no importa cap altra capa ni cap dependència externa.
 - `mypy --strict` sense errors.
 
@@ -22,3 +22,7 @@ bash scripts/verify.sh                       # porta única: ha d'acabar «LLEST
 2. Canviar `piscina` a 33 en el catàleg: error que identifica el fitxer, el camp i el valor (CA-001-41).
 3. Inscriure `100 Ei` en una competició de 50 m: error RN-030 (CA-001-42).
 4. Demanar l'aptitud d'un nedador sense participació A: «no», amb el motiu «falta competició A» (CA-001-15).
+5. Dos nedadors amb el mateix correu, un d'ells amb `mobil` sense `+`: no es carrega cap dels dos i l'error identifica tots dos (CA-001-69).
+6. Un `nedador.json` trencat i un de vàlid: el filtre dona un ERROR per a l'UUID del trencat i el vàlid es carrega (CA-001-65, 75).
+7. Un nedador sense `canal_preferent`: es carrega i `data/avisos.jsonl` té una línia `RN-035` amb `decisio: null` (CA-001-57).
+8. Modificar un nedador amb `volum_setmanal.min > max`: no es desa res (CA-001-80).

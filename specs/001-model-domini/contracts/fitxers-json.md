@@ -8,6 +8,8 @@ Interfície externa: fitxers que el coach edita i que genera la importació (spe
 - Dates `AAAA-MM-DD` i temps `m:ss.cc`.
 - `millors_registres` pot tenir diversos registres de la mateixa prova i piscina; el millor és un valor derivat i no es desa.
 - Un camp obligatori absent és error. Un opcional desconegut s'escriu `null`.
+- `mobil` en E.164 (`+34…`); `correu` obligatori i únic (RN-032, RN-033).
+- `canal_preferent`: `correu` o `mobil`. Absent o `null`: avís RN-035. Un altre valor: error de format (CA-001-59).
 
 ## `data/nedadors/<id>/nedador.json`
 ```json

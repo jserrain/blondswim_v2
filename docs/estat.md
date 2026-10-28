@@ -5,7 +5,8 @@ Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és norm
 ## On som
 - Branca: `001-model-domini`. Spec 001 amb G1 i G2 passats; pla i tasques llestos (34 tasques; 84 CA, 9 pendents; 19 CA amb test als markers de `tests/`).
 - Constitució 1.3.0 (G0 r2: passa amb condicions).
-- Fases 1 i 2 (US1) fetes. Següent pas: esmena «contacte del nedador» (ADR, RN-032, CA i tasques US1b, implementació); després, fase 3 (US2, T017–T019).
+- `tasks.md` (47 tasques, 75 CA amb tasca): fetes Setup (T001), Foundational (T003–T010) i US1 (T011–T016), contra la spec anterior. Tasques de la fase US1b (T035–T047) afegides, pendents d'implementar. Decisions D1 i D2 confirmades (`plan.md`).
+- Següent pas: fase US1b (UUID, alias, contacte i validació), que modifica el codi fet (p. ex. `_RE_ID = n[0-9]{4}` a `valors.py`); després, US2 (T017–T019).
 - Durant la implementació, `verify.sh` mostra «Traçabilitat CA» com a AVÍS (CA sense test encara). Passa a bloquejant amb T002, al final.
 
 ## Decisions recents (detall als ADR i a la spec)

@@ -36,11 +36,13 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
 - **Alternatives considered:** un registre per nedador. Descartat: els avisos del catàleg no són de cap nedador, i un sol fitxer es consulta millor.
 
 ## R6. Operacions de gestió
-- **Decision:** casos d'ús a `application`: crear nedador (RN-002), esborrar nedador (sempre error, RN-004), arxivar i desarxivar (RN-017), modificar nedador, afegir test, acceptar test (CA-001-30), afegir un millor registre, esborrar competició (RN-010).
+- **Decision:** casos d'ús a `application`: alta (genera l'id UUID v4 i l'alias `<part>_<sufix>`, reintenta si l'alias col·lisiona, rebutja un ERROR; RN-002, RN-003; CA-001-45, 52, 61, 62, 70), esborrar nedador (sempre error, RN-004), arxivar i desarxivar (RN-017), modificar nedador, afegir test, acceptar test (CA-001-30), afegir un millor registre, esborrar competició (RN-010).
   - Immutables: `id`, `alias`, `versio_esquema`. La modificació no els rep com a dada.
   - Modificables: `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal`. Una modificació torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res.
   - Un test o un millor registre desat no s'edita.
-- **Rationale:** els CA de gestió (21, 24, 25, 30, 37, 45, 53, 79 a 83) necessiten operacions, no només càrrega.
+- **Rationale:** els CA de gestió (21, 25, 30, 37, 45, 52, 53, 61, 62, 70, 79 a 83) necessiten operacions, no només càrrega.
+- **D1 (confirmada) — lectura d'identitat per a la unicitat:** un DTO mínim (`correu`, `alias`, `mobil`, `extra="ignore"`) llegeix els tres camps com a text cru i els normalitza com la validació. Si un camp falta o no és text, aquell nedador no participa a la unicitat d'aquell camp, però sí a la dels altres. «Llegible» = JSON ben format que és un objecte.
+- **D2 (confirmada) — port `GeneradorId`:** `nou() -> IdNedador`, implementat amb `uuid4()` i injectat a l'alta. Detall a `plan.md`, § Decisions de disseny confirmades.
 - **Fora d'abast:** la CLI (`interfaces`). Els casos d'ús es proven directament.
 
 ## R7. Temporada i setmana derivades
