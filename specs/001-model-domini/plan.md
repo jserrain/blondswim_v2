@@ -36,7 +36,7 @@ Sense LLM. El rellotge només s'injecta per registrar avisos.
 
 **Constraints**: domini sense I/O, LLM, rellotge ni dependències externes; escriptura estable byte a byte (CA-001-36); errors en català amb fitxer, camp i valor
 
-**Scale/Scope**: desenes de nedadors i de competicions per temporada; 72 CA, 8 dels quals pendents
+**Scale/Scope**: desenes de nedadors i de competicions per temporada; 84 CA, 9 dels quals pendents
 
 ## Constitution Check
 
@@ -84,7 +84,7 @@ src/blondswim/
 ├── application/
 │   ├── ports.py               # RepositoriNedadors, RepositoriCataleg, RegistreAvisos, Rellotge (Protocols)
 │   ├── carrega.py             # carregar i registrar els avisos
-│   └── gestio.py              # crear, arxivar, esborrar, canviar correu, registrar/acceptar test, esborrar competició
+│   └── gestio.py              # crear, arxivar/desarxivar, esborrar, modificar, afegir/acceptar test, millors registres, esborrar competició
 └── infrastructure/
     ├── json_io.py             # escriptura estable (R3)
     ├── dto.py                 # models Pydantic estrictes (R1)

@@ -12,6 +12,7 @@ Idees per a la propera versió. Una idea per fila. Només passa a la versió nov
 | 1 | 25/10/2026 | Sèrie USRPT: crol a ritme de cursa 100 L | Pendent | Alta |
 | 2 | 25/10/2026 | Definir patrons d'entrenament per enriquir el model | Pendent | Mitjana |
 | 3 | 25/10/2026 | Seguretat quan l'app s'exposi a un endpoint | Pendent | Mitjana |
+| 4 | 28/10/2026 | Replanificar a mitja temporada per canvi de dies o volum | Pendent | Mitjana |
 
 ## Notes
 
@@ -64,6 +65,19 @@ Idees per a la propera versió. Una idea per fila. Només passa a la versió nov
     - Relació compte → nedadors amb rol (coach / nedador), que és la base de l'autorització.
   - Descartat: id derivat d'un hash de l'UUID amb el correu o el mòbil (no afegeix unicitat, trenca la immutabilitat de l'id i hi introdueix una dada personal).
   - Fora d'abast: notificacions push pròpies, gestió de contrasenyes i 2FA propis.
+- **Resultat:** —
+
+### 4. Replanificar a mitja temporada per canvi de dies o volum
+
+- **Font:** G1 r2 de la spec 001 (28/10/2026)
+- **Objectiu:** que un canvi de `dies_entrenament` o `volum_setmanal` a mitja temporada torni a planificar amb la configuració nova
+- **On encaixa:** spec 005 (CA-001-84)
+- **Estat:** Pendent
+- **Prioritat:** Mitjana
+- **Detall:**
+  - La 001 permet el canvi; la planificació passada es conserva com a registre.
+  - Per decidir a la 005: des de quina setmana s'aplica la configuració nova.
+  - Altres canvis del nedador (filtre de validació, camps immutables, operacions de modificació, arxivar i desarxivar) són de la 001.
 - **Resultat:** —
 
 ## Plantilla per a una nota nova

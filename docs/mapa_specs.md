@@ -70,11 +70,11 @@ Convencions de noms:
 |---|---|---|---|
 | 000 | Glossari | Zones (A0, A1, A2, A3, Vel, MPLA, TOLA), notació (`c/`, `d/`, `r/N`), abreviatures, termes de cicle (macro, meso, micro, fase, bloc), classes A/B/C | — (aprovada) |
 | 001 | Model de domini | Nedador (estils preferents, disponibilitat, zones), Temporada, Competició (del nedador), Prova, Inscripció per dia, Prova objectiu (prioritat, marca, objectiu), Setmana (derivada de la data). Invariants i roundtrip JSON | — (aprovada) |
-| 002 | Importació i normalització | CSV de calendari → catàleg; CSV d'inscripcions → inscripcions del nedador (ADR-0013). Regles per a cada irregularitat de `fonts_dades.md`. Informe d'errors; mai valors inventats | Ubicació dels CSV d'entrada; identificació del nedador en importar (id o alias com a argument) |
+| 002 | Importació i normalització | CSV de calendari → catàleg; CSV d'inscripcions → inscripcions del nedador (ADR-0013). Regles per a cada irregularitat de `fonts_dades.md`. Informe d'errors; mai valors inventats. Resum per nivells, codi de sortida i confirmació d'avisos | Ubicació dels CSV d'entrada; identificació del nedador en importar (id o alias com a argument) |
 | 002b | Biblioteca d'exercicis de tècnica | Exercicis per estil confeccionats pel coach, format, metres per exercici, cobertura per estil (ADR-0005) | Format de l'exercici; com es tria per a les proves objectiu |
 | 003 | Periodització | Fases cap enrere des de cada A, blocs càrrega:recuperació, doble pic, finestra insuficient, activació quan la competició és en cap de setmana, tractament de B i C, períodes no disponibles | Model de taper; mínims de fase; regla de doble pic |
 | 004 | Zones i càrrega | CSS → zones; nedador sense CSS; càrrega per RPE de sessió (pendent d'ADR-0009) | Model de càrrega; mode sense zones |
-| 005 | Microcicle | Plantilla per nombre de dies, rols de sessió, repartiment del rang de volum per fase i tipus de setmana | Plantilla per dies; tolerància de volum |
+| 005 | Microcicle | Plantilla per nombre de dies, rols de sessió, repartiment del rang de volum per fase i tipus de setmana. Replanificació per canvi de dies o volum | Plantilla per dies; tolerància de volum |
 | 006 | Composició de sessions | Plantilla (rol + fase) → parts (ADR-0004) → tècnica de la biblioteca → principals segons les proves objectiu i la seva prioritat → volum ajustat; l'LLM només redacta i adapta dins de límits | Punts de judici LLM; activació del principal II; pes per prioritat |
 | 007 | Progressió amb B/C | Resultats, bandes de progressió, alertes | — |
 | 008 | Sortides | Full de piscina, resum setmanal, plantilla de registre | Formats d'E/S |

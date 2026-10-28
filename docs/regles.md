@@ -153,7 +153,8 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 ### RN-011 — Participació d'una competició del catàleg
 - **Tipus:** bloquejant · **Moment:** càrrega
-- **Regla:** cada participació apunta a una competició que existeix al catàleg de la mateixa temporada.- **Missatge:** identifica l'`id_competicio`.
+- **Regla:** cada participació apunta a una competició que existeix al catàleg de la mateixa temporada.
+- **Missatge:** identifica l'`id_competicio`.
 - **Font:** spec 001, ADR-0006.
 - **Coherència:** revisada contra RN-008 i RN-010; sense conflicte.
 

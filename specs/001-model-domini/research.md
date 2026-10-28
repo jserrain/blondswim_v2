@@ -26,15 +26,21 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
 
 ## R5. Errors, avisos i registre
 - **Decision:**
-  - La validació retorna `Resultat(errors, avisos)`. Cada element té `rn`, `fitxer`, `camp`, `valor` i `missatge`. La càrrega acumula els errors per nedador i exclou el nedador amb error; un error del catàleg fa fallar tota la càrrega.
+  - La validació retorna `Resultat(errors, avisos)`. Cada element té `rn` (o «format»), `fitxer`, `camp`, `valor`, `missatge` i acció, i s'identifica per l'alias (o per l'UUID de la carpeta si el fitxer no es pot llegir).
+  - Un sol validador, amb les mateixes regles a l'entrada, a la càrrega i al filtre. El filtre passa per tots els nedadors i no s'atura al primer error.
+  - La càrrega acumula els errors per nedador i exclou el nedador amb error; un error del catàleg fa fallar tota la càrrega.
+  - La unicitat (RN-032, RN-003) i RN-034 es comproven sobre tots els fitxers que es poden llegir, vàlids o no. Una col·lisió identifica tots els implicats. Un fitxer il·legible és un ERROR propi i no hi participa.
   - `application` registra els avisos a través del port `RegistreAvisos`, amb la data i hora del port `Rellotge`.
   - `infrastructure` implementa el registre com a `data/avisos.jsonl` en mode afegir (spec 001, § Registre d'avisos).
 - **Rationale:** el principi IV demana avisos persistents i consultables; el domini continua sense I/O ni rellotge (principi I).
 - **Alternatives considered:** un registre per nedador. Descartat: els avisos del catàleg no són de cap nedador, i un sol fitxer es consulta millor.
 
 ## R6. Operacions de gestió
-- **Decision:** casos d'ús a `application`: crear nedador (RN-002), esborrar nedador (sempre error, RN-004), arxivar, canviar correu, registrar test, acceptar test (CA-001-30), esborrar competició (RN-010).
-- **Rationale:** els CA de gestió (21, 24, 25, 30, 37, 45) necessiten operacions, no només càrrega.
+- **Decision:** casos d'ús a `application`: crear nedador (RN-002), esborrar nedador (sempre error, RN-004), arxivar i desarxivar (RN-017), modificar nedador, afegir test, acceptar test (CA-001-30), afegir o actualitzar un millor registre, esborrar competició (RN-010).
+  - Immutables: `id`, `alias`, `versio_esquema`. La modificació no els rep com a dada.
+  - Modificables: `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal`. Una modificació torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res.
+  - Un test o un millor registre desat no s'edita.
+- **Rationale:** els CA de gestió (21, 24, 25, 30, 37, 45, 53, 79 a 83) necessiten operacions, no només càrrega.
 - **Fora d'abast:** la CLI (`interfaces`). Els casos d'ús es proven directament.
 
 ## R7. Temporada i setmana derivades
@@ -48,5 +54,5 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
 - **Decision:**
   - Un test o més per CA, amb `@pytest.mark.ca("CA-001-nn")`.
   - Els tests de domini van a `tests/unit/` i els de lectura i escriptura de fitxers, a `tests/integration/` amb `tmp_path`.
-  - CA-001-33, 34, 38, 58, 63, 64, 68 i 72 queden exclosos fins que les specs 004 i 002 estiguin aprovades.
+  - CA-001-33, 34, 38, 58, 63, 64, 68, 72 i 84 queden exclosos fins que les specs 004, 002 i 005 estiguin aprovades.
 - **Rationale:** principi VII. La traçabilitat passa de «avis» a «bloquejant» en el primer commit d'implementació (AGENTS.md).

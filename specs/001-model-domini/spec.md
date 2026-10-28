@@ -101,8 +101,11 @@ data/
 - Cap nedador queda en un estat intermedi per culpa de les dades: o es desa o es carrega complet, o no.
 - La 001 només dona el resultat de la validació per nedador i per nivell.
 
+### Un sol validador
+- L'entrada, la càrrega i el filtre apliquen el mateix validador, amb les mateixes regles.
+
 ### A l'entrada
-- ERROR: el nedador no es desa. El missatge indica l'alias, la RN i l'acció que cal fer.
+- ERROR: el nedador no es desa. El missatge indica l'alias, la RN (si n'hi ha) i l'acció que cal fer; un error de format indica el camp.
 - AVÍS: el nedador només es desa si el coach ho confirma explícitament (flux d'importació: spec 002).
 
 ### A la càrrega
@@ -110,8 +113,27 @@ data/
 - ERROR en un fitxer del nedador: aquell nedador no es carrega; la resta de nedadors sí.
 - ERROR en un fitxer del catàleg: falla TOTA la càrrega. Una inscripció que apunta a una competició inexistent (RN-011) és un ERROR només d'aquell nedador.
 - Col·lisió d'unicitat (correu o alias): no es carrega cap dels nedadors implicats.
-- Un nedador exclòs per un ERROR continua comptant per a la unicitat de correu i alias (RN-032, RN-003), per a RN-034 i per a l'alta.
 - AVÍS: es retorna al resultat i es desa al registre d'avisos, sense demanar confirmació.
+
+### Filtre de validació
+- El filtre passa per tots els nedadors i no s'atura al primer error. Un nedador amb un ERROR no es planifica fins que es corregeix.
+- El resultat és per nedador i per camp: alias (o l'UUID de la carpeta si el fitxer no es pot llegir), camp, valor, RN (o «format» si no n'hi ha) i acció.
+- Un nedador pot tenir diversos errors: els llista tots.
+- La unicitat (correu, RN-032; alias, RN-003) i RN-034 es comproven sobre tots els fitxers que es poden llegir, siguin vàlids o no. Una col·lisió identifica tots els nedadors implicats; un ERROR en un altre camp no n'exclou cap de la comprovació. També val per a l'alta.
+- Un fitxer que no es pot llegir és un ERROR propi i no participa a la unicitat.
+
+## Modificació del nedador
+
+**Immutables:** `id`, `alias` i `versio_esquema` (aquest només canvia amb una migració). La modificació no els rep com a dada.
+
+**Modificables:** `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament` i `volum_setmanal`.
+- Una modificació torna a validar el nedador sencer, unicitat inclosa. Si hi ha un ERROR, no es desa res.
+- Canviar `dies_entrenament` o `volum_setmanal` a mitja temporada: la 001 ho permet. La nova planificació és de la spec 005 (CA-001-84).
+
+**Amb operació pròpia:**
+- Arxivar i desarxivar: es permeten totes dues (RN-017).
+- `tests_css`: només s'hi afegeixen tests. Un test desat no s'edita; el coach l'accepta o no (`acceptat`).
+- `millors_registres`: només s'hi afegeixen registres o s'actualitzen per prova (RN-007). Un registre desat no s'edita.
 
 ## Format JSON
 - Cada fitxer porta `versio_esquema`.
@@ -180,19 +202,28 @@ data/
 - P: Què passa amb un nedador que té un error a l'entrada? → No es desa; el missatge indica l'alias, la RN i l'acció que cal fer.
 - P: I amb un avís a l'entrada? → Es mostra al coach i el nedador només es desa si el coach ho confirma explícitament. Rebutjar-lo no és un error.
 - P: Pot un nedador quedar en un estat intermedi per les dades? → No. L'aptitud per planificar continua regida per RN-017 i RN-018.
-- P: Com acaba cada ordre? → El resum per nivells i el codi de sortida són de la spec 002. La 001 només dona el resultat de la validació per nedador i per nivell (CA-001-67).
+- P: Com acaba cada ordre i on són el resum i el codi de sortida? → Són de la spec 002. La 001 només dona el resultat de la validació per nedador i per nivell (CA-001-67).
 - P: Un error d'un nedador fa fallar tota la càrrega? → No: aquell nedador no es carrega i la resta sí. Amb una col·lisió de correu o d'alias no es carrega cap dels implicats. Els avisos de càrrega es desen al registre, sense confirmació.
 - P: Què registra el registre d'avisos sobre la decisió del coach? → El camp `decisio`: `confirmat`, `rebutjat` o `null` (avisos de càrrega i de planificació).
 - P: Falta `canal_preferent`? → Avís (a la càrrega o a la importació; RN-035). Un valor fora de `correu` i `mobil` és un error de format del camp, no de RN-035. Ja no hi ha incidències resolubles ni valor per defecte.
 - P: Què vol dir `[PENDENT spec 002]` a la 001? → Que el criteri depèn del flux d'importació. Les operacions de domini no parlen de CLI: l'alta genera l'id i l'alias i rebutja un ERROR (CA-001-52, 61, 62); la confirmació de l'alias és el CA-001-68; `canal_preferent` no admès en una importació és el CA-001-58. Cap operació permet canviar l'alias (CA-001-53).
-- P: Com s'entren els nedadors? → A la 001 no hi ha entrada per CLI: el format d'entrada de nedadors el defineix la spec 002. Els criteris que en depenen (CA-001-58, 63, 64, 68 i 72) són `[PENDENT spec 002]`, que també ha de definir com es confirmen els avisos en una importació massiva.
+- P: Com s'entren els nedadors i quina n'és la font? → A la 001 no hi ha entrada per CLI: el format d'entrada de nedadors el defineix la spec 002 i no es justifica amb cap ADR. Els criteris que en depenen (CA-001-58, 63, 64, 68 i 72) són `[PENDENT spec 002]`, que també ha de definir com es confirmen els avisos en una importació massiva.
 - P: Un error del catàleg fa fallar un sol nedador? → No: fa fallar TOTA la càrrega. El criteri per nedador només s'aplica als fitxers del nedador. Una inscripció que apunta a una competició inexistent és un ERROR només d'aquell nedador (RN-011).
-- P: Un nedador exclòs per un error compta per a la unicitat? → Sí: continua comptant per a la unicitat de correu i alias (RN-032, RN-003), per a RN-034 i per a l'alta (CA-001-69, 70).
+- P: Un nedador exclòs per un error compta per a la unicitat? → Sí: continua comptant per a la unicitat de correu i alias (RN-032, RN-003), per a RN-034 i per a l'alta (CA-001-69, 70). Matisada per 2026-10-28 (només compten els fitxers que es poden llegir).
 - P: Quin contacte i quin canal preferent? → ADR-0016 substitueix l'ADR-0015. RN-035 és només un avís (`canal_preferent` absent o `null`); un valor no admès és un error de format (CA-001-57 a 59).
-- P: Quina és la font de l'entrada de nedadors? → No es justifica amb cap ADR: el format d'entrada el defineix la spec 002.
-- P: On són el resum i el codi de sortida? → A la spec 002. La 001 només dona el resultat per nedador i per nivell (CA-001-67).
 - P: Què es pot provar a la 001 de l'alta amb un ERROR? → Que no es desa (CA-001-62). El flux d'importació és el CA-001-72, `[PENDENT spec 002]`.
 - P: On es decideix la supressió de dades personals? → Al pendent «ADR de dades personals: supressió» (`docs/estat.md`), quan un nedador ho demani.
+
+### Sessió 2026-10-28 (G1 r2: filtre de validació i modificació)
+
+- N1 — P: Hi ha un validador per a cada moment? → No: un sol validador amb les mateixes regles a l'entrada, a la càrrega i al filtre.
+- N1 — P: El filtre s'atura al primer error? → No: passa per tots els nedadors i per tots els camps. Un nedador amb un ERROR no es planifica fins que es corregeix.
+- N1 — P: Què dona el resultat? → Per nedador i per camp: alias (o l'UUID de la carpeta si el fitxer no es pot llegir), camp, valor, RN (o «format») i acció.
+- N1 — P: Quins fitxers compten per a la unicitat? → Tots els que es poden llegir, vàlids o no (RN-032, RN-003, RN-034). Una col·lisió identifica tots els implicats. Un fitxer il·legible és un ERROR propi i no hi participa.
+- N3 — P: Quines dades no canvien mai? → `id`, `alias` i `versio_esquema` (només amb una migració). La modificació no els rep com a dada.
+- N3 — P: Què es pot modificar? → `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament` i `volum_setmanal`. La modificació torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res.
+- N3 — P: Quines dades tenen operació pròpia? → Arxivar i desarxivar; `tests_css` (només s'afegeixen; el coach accepta o no); `millors_registres` (s'afegeixen o s'actualitzen per prova). Un test o un registre desat no s'edita.
+- N3 — P: Es pot canviar `dies_entrenament` o `volum_setmanal` a mitja temporada? → Sí. Replanificar és de la spec 005 (CA-001-84, `[PENDENT spec 005]`).
 
 ## Criteris d'acceptació
 - **CA-001-01** — **Donat** un `nedador.json` vàlid, **quan** es carrega i es torna a desar, **aleshores** el contingut desat és equivalent a l'original (mateixos valors; un camp informatiu absent equival a `null`).
@@ -247,12 +278,12 @@ data/
 - **CA-001-50** — **Donat** un `nedador.json` sense `alias` o amb `alias: null`, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp (RN-003).
 - **CA-001-51** — **Donat** un nedador amb un `alias` el sufix del qual no coincideix amb el seu id (p. ex. `marc_0000000` en un nedador amb id `3f2a9c1e-…`), **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp (RN-003).
 - **CA-001-52** — **Donat** un nedador nou amb la part d'alias `marc` i un id que comença per `3f2a9c1`, **quan** s'executa l'operació d'alta, **aleshores** l'alias generat és `marc_3f2a9c1` (RN-003).
-- **CA-001-53** — **Donat** un nedador existent, **quan** s'executa l'operació de modificació del nedador, **aleshores** l'`alias` no canvia (RN-003).
+- **CA-001-53** — **Donat** un nedador existent, **quan** es modifica, **aleshores** l'id i l'alias no canvien.
 - **CA-001-54** — **Donat** un nedador sense `mobil` o amb `mobil: null`, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp (RN-033).
 - **CA-001-55** — **Donat** un nedador amb `mobil` `600000000`, `+34 600 000 000` o `+3460`, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp i el valor (RN-033).
 - **CA-001-56** — **Donats** dos nedadors amb el mateix `mobil`, un d'ells arxivat, **quan** es carrega, **aleshores** es carrega sense error i `data/avisos.jsonl` té una línia nova amb `rn: "RN-034"` per a cada nedador, amb el mòbil a `valor` i un `missatge` que identifica els altres nedadors que el comparteixen.
 - **CA-001-57** — **Donat** un nedador amb `canal_preferent: null` o sense el camp, **quan** es carrega, **aleshores** es carrega, genera un avís `RN-035` que identifica l'alias i el camp, es registra a `data/avisos.jsonl` amb `decisio: null` i no demana confirmació.
-- **CA-001-58** [PENDENT spec 002] — **Donat** un nedador nou amb `canal_preferent: "whatsapp"` en un CSV, **quan** s'importa, **aleshores** dona un error de format que indica l'alias, el camp, el valor i les opcions admeses (`correu`, `mobil`), i el nedador no es desa.
+- **CA-001-58** [PENDENT spec 002] — **Donat** un nedador nou amb `canal_preferent: "whatsapp"` en una importació, **quan** s'importa, **aleshores** dona un error de format que indica l'alias, el camp, el valor i les opcions admeses (`correu`, `mobil`), i el nedador no es desa.
 - **CA-001-59** — **Donat** un nedador amb `canal_preferent: "whatsapp"` en un JSON, **quan** es carrega, **aleshores** aquell nedador no es carrega i l'error de format indica l'alias, el camp, el valor i les opcions admeses (`correu`, `mobil`).
 - **CA-001-60** — **Donats** dos nedadors, un amb `canal_preferent: "whatsapp"` i l'altre vàlid, **quan** es carreguen tots dos, **aleshores** el nedador vàlid es carrega i l'altre no.
 - **CA-001-61** — **Donat** un nedador nou l'alias generat del qual ja existeix, **quan** s'executa l'operació d'alta, **aleshores** el sistema genera un id nou i un alias nou (RN-003).
@@ -261,9 +292,21 @@ data/
 - **CA-001-64** [PENDENT spec 002] — **Donat** un nedador nou amb un AVÍS, **quan** el coach el rebutja, **aleshores** el nedador no es desa, el registre d'avisos té una línia amb `decisio: "rebutjat"`.
 - **CA-001-65** — **Donats** dos nedadors, un d'ells amb un `nedador.json` editat a mà que ja no és vàlid (p. ex. `mobil` sense `+`), **quan** es carreguen, **aleshores** aquell nedador no es carrega i l'altre sí.
 - **CA-001-66** — **Donats** dos nedadors amb el mateix correu (o el mateix alias) al JSON, **quan** es carreguen, **aleshores** no es carrega cap dels dos i la resta de nedadors sí.
-- **CA-001-67** — **Donats** diversos nedadors amb errors i avisos, **quan** es validen, **aleshores** el resultat dona, per a cada nedador, els errors (nivell ERROR) i els avisos (nivell AVÍS) per separat.
+- **CA-001-67** — **Donats** diversos nedadors amb errors i avisos, **quan** es validen, **aleshores** el resultat dona, per a cada nedador, els errors (nivell ERROR) i els avisos (nivell AVÍS) per separat, cadascun amb alias, camp, valor, RN (o «format») i acció.
 - **CA-001-68** [PENDENT spec 002] — **Donat** un nedador nou amb l'alias definitiu generat (`marc_3f2a9c1`), **quan** s'importa, **aleshores** el nedador no es desa fins que el coach confirma l'alias (RN-003).
-- **CA-001-69** — **Donats** un nedador exclòs per un ERROR a la càrrega i un altre nedador amb el mateix correu, **quan** es carreguen, **aleshores** hi ha col·lisió i no es carrega cap dels dos (RN-032).
-- **CA-001-70** — **Donat** un nedador exclòs per un ERROR a la càrrega, **quan** s'executa l'operació d'alta d'un nedador nou amb el seu correu, **aleshores** dona un ERROR i el nedador nou no es desa (RN-032).
+- **CA-001-69** — **Donats** un nedador amb un ERROR en un altre camp (p. ex. `mobil` sense `+`) i un altre nedador amb el mateix correu, tots dos amb el fitxer llegible, **quan** es carreguen, **aleshores** hi ha col·lisió, no es carrega cap dels dos i l'error de col·lisió identifica tots dos (RN-032).
+- **CA-001-70** — **Donat** un nedador amb un ERROR en un altre camp i el fitxer llegible, **quan** s'executa l'operació d'alta d'un nedador nou amb el seu correu, **aleshores** dona un ERROR i el nedador nou no es desa (RN-032).
 - **CA-001-71** — **Donat** un fitxer de catàleg amb un nom que no segueix RN-031 (p. ex. `2026-28.json`), **quan** es carrega, **aleshores** falla TOTA la càrrega i dona un error que identifica el fitxer.
 - **CA-001-72** [PENDENT spec 002] — **Donada** una importació amb un nedador amb un ERROR, **quan** s'importa, **aleshores** aquell nedador no es desa i el flux d'importació en presenta l'error segons la spec 002.
+- **CA-001-73** — **Donat** un nedador amb diversos errors (p. ex. `mobil` sense `+` i `estils_preferents` buit), **quan** es valida, **aleshores** el resultat els llista tots, cadascun amb alias, camp, valor, RN (o «format») i acció.
+- **CA-001-74** — **Donats** diversos nedadors, un d'ells amb un ERROR, **quan** s'executa el filtre, **aleshores** passa per tots, no s'atura al primer error i el nedador amb l'ERROR no es planifica fins que es corregeix.
+- **CA-001-75** — **Donat** un fitxer de nedador que no es pot llegir (p. ex. JSON trencat), **quan** s'executa el filtre, **aleshores** dona un ERROR propi que l'identifica per l'UUID de la carpeta, i el fitxer no participa a la unicitat.
+- **CA-001-76** — **Donats** dos nedadors amb el mateix alias, un d'ells amb un ERROR en un altre camp, **quan** es valida, **aleshores** hi ha col·lisió i l'error identifica tots dos (RN-003).
+- **CA-001-77** — **Donats** dos nedadors amb el mateix `mobil`, un d'ells amb un ERROR en un altre camp, **quan** es valida, **aleshores** genera l'avís RN-034 per a cada nedador amb el fitxer llegible, amb un `missatge` que identifica els altres (RN-034).
+- **CA-001-78** — **Donat** un mateix nedador amb un ERROR, **quan** s'entra, es carrega i passa pel filtre, **aleshores** els tres moments en donen el mateix resultat.
+- **CA-001-79** — **Donat** un nedador existent, **quan** es modifica `correu` amb el d'un altre nedador, **aleshores** es torna a validar el nedador sencer, unicitat inclosa, i dona un ERROR (RN-032).
+- **CA-001-80** — **Donat** un nedador existent, **quan** es modifica amb un valor que dona un ERROR (p. ex. `volum_setmanal.min > max`), **aleshores** no es desa res i el nedador no canvia.
+- **CA-001-81** — **Donat** un nedador arxivat, **quan** es desarxiva, **aleshores** `arxivat` val `false` i la resta del nedador no canvia (RN-017). **Quan** s'arxiva un nedador no arxivat, **aleshores** `arxivat` val `true`.
+- **CA-001-82** — **Donat** un test CSS desat, **quan** s'intenta editar, **aleshores** no es permet i el test no canvia; només es pot afegir un test nou o acceptar-lo.
+- **CA-001-83** — **Donat** un millor registre desat, **quan** s'afegeix un registre d'una prova que ja en té, **aleshores** s'actualitza el de la prova (RN-007); **quan** s'intenta editar un registre desat, **aleshores** no es permet.
+- **CA-001-84** [PENDENT spec 005] — **Donat** un nedador al qual es canvia `dies_entrenament` o `volum_setmanal` a mitja temporada, **quan** es planifica, **aleshores** es torna a planificar amb la configuració nova i la planificació passada es conserva com a registre (des de quina setmana: ho decideix la spec 005).

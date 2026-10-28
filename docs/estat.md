@@ -24,8 +24,12 @@ Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és norm
 - Tasques per al bloc US1b de `tasks.md` (encara no afegides):
   - adaptar la càrrega al criteri per nedador;
   - camp «decisió» al registre d'avisos;
-  - unicitat amb nedadors exclosos;
-  - RN-035 només avís; valor no admès com a error de format.
+  - unicitat sobre els fitxers llegibles, vàlids o no;
+  - RN-035 només avís; valor no admès com a error de format;
+  - filtre de validació (un sol validador, tots els nedadors, resultat per camp, fitxer il·legible);
+  - camps immutables (`id`, `alias`, `versio_esquema`) i modificables;
+  - operacions de modificació (nedador sencer revalidat; tests i millors registres només s'afegeixen);
+  - arxivar i desarxivar.
 - Spec 002: abast reduït (sense històric), àlies «lliure» → `Cr`, CSV o Excel.
 
 ## Flux de treball

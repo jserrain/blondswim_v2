@@ -82,18 +82,31 @@ Fitxer: `{versio_esquema, participacions: [...]}`.
 - CSS i zones: spec 004.
 
 ## Validació (nivells)
-1. **ERROR / AVÍS per nedador** (entrada i càrrega; spec, § Validació). Inclou les regles que creuen fitxers: RN-003, RN-032 i RN-034 entre nedadors, RN-011 amb el catàleg. Un ERROR en un fitxer del nedador deixa fora aquell nedador (a la càrrega, tots els implicats en una col·lisió); un nedador exclòs continua comptant per a la unicitat. Un ERROR en un fitxer del catàleg (RN-008) fa fallar TOTA la càrrega. Un AVÍS no exclou ningú.
-2. **Aptitud per planificar:** RN-017 i RN-018 són motius de bloqueig; RN-019 i RN-020 són avisos.
+1. **ERROR / AVÍS per nedador** (entrada, càrrega i filtre, amb un sol validador; spec, § Validació). Inclou les regles que creuen fitxers: RN-003, RN-032 i RN-034 entre nedadors, RN-011 amb el catàleg. Un ERROR en un fitxer del nedador deixa fora aquell nedador (a la càrrega, tots els implicats en una col·lisió). La unicitat i RN-034 es comproven sobre tots els fitxers que es poden llegir, vàlids o no; una col·lisió identifica tots els implicats. Un fitxer que no es pot llegir és un ERROR propi i no hi participa. Un ERROR en un fitxer del catàleg (RN-008) fa fallar TOTA la càrrega. Un AVÍS no exclou ningú.
+2. **Filtre:** passa per tots els nedadors i no s'atura al primer error; un nedador amb un ERROR no es planifica fins que es corregeix.
+3. **Aptitud per planificar:** RN-017 i RN-018 són motius de bloqueig; RN-019 i RN-020 són avisos.
 
-Resultat: `Resultat(errors, avisos)` per nedador (research R5).
+Resultat: `Resultat(errors, avisos)` per nedador (research R5). Cada element: identificador (alias, o l'UUID de la carpeta si el fitxer no es pot llegir), camp, valor, RN (o «format») i acció.
 
 ## Registre d'avisos (`data/avisos.jsonl`)
 Una línia JSON per avís: `data_hora` (ISO 8601), `rn`, `fitxer`, `camp`, `valor`, `missatge`, `id_nedador` (o `null`), `decisio` (`confirmat`, `rebutjat` o `null`). `null` per als avisos de càrrega i de planificació. Només s'hi afegeix (CA-001-47, 48, 63, 64).
 
+## Dades immutables i modificables (nedador)
+| Tipus | Camps | Regla |
+|---|---|---|
+| Immutables | `id`, `alias`, `versio_esquema` | `versio_esquema` només canvia amb una migració; la modificació no els rep com a dada (CA-001-53) |
+| Modificables | `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal` | torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res (CA-001-79, 80) |
+| Operació pròpia | `arxivat` | arxivar i desarxivar (RN-017; CA-001-81) |
+| Operació pròpia | `tests_css` | només s'afegeixen; un test desat no s'edita; el coach l'accepta (CA-001-30, 82) |
+| Operació pròpia | `millors_registres` | s'afegeixen o s'actualitzen per prova; un registre desat no s'edita (CA-001-83) |
+
+Canvi de `dies_entrenament` o `volum_setmanal` a mitja temporada: la 001 el permet; la replanificació és de la spec 005 (CA-001-84).
+
 ## Transicions d'estat
 | Entitat | Transició | Regla |
 |---|---|---|
-| Nedador | creat → arxivat | RN-004, RN-017; no hi ha transició inversa en aquesta spec |
+| Nedador | creat → arxivat | RN-004, RN-017; CA-001-81 |
+| Nedador | arxivat → desarxivat | RN-017; CA-001-81 |
 | Nedador | esborrar | sempre error (RN-004, CA-001-37) |
-| TestCss | registrat (`acceptat: false`) → acceptat | CA-001-30; canvia el test vigent |
+| TestCss | registrat (`acceptat: false`) → acceptat | CA-001-30; canvia el test vigent. Un test desat no s'edita (CA-001-82) |
 | Competició | esborrar | error si té participacions (RN-010) |
