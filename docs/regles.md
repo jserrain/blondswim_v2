@@ -19,7 +19,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-004 | Els nedadors no s'esborren | bloquejant | gestió | spec 001 |
 | RN-005 | Rang de volum setmanal | bloquejant | càrrega | spec 001 |
 | RN-006 | Coherència del test CSS | bloquejant | càrrega | spec 001 |
-| RN-007 | Unicitat dels millors registres (Retirada) | — | — | spec 001 |
+| RN-007 | Un millor registre per prova i piscina | bloquejant | càrrega, gestió | spec 001 |
 | RN-008 | Unicitat de l'id de competició | bloquejant | càrrega | spec 001, ADR-0006 |
 | RN-009 | Seu desconeguda | avís | càrrega | spec 001 |
 | RN-010 | Competició amb participacions | bloquejant | gestió | ADR-0006 |
@@ -44,10 +44,10 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-029 | Canvi de període de piscina sense test | avís | planificació | spec 004 |
 | RN-030 | Prova oficial segons la piscina | bloquejant | càrrega | spec 001 |
 | RN-031 | Temporada de natació | bloquejant | càrrega | spec 001 |
-| RN-032 | Correu del nedador | bloquejant | càrrega | spec 001 |
-| RN-033 | Mòbil del nedador | bloquejant | càrrega | spec 001 |
-| RN-034 | Mòbil compartit | avís | càrrega | spec 001 |
-| RN-035 | Canal preferent absent | avís | càrrega, importació | spec 001 |
+| RN-032 | Correu del nedador | bloquejant | càrrega, gestió | spec 001, ADR-0017 |
+| RN-033 | Mòbil del nedador (Retirada) | — | — | ADR-0017 |
+| RN-034 | Mòbil compartit (Retirada) | — | — | ADR-0017 |
+| RN-035 | Canal preferent absent | avís | càrrega, importació | spec 001, ADR-0017 |
 
 ## Nedador
 
@@ -91,36 +91,32 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Font:** spec 001.
 - **Coherència:** revisada contra RN-020; un test incoherent no compta com a test. Sense conflicte.
 
-### RN-007 — Unicitat dels millors registres (Retirada)
-- **Estat:** Retirada (spec 001, G1 r2, 2026-10-28). Els `millors_registres` només s'afegeixen; pot haver-hi diversos registres de la mateixa prova i piscina. El millor registre per prova i piscina és un valor derivat (el millor temps de la llista) i no es desa. No es reutilitza l'ID.
+### RN-007 — Un millor registre per prova i piscina
+- **Tipus:** bloquejant · **Moment:** càrrega, gestió
+- **Regla:** `millors_registres` té com a màxim un registre per prova (`{estil, distancia}`) i piscina, i és sempre de competició: `competicio` és obligatori i és l'id d'una competició del catàleg (qualsevol temporada), amb la mateixa piscina que el registre (si no, ERROR). En afegir-ne un d'una prova i piscina que ja en té, si el temps és menor que el desat, el substitueix; si és igual o pitjor, no es fa res (ni error ni avís). Dos registres de la mateixa prova i piscina en un fitxer són un ERROR. Els tests CSS no segueixen aquesta regla: es desen tots, per estudiar-ne l'evolució.
+- **Missatge:** identifica la prova i la piscina (o el camp `competicio` i el valor).
+- **Font:** spec 001.
+- **Coherència:** revisada contra RN-006 (els tests CSS no es substitueixen) i RN-030 (la prova ha de ser oficial). Estat: reinstaurada el 2026-10-29 amb el contingut esmenat; havia estat retirada el 2026-10-28 (G1 r2) quan el millor registre era derivat. Sense conflicte.
 
 ### RN-032 — Correu del nedador
-- **Tipus:** bloquejant · **Moment:** càrrega
-- **Regla:** tot nedador té un `correu` no buit i sense espais. El correu és únic entre tots els nedadors, arxivats inclosos, sense distingir majúscules.
-- **Missatge:** identifica el camp, o els ids dels nedadors que comparteixen correu.
-- **Font:** spec 001.
-- **Coherència:** revisada contra RN-002 (l'id no depèn del correu), RN-003 (l'alias és un identificador a part) i RN-004 (els arxivats compten). Sense conflicte.
+- **Tipus:** bloquejant · **Moment:** càrrega, gestió
+- **Regla:** tot nedador té un `correu` obligatori, únic entre tots els nedadors (arxivats inclosos) i intransferible. Es normalitza (sense espais als extrems, en minúscules) abans de validar-lo i de desar-lo. Format (ERROR): exactament una «@», part local no buida, domini amb almenys un punt i un TLD de 2 lletres o més, sense espais, 254 caràcters com a màxim. És una regla simple al domini, sense llibreries externes. Es pot modificar (l'id no canvia, RN-002): el correu nou passa format i unicitat, i l'antic queda lliure.
+- **Missatge:** identifica el camp i el valor, o els ids dels nedadors que comparteixen correu.
+- **Font:** spec 001, ADR-0017.
+- **Coherència:** revisada contra RN-002 (l'id no depèn del correu i no canvia quan el correu canvia), RN-003 (l'alias és un identificador a part) i RN-004 (els arxivats compten). La unicitat només s'aplica a correu i alias. Sense conflicte.
 
-### RN-033 — Mòbil del nedador
-- **Tipus:** bloquejant · **Moment:** càrrega
-- **Regla:** tot nedador té un `mobil` en format E.164: `+` seguit de 8 a 15 dígits, sense espais ni separadors.
-- **Missatge:** identifica el camp i el valor.
-- **Font:** spec 001, ADR-0016.
-- **Coherència:** revisada contra RN-032 (el correu continua sent l'única dada de contacte única) i RN-034. Sense conflicte.
+### RN-033 — Mòbil del nedador (Retirada)
+- **Estat:** Retirada (ADR-0017, 2026-10-29). El `mobil` no té format, unicitat ni avís. No es reutilitza l'ID.
 
-### RN-034 — Mòbil compartit
-- **Tipus:** avís · **Moment:** càrrega
-- **Regla:** si dos o més nedadors, arxivats inclosos, tenen el mateix `mobil`, es genera un avís per a cada nedador afectat. No bloqueja.
-- **Missatge:** el mòbil (a `valor`) i els ids dels altres nedadors que el comparteixen.
-- **Font:** spec 001, ADR-0016.
-- **Coherència:** revisada contra RN-004 (els arxivats compten, com a RN-032) i RN-033. Sense conflicte.
+### RN-034 — Mòbil compartit (Retirada)
+- **Estat:** Retirada (ADR-0017, 2026-10-29). Compartir el `mobil` entre nedadors no genera cap avís. No es reutilitza l'ID.
 
 ### RN-035 — Canal preferent absent
 - **Tipus:** avís · **Moment:** càrrega, importació
 - **Regla:** un `canal_preferent` absent o `null` genera un avís. No bloqueja. Un valor fora de `correu` i `mobil` no és d'aquesta regla: és un error de format del camp (spec 001, § Entitats).
 - **Missatge:** identifica l'alias i el camp.
-- **Font:** spec 001, ADR-0016.
-- **Coherència:** revisada contra RN-032 i RN-033: tots dos canals existeixen sempre, de manera que qualsevol valor admès és utilitzable. No hi ha cap valor per defecte (principi V). Sense conflicte.
+- **Font:** spec 001, ADR-0017.
+- **Coherència:** revisada contra RN-032: `correu` i `mobil` són obligatoris, de manera que tots dos canals existeixen sempre i qualsevol valor admès és utilitzable. No hi ha cap valor per defecte (principi V). Sense conflicte.
 
 ## Catàleg de competicions
 
@@ -140,10 +136,10 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 ### RN-010 — Competició amb participacions
 - **Tipus:** bloquejant · **Moment:** gestió
-- **Regla:** no es pot esborrar una competició del catàleg que tingui participacions.
-- **Missatge:** identifica els nedadors que hi participen.
-- **Font:** ADR-0006.
-- **Coherència:** revisada contra RN-011; garanteix que cap participació no queda òrfena. Sense conflicte.
+- **Regla:** no es pot esborrar una competició del catàleg que tingui participacions (inscripcions) ni que sigui referenciada per un millor registre d'algun nedador.
+- **Missatge:** identifica els nedadors afectats.
+- **Font:** ADR-0006, spec 001 (esmena 2026-10-29).
+- **Coherència:** revisada contra RN-011 i RN-007; garanteix que cap participació ni cap millor registre no queda òrfena. Sense conflicte.
 
 ## Inscripcions
 

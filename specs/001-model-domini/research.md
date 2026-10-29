@@ -22,7 +22,11 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
 
 ## R4. Temps `m:ss.cc`
 - **Decision:** objecte de valor `Temps` amb centèsimes enteres. Parseja `^\d+:[0-5]\d\.\d{2}$` i formata sempre amb dues xifres de centèsimes.
-- **Rationale:** compara sense errors de coma flotant (RN-006: t400 > t200) i rebutja `1:05.3` (CA-001-07).
+- **Rationale:** compara sense errors de coma flotant (RN-006: t400 > t200; RN-007: un temps menor substitueix el millor registre) i rebutja `1:05.3` (CA-001-07).
+- **Alternatives considered:**
+  - `float` de segons: descartat; errors de coma flotant en comparar i en tornar a escriure.
+  - `datetime.timedelta`: descartat; no imposa el format `m:ss.cc` ni les dues xifres de centèsimes.
+  - Comparar el text: descartat; `10:00.00` quedaria abans de `9:59.00`.
 
 ## R5. Errors, avisos i registre
 - **Decision:**
@@ -36,12 +40,17 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
 - **Alternatives considered:** un registre per nedador. Descartat: els avisos del catàleg no són de cap nedador, i un sol fitxer es consulta millor.
 
 ## R6. Operacions de gestió
-- **Decision:** casos d'ús a `application`: alta (genera l'id UUID v4 i l'alias `<part>_<sufix>`, reintenta si l'alias col·lisiona, rebutja un ERROR; RN-002, RN-003; CA-001-45, 52, 61, 62, 70), esborrar nedador (sempre error, RN-004), arxivar i desarxivar (RN-017), modificar nedador, afegir test, acceptar test (CA-001-30), afegir un millor registre, esborrar competició (RN-010).
+- **Decision:** casos d'ús a `application`: alta (genera l'id UUID v4 i l'alias `<part>_<sufix>`, reintenta si l'alias col·lisiona, rebutja un ERROR; RN-002, RN-003; CA-001-45, 52, 61, 62, 70), esborrar nedador (sempre error, RN-004), arxivar i desarxivar (RN-017), modificar nedador, afegir test, acceptar test (CA-001-30), afegir un millor registre (substitueix el desat si el temps és menor; si és igual o pitjor, no fa res; RN-007), esborrar competició (RN-010).
   - Immutables: `id`, `alias`, `versio_esquema`. La modificació no els rep com a dada.
   - Modificables: `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal`. Una modificació torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res.
   - Un test o un millor registre desat no s'edita.
-- **Rationale:** els CA de gestió (21, 25, 30, 37, 45, 52, 53, 61, 62, 70, 79 a 83) necessiten operacions, no només càrrega.
-- **D1 (confirmada) — lectura d'identitat per a la unicitat:** un DTO mínim (`correu`, `alias`, `mobil`, `extra="ignore"`) llegeix els tres camps com a text cru i els normalitza com la validació. Si un camp falta o no és text, aquell nedador no participa a la unicitat d'aquell camp, però sí a la dels altres. «Llegible» = JSON ben format que és un objecte.
+- **Rationale:** els CA de gestió (21, 25, 30, 37, 45, 52, 53, 61, 62, 70, 79 a 83, 88, 89) necessiten operacions, no només càrrega.
+- **Alternatives considered:**
+  - Una operació genèrica de desament que accepti qualsevol canvi: descartada; permetria canviar l'id o l'alias i editar tests i registres desats.
+  - Permetre editar tests i registres desats: descartat (decisió c, 2026-10-28).
+  - Desar tots els millors registres i derivar el millor: descartat el 2026-10-29 (decisió B); un sol registre de competició per prova i piscina és la dada que el coach consulta.
+  - Casos d'ús dins de les entitats del domini: descartat; necessiten repositoris i generador d'id, i el domini no fa I/O.
+- **D1 (confirmada) — lectura d'identitat per a la unicitat:** un DTO mínim (`correu`, `alias`, `extra="ignore"`) llegeix els dos camps com a text cru i els normalitza com la validació. Si un camp falta o no és text, aquell nedador no participa a la unicitat d'aquell camp, però sí a la de l'altre. «Llegible» = JSON ben format que és un objecte.
 - **D2 (confirmada) — port `GeneradorId`:** `nou() -> IdNedador`, implementat amb `uuid4()` i injectat a l'alta. Detall a `plan.md`, § Decisions de disseny confirmades.
 - **Fora d'abast:** la CLI (`interfaces`). Els casos d'ús es proven directament.
 
@@ -49,12 +58,16 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
 - **Decision:**
   - `Temporada.de_codi("AAAA-AA")` valida el nom (RN-031) i calcula `inici` i `fi`.
   - `setmana_iso(data)` fa servir `date.isocalendar()`.
-  - Res d'això es desa.
-- **Rationale:** són valors derivats (principi V) i el rellotge no hi intervé.
+  - Res d'això es desa. L'inici i el fi de temporada són una definició (RN-031); la setmana és una consulta.
+- **Rationale:** són valors derivats o definicions (principi V) i el rellotge no hi intervé.
+- **Alternatives considered:**
+  - Desar `temporada.json` amb l'inici i el fi: descartat; duplicaria el que ja diu el nom de la carpeta.
+  - Calcular la setmana amb una fórmula pròpia: descartat; `isocalendar()` ja implementa ISO 8601 i evita els errors de canvi d'any.
+  - Desar la setmana (`AAAA-Www`) al fitxer: descartat; es calcula de la data (CA-001-18).
 
 ## R8. Proves de la traçabilitat
 - **Decision:**
   - Un test o més per CA, amb `@pytest.mark.ca("CA-001-nn")`.
   - Els tests de domini van a `tests/unit/` i els de lectura i escriptura de fitxers, a `tests/integration/` amb `tmp_path`.
   - CA-001-33, 34, 38, 58, 63, 64, 68, 72 i 84 queden exclosos fins que les specs 004, 002 i 005 estiguin aprovades.
-- **Rationale:** principi VII. La traçabilitat passa de «avis» a «bloquejant» en el primer commit d'implementació (AGENTS.md).
+- **Rationale:** principi VII. La traçabilitat és «avis» durant la implementació i passa a «bloquejant» quan tots els criteris de la primera spec implementada tenen test (AGENTS.md); és l'última tasca, T002.

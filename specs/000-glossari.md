@@ -140,27 +140,27 @@ Les lletres soltes C/E/B/P i «IM» (= Ei) no són codis canònics; només són 
   - Sortida des de l'aigua, sense salt.
 
 ## Criteris d'acceptació
-- **CA-000-01** — **Donat** el catàleg de zones, **quan** es llista, **aleshores** conté exactament A0, A1, A2, A3, TOLA, MPLA i Vel.
-- **CA-000-02** — **Donat** qualsevol codi canònic, **quan** es converteix a text i es torna a llegir, **aleshores** s'obté el mateix valor.
-- **CA-000-03** — **Donat** un codi no canònic (per exemple, `Mpla` o `C`), **quan** el domini el llegeix, **aleshores** el rebutja amb un error, sense interpretar-lo ni assignar-li cap valor per defecte.
-- **CA-000-04** — **Donats** tots els codis del glossari, **quan** es comparen, **aleshores** no n'hi ha dos d'iguals amb significats diferents.
-- **CA-000-05** — **Donada** una sèrie sense zona (ni seqüència AeM) o sense descans, **quan** es valida, **aleshores** és invàlida (error bloquejant).
-- **CA-000-06** — **Donada** una sèrie generada pel sistema, **quan** es valida, **aleshores** el descans és de tipus `d/`.
-- **CA-000-07** — **Donada** la durada `1:45`, **quan** es llegeix, **aleshores** val 105 s. **Donada** la durada `45`, **quan** es llegeix, **aleshores** es rebutja.
-- **CA-000-08** — **Donada** una sèrie `Ps` sense estil, **quan** es valida, **aleshores** és invàlida.
-- **CA-000-09** — **Donada** una sèrie sense patró de ritme, **quan** es llegeix, **aleshores** el patró és constant.
+- **CA-000-01** [PENDENT spec 004] — **Donat** el catàleg de zones, **quan** es llista, **aleshores** conté exactament A0, A1, A2, A3, TOLA, MPLA i Vel.
+- **CA-000-02** [PENDENT spec 006] — **Donat** qualsevol codi canònic, **quan** es converteix a text i es torna a llegir, **aleshores** s'obté el mateix valor.
+- **CA-000-03** [PENDENT spec 006] — **Donat** un codi no canònic (per exemple, `Mpla` o `C`), **quan** el domini el llegeix, **aleshores** el rebutja amb un error, sense interpretar-lo ni assignar-li cap valor per defecte.
+- **CA-000-04** [PENDENT spec 006] — **Donats** tots els codis del glossari, **quan** es comparen, **aleshores** no n'hi ha dos d'iguals amb significats diferents.
+- **CA-000-05** [PENDENT spec 006] — **Donada** una sèrie sense zona (ni seqüència AeM) o sense descans, **quan** es valida, **aleshores** és invàlida (error bloquejant).
+- **CA-000-06** [PENDENT spec 006] — **Donada** una sèrie generada pel sistema, **quan** es valida, **aleshores** el descans és de tipus `d/`.
+- **CA-000-07** [PENDENT spec 006] — **Donada** la durada `1:45`, **quan** es llegeix, **aleshores** val 105 s. **Donada** la durada `45`, **quan** es llegeix, **aleshores** es rebutja.
+- **CA-000-08** [PENDENT spec 006] — **Donada** una sèrie `Ps` sense estil, **quan** es valida, **aleshores** és invàlida.
+- **CA-000-09** [PENDENT spec 006] — **Donada** una sèrie sense patró de ritme, **quan** es llegeix, **aleshores** el patró és constant.
 - **CA-000-10** — **Donat** un millor registre sense piscina, **quan** es valida, **aleshores** és invàlid.
-- **CA-000-11** — **Donada** una sèrie AeM de 4 repeticions amb una seqüència de 3 zones, **quan** es valida, **aleshores** és invàlida.
-- **CA-000-12** — **Donada** una sèrie AeM amb una seqüència que no és creixent (per exemple, A2-A1-A3-Màx), **quan** es valida, **aleshores** és invàlida.
-- **CA-000-13** — **Donada** una sèrie amb `Màx` fora d'una seqüència AeM i fora de la sessió de test CSS, **quan** es valida, **aleshores** és invàlida (RN-027).
-- **CA-000-14** — **Donada** una sèrie generada pel sistema amb una seqüència AeM, **quan** es valida, **aleshores** és invàlida.
-- **CA-000-15** — **Donada** una sèrie a A0, A1, A2 o A3 amb descans `d/×N`, **quan** es valida, **aleshores** és invàlida.
-- **CA-000-16** — **Donat** el descans `d/×0`, **quan** es llegeix, **aleshores** es rebutja.
-- **CA-000-17** — **Donada** una sessió de test CSS amb `400 Cr Màx` al principal I i `200 Cr Màx` al principal II, **quan** es valida, **aleshores** és vàlida (RN-027).
-- **CA-000-18** — **Donada** una sèrie amb trams que no sumen la distància de la repetició (per exemple, `4x100 Cr trams(25 A2, 25 A3, 25 A2) d/0:30`), **quan** es valida, **aleshores** és invàlida.
-- **CA-000-19** — **Donada** una sèrie amb un tram a `Màx`, **quan** es valida, **aleshores** és invàlida.
-- **CA-000-20** — **Donada** una sèrie amb trams i patró, **quan** es valida, **aleshores** és invàlida.
-- **CA-000-21** — **Donada** una sèrie amb trams i un tram a Vel amb descans `d/×2`, **quan** es valida, **aleshores** és vàlida (RN-024).
-- **CA-000-22** — **Donada** una sèrie amb trams, cap a TOLA, MPLA o Vel, i descans `d/×2`, **quan** es valida, **aleshores** és invàlida (RN-024).
-- **CA-000-23** — **Donat** el patró `regressiu`, `fartlek` o `progressiu` escrit com a codi, **quan** es llegeix, **aleshores** es rebutja. Els codis canònics són `prog` i `neg`.
-- **CA-000-24** — **Donada** una sèrie amb un patró que passa a una altra zona (per exemple, `4x100 Cr A2 prog A3 d/0:20`), **quan** es valida, **aleshores** és invàlida, sigui per format o per validació.
+- **CA-000-11** [PENDENT spec 006] — **Donada** una sèrie AeM de 4 repeticions amb una seqüència de 3 zones, **quan** es valida, **aleshores** és invàlida.
+- **CA-000-12** [PENDENT spec 006] — **Donada** una sèrie AeM amb una seqüència que no és creixent (per exemple, A2-A1-A3-Màx), **quan** es valida, **aleshores** és invàlida.
+- **CA-000-13** [PENDENT spec 006] — **Donada** una sèrie amb `Màx` fora d'una seqüència AeM i fora de la sessió de test CSS, **quan** es valida, **aleshores** és invàlida (RN-027).
+- **CA-000-14** [PENDENT spec 006] — **Donada** una sèrie generada pel sistema amb una seqüència AeM, **quan** es valida, **aleshores** és invàlida.
+- **CA-000-15** [PENDENT spec 006] — **Donada** una sèrie a A0, A1, A2 o A3 amb descans `d/×N`, **quan** es valida, **aleshores** és invàlida.
+- **CA-000-16** [PENDENT spec 006] — **Donat** el descans `d/×0`, **quan** es llegeix, **aleshores** es rebutja.
+- **CA-000-17** [PENDENT spec 006] — **Donada** una sessió de test CSS amb `400 Cr Màx` al principal I i `200 Cr Màx` al principal II, **quan** es valida, **aleshores** és vàlida (RN-027).
+- **CA-000-18** [PENDENT spec 006] — **Donada** una sèrie amb trams que no sumen la distància de la repetició (per exemple, `4x100 Cr trams(25 A2, 25 A3, 25 A2) d/0:30`), **quan** es valida, **aleshores** és invàlida.
+- **CA-000-19** [PENDENT spec 006] — **Donada** una sèrie amb un tram a `Màx`, **quan** es valida, **aleshores** és invàlida.
+- **CA-000-20** [PENDENT spec 006] — **Donada** una sèrie amb trams i patró, **quan** es valida, **aleshores** és invàlida.
+- **CA-000-21** [PENDENT spec 006] — **Donada** una sèrie amb trams i un tram a Vel amb descans `d/×2`, **quan** es valida, **aleshores** és vàlida (RN-024).
+- **CA-000-22** [PENDENT spec 006] — **Donada** una sèrie amb trams, cap a TOLA, MPLA o Vel, i descans `d/×2`, **quan** es valida, **aleshores** és invàlida (RN-024).
+- **CA-000-23** [PENDENT spec 006] — **Donat** el patró `regressiu`, `fartlek` o `progressiu` escrit com a codi, **quan** es llegeix, **aleshores** es rebutja. Els codis canònics són `prog` i `neg`.
+- **CA-000-24** [PENDENT spec 006] — **Donada** una sèrie amb un patró que passa a una altra zona (per exemple, `4x100 Cr A2 prog A3 d/0:20`), **quan** es valida, **aleshores** és invàlida, sigui per format o per validació.

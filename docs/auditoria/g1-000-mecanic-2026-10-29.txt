@@ -1,0 +1,4 @@
+== Gate 1: Spec 000-glossari (2026-10-29) ==
+  FALLA  G1-S01 No existeix specs/000-glossari/spec.md
+
+Resultat: 1 FALLA(ES)

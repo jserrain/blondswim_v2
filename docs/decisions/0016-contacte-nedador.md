@@ -1,6 +1,6 @@
 # ADR-0016 — Contacte del nedador
 
-**Estat:** Acceptat. Substitueix l'ADR-0015. Amplia la spec 001 (RN-032) amb RN-033, RN-034 i RN-035.
+**Estat:** Substituït per ADR-0017. Substituïa l'ADR-0015 i ampliava la spec 001 (RN-032) amb RN-033, RN-034 i RN-035.
 
 ## Context
 La spec 001 identifica la persona pel correu (RN-032) i no en desa ni el nom ni els cognoms. Cal un segon canal de contacte. Es va valorar fer el mòbil i el correu alternatius (almenys un), però això obliga a tractar quatre combinacions.

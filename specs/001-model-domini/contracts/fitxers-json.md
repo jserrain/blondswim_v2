@@ -6,9 +6,9 @@ Interfície externa: fitxers que el coach edita i que genera la importació (spe
 - UTF-8, `indent=2`, salt de línia final, ordre de claus del data model (research R3).
 - `versio_esquema: 1`. Qualsevol altre valor és error (CA-001-17).
 - Dates `AAAA-MM-DD` i temps `m:ss.cc`.
-- `millors_registres` pot tenir diversos registres de la mateixa prova i piscina; el millor és un valor derivat i no es desa.
+- `millors_registres` té un sol registre per prova i piscina, de competició; `competicio` és l'id d'una competició del catàleg (RN-007).
 - Un camp obligatori absent és error. Un opcional desconegut s'escriu `null`.
-- `mobil` en E.164 (`+34…`); `correu` obligatori i únic (RN-032, RN-033).
+- `correu` obligatori, únic i normalitzat (RN-032); `mobil` obligatori i no buit, sense cap altra validació (ADR-0017).
 - `canal_preferent`: `correu` o `mobil`. Absent o `null`: avís RN-035. Un altre valor: error de format (CA-001-59).
 
 ## `data/nedadors/<id>/nedador.json`
@@ -36,7 +36,7 @@ Interfície externa: fitxers que el coach edita i que genera la importació (spe
     }
   ],
   "millors_registres": [
-    {"estil": "Cr", "distancia": 100, "piscina": 25, "temps": "1:15.00", "data": "2000-02-01", "competicio": "Exemple"}
+    {"estil": "Cr", "distancia": 100, "piscina": 25, "temps": "1:15.00", "data": "2000-02-01", "competicio": "c001"}
   ]
 }
 ```
@@ -71,5 +71,5 @@ Interfície externa: fitxers que el coach edita i que genera la importació (spe
 Una línia per avís; només s'hi afegeix. `decisio`: `confirmat` o `rebutjat` als avisos d'entrada; `null` als de càrrega i de planificació.
 ```json
 {"data_hora": "2000-03-04T10:15:00", "rn": "RN-009", "fitxer": "competicions/1999-00.json", "camp": "competicions.0.seu", "valor": null, "missatge": "Seu desconeguda", "id_nedador": null, "decisio": null}
-{"data_hora": "2000-03-04T10:20:00", "rn": "RN-034", "fitxer": "nedadors/3f2a9c1e-7b4d-4e8a-9c2f-1d6b5e0a8f47/nedador.json", "camp": "mobil", "valor": "+34600000000", "missatge": "Mòbil compartit amb el nedador 9d8c7b6a-1234-4abc-8def-0123456789ab", "id_nedador": "3f2a9c1e-7b4d-4e8a-9c2f-1d6b5e0a8f47", "decisio": "confirmat"}
+{"data_hora": "2000-03-04T10:20:00", "rn": "RN-035", "fitxer": "nedadors/3f2a9c1e-7b4d-4e8a-9c2f-1d6b5e0a8f47/nedador.json", "camp": "canal_preferent", "valor": null, "missatge": "Canal preferent absent", "id_nedador": "3f2a9c1e-7b4d-4e8a-9c2f-1d6b5e0a8f47", "decisio": null}
 ```
