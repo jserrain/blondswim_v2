@@ -16,7 +16,7 @@
   OK     G2-T01 Totes amb ID, capa única i format correcte
   OK     G2-T02 IDs únics
   AVÍS   G2-T02 IDs no consecutius a: 003 048 035 017 051 025 053 028 002 034 
-  PISTA  G2-T03 Tasques sense ruta de fitxer: T044 T015 T016 T038 
+  PISTA  G2-T03 Tasques sense ruta de fitxer: T044 
   OK     G2-Q01 Tots els CA no pendents tenen tasca de test (83)
   OK     G2-Q02 Cap tasca amb CA inexistent
   OK     G2-Q03 27 RN citades, totes definides
