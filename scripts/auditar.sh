@@ -202,7 +202,7 @@ gate_spec() {
 
   # Q02/Q03: criteris d'acceptació CA-NNN[x]-nn
   local defs ids nca dup mal sense
-  defs=$(grep -oE '^[[:space:]]*- \*\*CA-[0-9]{3}[a-z]?-[0-9]{2}\*\*' "$S" | grep -oE 'CA-[0-9]{3}[a-z]?-[0-9]{2}')
+  defs=$(grep -oE '^[[:space:]]*- \*\*CA-[0-9]{3}[a-z]?-[0-9]{2,}\*\*' "$S" | grep -oE 'CA-[0-9]{3}[a-z]?-[0-9]{2,}')
   nca=$(echo "$defs" | grep -c 'CA-')
   [[ "$nca" -gt 0 ]] && ok "G1-Q02 Criteris d'acceptació definits: $nca" || falla "G1-Q02 Cap criteri - **CA-$nnn-nn**"
   dup=$(echo "$defs" | sort | uniq -d | tr '\n' ' ')
@@ -210,7 +210,7 @@ gate_spec() {
   mal=$(echo "$defs" | grep -vE "^CA-$nnn[a-z]?-" | grep 'CA-' | tr '\n' ' ')
   [[ -n "$mal" ]] && falla "G1-Q03 CA amb número de spec incorrecte: $mal" || ok "G1-Q03 Tots els CA són de la spec $nnn"
   sense=$(grep -E '^[[:space:]]*- \*\*CA-[0-9]{3}' "$S" | grep -viE 'dona[td][a-z]*.*quan.*aleshores' \
-          | grep -oE 'CA-[0-9]{3}[a-z]?-[0-9]{2}' | tr '\n' ' ')
+          | grep -oE 'CA-[0-9]{3}[a-z]?-[0-9]{2,}' | tr '\n' ' ')
   [[ -n "$sense" ]] && avis "G1-Q02 CA sense Donat(s/da/des)/quan/aleshores: $sense" || ok "G1-Q02 Tots els CA en format Donat/quan/aleshores"
   info "G1-Q02 CA marcats [PENDENT spec NNN]: $(grep -cE '^[[:space:]]*- \*\*CA-.*\[PENDENT spec' "$S")"
 
@@ -313,12 +313,14 @@ gate_plan() {
 
   # Q01-Q02: traçabilitat CA → tasques de test
   local ca_spec ca_pend ca_test c falten="" sobren=""
-  ca_spec=$(grep -oE '^[[:space:]]*- \*\*CA-[0-9]{3}[a-z]?-[0-9]{2}\*\*' "$S" | grep -oE '[0-9]{2}\*\*' | tr -d '*' | sort -u)
-  ca_pend=$(grep -E '^[[:space:]]*- \*\*CA-.*\[PENDENT spec' "$S" | grep -oE 'CA-[0-9]{3}[a-z]?-[0-9]{2}' | grep -oE '[0-9]{2}$' | sort -u)
+  ca_spec=$(grep -oE '^[[:space:]]*- \*\*CA-[0-9]{3}[a-z]?-[0-9]{2,}\*\*' "$S" | grep -oE '[0-9]{2,}\*\*$' | tr -d '*' | sort -u)
+  ca_pend=$(grep -E '^[[:space:]]*- \*\*CA-.*\[PENDENT spec' "$S" | grep -oE 'CA-[0-9]{3}[a-z]?-[0-9]{2,}' | grep -oE '[0-9]{2,}$' | sort -u)
   # Tot el que ve després del primer CA de la línia, sense codi entre `...`, RN, tasques ni prefixos +NN
   ca_test=$(echo "$tasques" | grep -E 'Tests? ' | grep "CA-$nnn-" \
             | perl -ne 'if (/CA-'"$nnn"'-(.*)$/) { $_ = $1; s/`[^`]*`//g; s/CA-\d{3}-//g; s/\b(RN|T)-?\d+//g; s/\+\d+//g; print "$_\n" }' \
-            | tr -cs '0-9' '\n' | grep -E '^[0-9]{2}$' | sort -u)
+            | tr -cs '0-9' '\n' | grep -E '^[0-9]{2,3}$' | sort -u)
+  # Un número de 3 xifres només compta si és un CA de la spec (evita distàncies com 100 o 200)
+  ca_test=$(for c in $ca_test; do { [[ ${#c} -eq 2 ]] || echo "$ca_spec" | grep -qx "$c"; } && echo "$c"; done)
   for c in $ca_spec; do
     echo "$ca_pend" | grep -qx "$c" && continue
     echo "$ca_test" | grep -qx "$c" || falten="$falten CA-$nnn-$c"
