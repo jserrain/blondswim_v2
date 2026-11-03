@@ -50,7 +50,7 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
   - Permetre editar tests i registres desats: descartat (decisió c, 2026-10-28).
   - Substituir el registre desat en entrar una marca millor: descartat; la llista conserva les millores successives i la marca vigent és la darrera (RN-007).
   - Casos d'ús dins de les entitats del domini: descartat; necessiten repositoris i generador d'id, i el domini no fa I/O.
-- **D1 (confirmada) — lectura d'identitat per a la unicitat:** un DTO mínim (`correu`, `alias`, `extra="ignore"`) llegeix els dos camps com a text cru; el correu es compara en minúscules i sense espais als extrems (el valor no canvia) i l'alias es llegeix tal com és (RN-003 no el normalitza). Si un camp falta o no és text, aquell nedador no participa a la unicitat d'aquell camp, però sí a la de l'altre; un nedador sense correu tampoc no hi participa. «Llegible» = JSON ben format que és un objecte.
+- **D1 (confirmada) — lectura d'identitat per a la unicitat:** un DTO mínim (`correu`, `alias`, `extra="ignore"`) llegeix els dos camps com a text cru; el correu es compara en minúscules i sense espais en blanc (espais, tabuladors i salts de línia) als extrems (el valor no canvia) i l'alias es llegeix tal com és (RN-003 no el normalitza). Si un camp falta o no és text, aquell nedador no participa a la unicitat d'aquell camp, però sí a la de l'altre; un nedador sense correu tampoc no hi participa. «Llegible» = JSON ben format que és un objecte.
 - **D2 (confirmada) — port `GeneradorId`:** `nou() -> IdNedador`, implementat amb `uuid4()` i injectat a l'alta. Detall a `plan.md`, § Decisions de disseny confirmades.
 - **Fora d'abast:** la CLI (`interfaces`). Els casos d'ús es proven directament.
 

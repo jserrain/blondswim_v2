@@ -38,7 +38,7 @@ Sense LLM. El rellotge només s'injecta per registrar avisos.
 
 **Constraints**: domini sense I/O, LLM, rellotge ni dependències externes; escriptura estable byte a byte (CA-001-36); errors en català amb fitxer, camp i valor
 
-**Scale/Scope**: desenes de nedadors i de competicions per temporada; 98 CA actius (89 amb test, 9 pendents) i 13 retirats (CA-001-55, 56, 77, 85, 86, 87, 88, 94, 95, 98, 99, 100 i 103)
+**Scale/Scope**: desenes de nedadors i de competicions per temporada; 99 CA actius (90 amb test, 9 pendents) i 13 retirats (CA-001-55, 56, 77, 85, 86, 87, 88, 94, 95, 98, 99, 100 i 103)
 
 ## Constitution Check
 
@@ -50,10 +50,10 @@ Sense LLM. El rellotge només s'injecta per registrar avisos.
 - [x] **IV. El sistema avisa; el coach decideix:** errors i avisos acumulats per nedador i per camp, amb motiu i acció; un sol validador; avisos registrats a `data/avisos.jsonl` amb `decisio` (research R5; CA-001-47, 48, 57, 67, 73). Un avís mai no bloqueja; un ERROR no es desa ni es carrega.
 - [x] **V. Dades honestes:** setmana, test vigent, marca vigent i proves objectiu es deriven; la temporada és una definició (RN-031), no es deriva. No hi ha valors per defecte en carregar. Només hi ha constants per a definicions (RN-030, RN-031), com permet la versió 1.3.0.
 - [x] **VI. El pla es persisteix i es versiona:** no aplica. La 001 no genera plans.
-- [x] **VII. Traçabilitat de la spec al test:** cada tasca porta capa; cada un dels 89 CA no pendents té test amb `@pytest.mark.ca` (taula CA → tasca a `tasks.md`). La traçabilitat passa a «bloquejant» amb T002, quan tots tenen test (AGENTS.md).
+- [x] **VII. Traçabilitat de la spec al test:** cada tasca porta capa; cada un dels 90 CA no pendents té test amb `@pytest.mark.ca` (taula CA → tasca a `tasks.md`). La traçabilitat passa a «bloquejant» amb T002, quan tots tenen test (AGENTS.md).
 - [x] **VIII. Documents genèrics i sense història:** els exemples de contracte fan servir valors fictius.
 
-**Re-check post-disseny:** compleix tots els principis, amb l'esmena de la spec 001 (98 CA actius), l'ADR-0020. Les decisions D1 i D2 (§ Decisions de disseny confirmades) no canvien cap principi.
+**Re-check post-disseny:** compleix tots els principis, amb l'esmena de la spec 001 (99 CA actius), l'ADR-0020. Les decisions D1 i D2 (§ Decisions de disseny confirmades) no canvien cap principi.
 
 ## Project Structure
 
@@ -107,7 +107,7 @@ tests/
 
 ## Decisions de disseny confirmades
 
-- **D1 — Lectura d'identitat per a la unicitat (confirmada).** La unicitat (només correu i alias) compta tots els fitxers llegibles, encara que tinguin un ERROR en un altre camp (CA-001-69, 70, 76). El DTO estricte complet falla sencer i no serveix. Decisió: un DTO mínim d'identitat (`correu`, `alias`) a `dto.py`, amb `extra="ignore"`. «Llegible» = JSON ben format que és un objecte. Els dos camps es llegeixen com a text cru; el correu es compara en minúscules i sense espais als extrems (RN-032) i el valor no canvia, i l'alias es llegeix tal com és (RN-003 no el normalitza). Si un camp falta o no és text, aquell nedador no participa a la unicitat d'aquell camp, però sí a la de l'altre (CA-001-92); un nedador sense correu és vàlid i tampoc no hi participa (CA-001-107). L'error del camp ja el dona el validador. *Alternativa descartada:* DTO complet que acumuli errors i conservi valors parcials (més complex).
+- **D1 — Lectura d'identitat per a la unicitat (confirmada).** La unicitat (només correu i alias) compta tots els fitxers llegibles, encara que tinguin un ERROR en un altre camp (CA-001-69, 70, 76). El DTO estricte complet falla sencer i no serveix. Decisió: un DTO mínim d'identitat (`correu`, `alias`) a `dto.py`, amb `extra="ignore"`. «Llegible» = JSON ben format que és un objecte. Els dos camps es llegeixen com a text cru; el correu es compara en minúscules i sense espais en blanc (espais, tabuladors i salts de línia) als extrems (RN-032) i el valor no canvia, i l'alias es llegeix tal com és (RN-003 no el normalitza). Si un camp falta o no és text, aquell nedador no participa a la unicitat d'aquell camp, però sí a la de l'altre (CA-001-92); un nedador sense correu és vàlid i tampoc no hi participa (CA-001-107). L'error del camp ja el dona el validador. *Alternativa descartada:* DTO complet que acumuli errors i conservi valors parcials (més complex).
 - **D2 — Generació de l'id (confirmada).** L'alta genera un UUID v4 (RN-002) i reintenta si l'alias col·lisiona (CA-001-61). Decisió: port `GeneradorId` (Protocol, `nou() -> IdNedador`) a `application/ports.py`, implementat amb `uuid4()` a `infrastructure/generador_id.py` i injectat, com el `Rellotge`. Els tests el substitueixen per una seqüència fixa (CA-001-45, 52, 61). *Alternativa descartada:* `uuid4()` directe a `application`: CA-001-61 no es pot provar de manera determinista.
 
 ## Complexity Tracking

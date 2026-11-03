@@ -7,7 +7,7 @@ Model del domini (`src/blondswim/domain/`). L'ordre dels camps és el de l'escri
 | Objecte | Representació | Validació |
 |---|---|---|
 | `IdNedador` | text, UUID v4 canònic en minúscules | RN-001, ADR-0014 |
-| `Correu` | text tal com s'entra; clau de comparació en minúscules i sense espais als extrems | RN-032 |
+| `Correu` | text tal com s'entra; clau de comparació en minúscules i sense espais en blanc (espais, tabuladors i salts de línia) als extrems | RN-032 |
 | `Canal` | `correu` \| `mobil` | un altre valor és un error de format; absent o `null`: RN-035 |
 | `Alias` | text | RN-003 |
 | `Estil` | enum `Cr`, `Esq`, `Br`, `Pap`, `Ei` | spec 000 §4; als estils preferents només aquests cinc (CA-001-39) |
@@ -29,8 +29,8 @@ Tipus de camp (spec, § Format JSON): **obligatori** (ha de ser-hi amb valor), *
 |---|---|---|---|
 | `versio_esquema` | int | sí | CA-001-17 |
 | `correu` | `Correu` \| null | no (informatiu; si hi és, RN-032) | RN-032, ADR-0020; CA-001-24, 44, 104 a 109 |
-| `mobil` | text no buit (sense espais en blanc als extrems) | sí | ADR-0020; CA-001-54, 93, 101, 111 |
-| `canal_preferent` | `Canal` \| null | opcional amb avís | RN-035 (també `correu` sense correu); CA-001-57 a 60, 110 |
+| `mobil` | text no buit (sense espais en blanc —espais, tabuladors i salts de línia— als extrems) | sí | ADR-0020; CA-001-54, 93, 101, 111 |
+| `canal_preferent` | `Canal` \| null | opcional amb avís | RN-035 (també `correu` sense correu, a la càrrega); CA-001-57 a 60, 110 |
 | `alias` | `Alias` | sí | RN-003; CA-001-26, 46, 50 a 53, 61 |
 | `arxivat` | bool | sí | RN-017; `false` en crear-lo |
 | `estils_preferents` | llista d'`Estil`, ≥ 1, sense repetir | sí | CA-001-03, 39 |
@@ -62,7 +62,7 @@ L'id no és al fitxer: és el nom de la carpeta.
 | `data` | data | sí |
 | `competicio` | nom de la competició (text no buit); informatiu, no es comprova contra el catàleg | sí (CA-001-90, 91) |
 
-Llista de millores successives per prova i piscina, només de competició (RN-007). En afegir-ne una: només s'afegeix si és millor que la marca vigent de la mateixa prova i piscina (CA-001-83); si és igual o pitjor, no es fa res (CA-001-89). Les marques de 25 m i de 50 m no es comparen. La data d'una marca nova ha de ser posterior a la de la vigent; si no, ERROR (CA-001-102). Una llista no ordenada en un fitxer: ERROR (CA-001-06, 96, 102). Els tests CSS es desen tots.
+Llista de millores successives per prova i piscina, només de competició (RN-007; CA-001-06, 83, 89, 96, 102). Els tests CSS es desen tots.
 
 ### Competició (`competicions/<AAAA-AA>.json`, catàleg)
 Fitxer: `{versio_esquema, competicions: [...]}`.
@@ -104,10 +104,10 @@ Una línia JSON per avís: `data_hora` (ISO 8601), `rn`, `fitxer`, `camp`, `valo
 | Tipus | Camps | Regla |
 |---|---|---|
 | Immutables | `id`, `alias`, `versio_esquema` | `versio_esquema` només canvia amb una migració; la modificació no els rep com a dada (CA-001-53) |
-| Modificables | `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal` | torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res (CA-001-79, 80); el correu nou es desa tal qual i l'antic queda lliure (CA-001-109) |
+| Modificables | `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal` | torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res (CA-001-79, 80); el correu nou es desa tal qual i l'antic queda lliure (CA-001-109); `correu: null` el treu (CA-001-112) |
 | Operació pròpia | `arxivat` | arxivar i desarxivar (RN-017; CA-001-81) |
 | Operació pròpia | `tests_css` | només s'afegeixen; un test desat no s'edita; el coach l'accepta (CA-001-30, 82) |
-| Operació pròpia | `millors_registres` | només s'afegeix una marca millor que la vigent de la mateixa prova i piscina i de data posterior (RN-007; CA-001-83, 102); una d'igual o pitjor no fa res (CA-001-89); un registre desat no s'edita |
+| Operació pròpia | `millors_registres` | només s'hi afegeixen marques, segons RN-007 (CA-001-83, 89, 102); un registre desat no s'edita |
 
 Canvi de `dies_entrenament` o `volum_setmanal` a mitja temporada: la 001 el permet; la replanificació és de la spec 005 (CA-001-84).
 
