@@ -132,23 +132,35 @@ gate_constitution() {
 }
 
 gate_spec() {
-  local F="${1%/}" S nom nnn
+  local F="${1%/}" S nom nnn unic=0
+  F="${F%.md}"
   nom=$(basename "$F"); nnn="${nom%%-*}"; S="$F/spec.md"
+  # Spec d'un sol fitxer (p. ex. specs/000-glossari.md): no té carpeta ni branca pròpia
+  [[ ! -f "$S" && -f "$F.md" ]] && { S="$F.md"; unic=1; }
   echo "== Gate 1: Spec $nom ($AVUI) =="
 
   # S01: carpeta i branca
-  [[ "$nnn" =~ ^[0-9]{3}$ ]] || { falla "G1-S01 La carpeta no té format NNN-nom: $nom"; return; }
-  [[ -f "$S" ]] || { falla "G1-S01 No existeix $S"; return; }
-  ok "G1-S01 Carpeta $F amb spec.md"
+  [[ "$nnn" =~ ^[0-9]{3}$ ]] || { falla "G1-S01 La spec no té format NNN-nom: $nom"; return; }
+  [[ -f "$S" ]] || { falla "G1-S01 No existeix $F/spec.md ni $F.md"; return; }
   local branca
-  branca=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "?")
-  if [[ "$branca" == "$nom" ]]; then ok "G1-S01 Branca = carpeta: $branca"
-  elif [[ "$branca" == "$nnn"-* ]]; then avis "G1-S01 Branca $branca no coincideix amb la carpeta $nom"
-  else falla "G1-S01 Branca $branca no és de la spec $nnn"; fi
+  if [[ "$unic" -eq 1 ]]; then
+    ok "G1-S01 Spec d'un sol fitxer: $S"
+    info "G1-S01 Spec d'un sol fitxer: no s'hi aplica la regla branca = carpeta"
+  else
+    ok "G1-S01 Carpeta $F amb spec.md"
+    branca=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "?")
+    if [[ "$branca" == "$nom" ]]; then ok "G1-S01 Branca = carpeta: $branca"
+    elif [[ "$branca" == "$nnn"-* ]]; then avis "G1-S01 Branca $branca no coincideix amb la carpeta $nom"
+    else falla "G1-S01 Branca $branca no és de la spec $nnn"; fi
+  fi
 
   # S02, S03
-  grep -qE '^## Clarifications' "$S" && ok "G1-S02 ## Clarifications" || falla "G1-S02 Sense ## Clarifications"
-  if ls "$F"/checklists/*.md >/dev/null 2>&1; then
+  if grep -qE '^## Clarifications' "$S"; then ok "G1-S02 ## Clarifications"
+  elif [[ "$unic" -eq 1 ]]; then avis "G1-S02 Sense ## Clarifications (spec d'un sol fitxer, anterior a Spec Kit)"
+  else falla "G1-S02 Sense ## Clarifications"; fi
+  if [[ "$unic" -eq 1 ]]; then
+    info "G1-S03 Spec d'un sol fitxer: sense checklist"
+  elif ls "$F"/checklists/*.md >/dev/null 2>&1; then
     local pend; pend=$(cat "$F"/checklists/*.md | grep -cE '^[[:space:]]*- \[ \]')
     pista "G1-S03 Checklist present; ítems pendents: $pend"
   else
@@ -209,7 +221,10 @@ gate_spec() {
   else
     for r in $rns; do
       grep -qE "^\| *$r *\|" docs/regles.md || falten="$falten $r"
-      grep -E "^\| *$r *\|" docs/regles.md | grep -qi 'retirada' && ret="$ret $r"
+      if grep -E "^\| *$r *\|" docs/regles.md | grep -qi 'retirada'; then
+        # Només compta si la RN surt fora de ## Clarifications i de ## CA retirats
+        awk '/^## /{skip=($0 ~ /^## (Clarifications|CA retirats)/)} !skip' "$S" | grep -q "$r" && ret="$ret $r"
+      fi
     done
     [[ -n "$falten" ]] && falla "G1-Q04 RN no definides a docs/regles.md:$falten" || ok "G1-Q04 $(echo "$rns" | wc -l | tr -d ' ') RN referenciades, totes definides"
     [[ -n "$ret" ]] && avis "G1-Q04 RN retirades referenciades:$ret"
@@ -283,6 +298,8 @@ gate_plan() {
   mal=$(echo "$tasques" | grep -vE '^- \[[ xX]\] T[0-9]{3} (\[P\] )?(\[US[0-9]+[a-z]?\] )?\[(domain|application|infrastructure|interfaces|project)\] ' \
         | grep -oE '^- \[[ xX]\] T[0-9]+' | grep -oE 'T[0-9]+' | tr '\n' ' ')
   [[ -n "$mal" ]] && falla "G2-T01 Format o capa incorrectes: $mal" || ok "G2-T01 Totes amb ID, capa única i format correcte"
+  local enganx; enganx=$(grep -E '^- \[[ xX]\] T[0-9]{3}.*.- \[[ xX]\] T[0-9]{3}' "$T" | grep -oE '^- \[[ xX]\] T[0-9]{3}' | grep -oE 'T[0-9]{3}' | tr '\n' ' ')
+  [[ -n "$enganx" ]] && falla "G2-T01 Dues tasques a la mateixa línia (a partir de): $enganx"
   ids=$(echo "$tasques" | grep -oE '^- \[[ xX]\] T[0-9]{3}' | grep -oE '[0-9]{3}$')
   dup=$(echo "$ids" | sort | uniq -d | tr '\n' ' ')
   [[ -n "$dup" ]] && falla "G2-T02 IDs repetits: $dup" || ok "G2-T02 IDs únics"
@@ -313,8 +330,13 @@ gate_plan() {
   # Q03: RN citades al pla, la recerca, el data model i les tasques
   local rns r faltenr=""
   rns=$(cat "$P" "$T" "$F/research.md" "$F/data-model.md" | grep -oE 'RN-[0-9]{3}' | sort -u)
-  for r in $rns; do grep -qE "^\| *$r *\|" docs/regles.md || faltenr="$faltenr $r"; done
+  local retq=""
+  for r in $rns; do
+    grep -qE "^\| *$r *\|" docs/regles.md || faltenr="$faltenr $r"
+    grep -E "^\| *$r *\|" docs/regles.md | grep -qi 'retirada' && retq="$retq $r"
+  done
   [[ -n "$faltenr" ]] && falla "G2-Q03 RN no definides:$faltenr" || ok "G2-Q03 $(echo "$rns" | grep -c .) RN citades, totes definides"
+  [[ -n "$retq" ]] && avis "G2-Q03 RN retirades citades al pla, la recerca, el data model o les tasques:$retq"
 
   # Q04: capes citades al pla que no surten a cap tasca (pista)
   local cap capes_t=""
@@ -328,7 +350,7 @@ case "${1:-}" in
   constitution) OUT="docs/auditoria/g0-mecanic-$AVUI.txt" ;;
   spec)
     [[ -n "${2:-}" ]] || { echo "Ús: $0 spec specs/NNN-nom"; exit 2; }
-    n=$(basename "${2%/}"); OUT="docs/auditoria/g1-${n%%-*}-mecanic-$AVUI.txt" ;;
+    n=$(basename "${2%/}"); n="${n%.md}"; OUT="docs/auditoria/g1-${n%%-*}-mecanic-$AVUI.txt" ;;
   plan)
     [[ -n "${2:-}" ]] || { echo "Ús: $0 plan specs/NNN-nom"; exit 2; }
     n=$(basename "${2%/}"); OUT="docs/auditoria/g2-${n%%-*}-mecanic-$AVUI.txt" ;;
