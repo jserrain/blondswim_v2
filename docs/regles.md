@@ -44,10 +44,10 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-029 | Canvi de període de piscina sense test | avís | planificació | spec 004 |
 | RN-030 | Prova oficial segons la piscina | bloquejant | càrrega | spec 001 |
 | RN-031 | Temporada de natació | bloquejant | càrrega | spec 001 |
-| RN-032 | Correu del nedador | bloquejant | càrrega, gestió | spec 001, ADR-0019 |
-| RN-033 | Mòbil del nedador (Retirada) | — | — | ADR-0019 |
-| RN-034 | Mòbil compartit (Retirada) | — | — | ADR-0019 |
-| RN-035 | Canal preferent absent | avís | càrrega, importació | spec 001, ADR-0019 |
+| RN-032 | Correu del nedador | bloquejant | càrrega, gestió | spec 001, ADR-0020 |
+| RN-033 | Mòbil del nedador (Retirada) | — | — | ADR-0020 |
+| RN-034 | Mòbil compartit (Retirada) | — | — | ADR-0020 |
+| RN-035 | Canal preferent absent | avís | càrrega, importació | spec 001, ADR-0020 |
 
 ## Nedador
 
@@ -100,27 +100,23 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 ### RN-032 — Correu del nedador
 - **Tipus:** bloquejant · **Moment:** càrrega, gestió
-- **Regla:** tot nedador té un `correu` obligatori, únic entre tots els nedadors (arxivats inclosos) i intransferible. Es normalitza (sense espais en blanc als extrems —espais, tabuladors i salts de línia—, en minúscules) abans de validar-lo i de desar-lo. Un cop normalitzat, ha de complir l'expressió regular següent; si no, ERROR:
-  ```
-  ^(?=.{1,254}$)(?=[^@]{1,64}@)[a-z0-9!#$%&'*+/=?^_`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$
-  ```
-  Es pot modificar (l'id no canvia, RN-002): el correu nou passa format i unicitat, i l'antic queda lliure.
+- **Regla:** el `correu` és opcional (absent o `null` = sense correu). Si hi és, es desa exactament tal com s'ha entrat (majúscules i espais als extrems inclosos). El sistema no el corregeix, normalitza ni verifica. Format (ERROR si no es compleix), avaluat sense tenir en compte els espais en blanc dels extrems: conté una `@`, la part d'abans no és buida, el domini (després de la darrera `@`) no és buit, conté un punt i no té espais en blanc; cap espai en blanc al mig. Sense expressió regular estricta ni consultes de xarxa. Si hi ha correu, és únic entre tots els nedadors (arxivats inclosos); la comparació és en minúscules i sense espais en blanc als extrems, i el valor desat no canvia. El correu no identifica el nedador: s'usa només per a notificacions.
 - **Missatge:** identifica el camp i el valor, o els ids dels nedadors que comparteixen correu.
-- **Font:** spec 001, ADR-0019.
-- **Coherència:** revisada contra RN-002 (l'id no depèn del correu i no canvia quan el correu canvia), RN-003 (l'alias és un identificador a part) i RN-004 (els arxivats compten). La unicitat només s'aplica a correu i alias. Sense conflicte.
+- **Font:** spec 001, ADR-0020.
+- **Coherència:** revisada contra RN-002 (l'id no depèn del correu i no canvia quan el correu canvia), RN-003 (l'alias és un identificador a part), RN-004 (els arxivats compten) i RN-035 (un `canal_preferent` = `correu` sense correu és un avís). La unicitat només s'aplica a correu i alias; un nedador sense correu no hi participa. Sense conflicte.
 
 ### RN-033 — Mòbil del nedador (Retirada)
-- **Estat:** Retirada (ADR-0019). El `mobil` no té format, unicitat ni avís. No es reutilitza l'ID.
+- **Estat:** Retirada (ADR-0020). El `mobil` no té format, unicitat ni avís. No es reutilitza l'ID.
 
 ### RN-034 — Mòbil compartit (Retirada)
-- **Estat:** Retirada (ADR-0019). Compartir el `mobil` entre nedadors no genera cap avís. No es reutilitza l'ID.
+- **Estat:** Retirada (ADR-0020). Compartir el `mobil` entre nedadors no genera cap avís. No es reutilitza l'ID.
 
 ### RN-035 — Canal preferent absent
 - **Tipus:** avís · **Moment:** càrrega, importació
-- **Regla:** un `canal_preferent` absent o `null` genera un avís. No bloqueja. Un valor fora de `correu` i `mobil` no és d'aquesta regla: és un error de format del camp (spec 001, § Entitats).
+- **Regla:** un `canal_preferent` absent o `null` genera un avís. Un `canal_preferent` = `correu` en un nedador sense correu també genera un avís. Cap dels dos no bloqueja. Un valor fora de `correu` i `mobil` no és d'aquesta regla: és un error de format del camp (spec 001, § Entitats).
 - **Missatge:** identifica l'alias i el camp.
-- **Font:** spec 001, ADR-0019.
-- **Coherència:** revisada contra RN-032: `correu` i `mobil` són obligatoris, de manera que tots dos canals existeixen sempre i qualsevol valor admès és utilitzable. No hi ha cap valor per defecte (principi V). Sense conflicte.
+- **Font:** spec 001, ADR-0020.
+- **Coherència:** revisada contra RN-032: el `mobil` és obligatori, de manera que el canal `mobil` existeix sempre; el `correu` és opcional, i per això triar-lo sense tenir-ne és un avís. No hi ha cap valor per defecte (principi V). Sense conflicte.
 
 ## Catàleg de competicions
 

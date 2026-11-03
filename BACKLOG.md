@@ -14,13 +14,14 @@ Idees per a la propera versió. Una idea per fila. Només passa a la versió nov
 | 3 | 25/10/2026 | Seguretat quan l'app s'exposi a un endpoint | Pendent | Mitjana |
 | 4 | 28/10/2026 | Replanificar a mitja temporada per canvi de dies o volum | Pendent | Mitjana |
 | 5 | 29/10/2026 | Historial de millors marques | Pendent | Baixa |
-| 6 | 29/10/2026 | Variants de Gmail al correu | Pendent | Baixa |
 | 7 | 29/10/2026 | Parcials i pacing de cursa | Pendent | Mitjana |
 | 8 | 29/10/2026 | Conversió de marques 25 m ↔ 50 m | Pendent | Mitjana |
 | 9 | 29/10/2026 | Marques mínimes amb caducitat | Pendent | Mitjana |
 | 10 | 29/10/2026 | Categoria per edat (data de naixement) | Pendent | Baixa |
 | 11 | 29/10/2026 | Tipus de cronometratge | Pendent | Baixa |
 | 12 | 29/10/2026 | ADR de dades personals: supressió | Pendent | Mitjana |
+
+Nota: decisió ADR-0020: no es verifica ni es normalitza. El número 6 (variants de Gmail) i la verificació del correu queden retirats; els números no es reutilitzen.
 
 ## Notes
 
@@ -96,18 +97,6 @@ Idees per a la propera versió. Una idea per fila. Només passa a la versió nov
 - **Estat:** Pendent
 - **Prioritat:** Baixa
 - **Detall:** les dades ja es desen (llista de millores i tots els tests CSS); falta la consulta de l'evolució, que és d'una spec futura.
-- **Resultat:** —
-
-### 6. Variants de Gmail al correu
-
-- **Font:** ADR-0017 (29/10/2026)
-- **Objectiu:** decidir si les variants d'una mateixa bústia de Gmail (p. ex. amb punts o amb etiqueta després de «+») compten com un sol correu a la unicitat (RN-032)
-- **On encaixa:** esmena de RN-032, quan es decideixi
-- **Estat:** Pendent
-- **Prioritat:** Baixa
-- **Detall:**
-  - RN-032 tracta cada adreça normalitzada com a diferent.
-  - La verificació de l'adreça ja no és aquí: és una spec pròpia (ADR-0018, `docs/mapa_specs.md`).
 - **Resultat:** —
 
 ### 7. Parcials i pacing de cursa

@@ -13,7 +13,7 @@ bash scripts/verify.sh                       # porta única: ha d'acabar «LLEST
 ```
 
 ## Resultats esperats
-- 89 CA amb almenys un test (98 actius; 5 retirats: CA-001-55, 56, 77, 94 i 95). CA-001-33, 34, 38, 58, 63, 64, 68, 72 i 84 estan pendents de les specs 002, 004 i 005 i no es comproven.
+- 89 CA amb almenys un test (98 actius; 13 retirats: CA-001-55, 56, 77, 85, 86, 87, 88, 94, 95, 98, 99, 100 i 103). CA-001-33, 34, 38, 58, 63, 64, 68, 72 i 84 estan pendents de les specs 002, 004 i 005 i no es comproven.
 - `import-linter`: `domain` no importa cap altra capa ni cap dependència externa.
 - `mypy --strict` sense errors.
 
@@ -27,5 +27,5 @@ bash scripts/verify.sh                       # porta única: ha d'acabar «LLEST
 7. Un nedador sense `canal_preferent`: es carrega i `data/avisos.jsonl` té una línia `RN-035` amb `decisio: null` (CA-001-57).
 8. Modificar un nedador amb `volum_setmanal.min > max`: no es desa res (CA-001-80).
 9. Afegir un millor registre amb un temps menor que el vigent: s'afegeix a la llista; amb un temps igual o pitjor: no passa res (CA-001-83, 89). Tres marques desordenades en un fitxer: error (CA-001-96). Una marca millor amb data igual o anterior a la vigent: error (CA-001-102).
-10. Un correu escrit `  Nedador@Example.COM `: es desa com `nedador@example.com` (CA-001-85).
-11. Un nedador nou té `correu_verificat: false`; en modificar-ne el correu per un de diferent torna a `false`; en modificar-ne un altre camp, o només les majúscules o els espais del correu, es conserva (CA-001-98 a 100, 103).
+10. Un correu escrit `  Pere@Exemple.cat `: s'accepta i es desa idèntic (CA-001-104). `usari@gmial.com` també (CA-001-106). `a b@example.com` o `nedador@example`: error (CA-001-105).
+11. Un nedador sense correu és vàlid (CA-001-107); amb `canal_preferent: correu` i sense correu, avís RN-035 (CA-001-110). `A@b.com` i ` a@b.com ` en dos nedadors: col·lisió (CA-001-108).

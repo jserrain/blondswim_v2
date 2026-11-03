@@ -1,6 +1,6 @@
 # ADR-0018 — Verificació del correu
 
-**Estat:** Acceptat. Complementa l'ADR-0019.
+**Estat:** Substituït per ADR-0020. Complementava l'ADR-0019.
 
 ## Context
 L'ADR-0019 fixa el format del correu (RN-032) però no comprova que l'adreça existeixi ni que estigui activa. Una adreça amb el format correcte pot no arribar a ningú.

@@ -8,15 +8,14 @@ Interfície externa: fitxers que el coach edita i que genera la importació (spe
 - Dates `AAAA-MM-DD` i temps `m:ss.cc`.
 - `millors_registres` és una llista de millores successives per prova i piscina, de competició; `competicio` és el nom de la competició (text no buit), informatiu (RN-007).
 - Un camp obligatori absent és error. Un opcional desconegut s'escriu `null`.
-- `correu` obligatori (RN-032); `correu_verificat` obligatori, `false` en crear-lo (ADR-0018); `mobil` obligatori i no buit, sense cap altra validació (ADR-0019).
-- `canal_preferent`: `correu` o `mobil`. Absent o `null`: avís RN-035. Un altre valor: error de format (CA-001-59).
+- `correu` opcional (RN-032): absent o `null` = sense correu; si hi és, es desa tal com s'ha entrat. `mobil` obligatori i no buit, sense cap altra validació (ADR-0020).
+- `canal_preferent`: `correu` o `mobil`. Absent o `null`: avís RN-035; `correu` sense correu: avís RN-035. Un altre valor: error de format (CA-001-59).
 
 ## `data/nedadors/<id>/nedador.json`
 ```json
 {
   "versio_esquema": 1,
   "correu": "nedador@example.com",
-  "correu_verificat": false,
   "mobil": "+34600000000",
   "canal_preferent": "correu",
   "alias": "exemple_3f2a9c1",

@@ -40,17 +40,17 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
 - **Alternatives considered:** un registre per nedador. Descartat: els avisos del catàleg no són de cap nedador, i un sol fitxer es consulta millor.
 
 ## R6. Operacions de gestió
-- **Decision:** casos d'ús a `application`: alta (genera l'id UUID v4 i l'alias `<part>_<sufix>`, reintenta si l'alias col·lisiona, rebutja un ERROR; RN-002, RN-003; CA-001-45, 52, 61, 62, 70), esborrar nedador (sempre error, RN-004), arxivar i desarxivar (RN-017), modificar nedador, afegir test, acceptar test (CA-001-30), afegir un millor registre (només s'afegeix si el temps és menor que la marca vigent de la mateixa prova i piscina i la data és posterior (si no, ERROR); si el temps és igual o pitjor, no fa res; RN-007), esborrar competició (RN-010). L'alta posa `correu_verificat` a `false` i modificar el correu el torna a `false` només si el correu normalitzat canvia (ADR-0018).
+- **Decision:** casos d'ús a `application`: alta (genera l'id UUID v4 i l'alias `<part>_<sufix>`, reintenta si l'alias col·lisiona, rebutja un ERROR; RN-002, RN-003; CA-001-45, 52, 61, 62, 70), esborrar nedador (sempre error, RN-004), arxivar i desarxivar (RN-017), modificar nedador, afegir test, acceptar test (CA-001-30), afegir un millor registre (només s'afegeix si el temps és menor que la marca vigent de la mateixa prova i piscina i la data és posterior (si no, ERROR); si el temps és igual o pitjor, no fa res; RN-007), esborrar competició (RN-010). El correu es desa tal com s'ha entrat i no es verifica (ADR-0020).
   - Immutables: `id`, `alias`, `versio_esquema`. La modificació no els rep com a dada.
   - Modificables: `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal`. Una modificació torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res.
   - Un test o un millor registre desat no s'edita.
-- **Rationale:** els CA de gestió (21, 25, 30, 37, 45, 52, 53, 61, 62, 70, 79 a 83, 88, 89) necessiten operacions, no només càrrega (CA-001-98 a 100, 102 i 103 inclosos).
+- **Rationale:** els CA de gestió (21, 25, 30, 37, 45, 52, 53, 61, 62, 70, 79 a 83, 89, 108, 109) necessiten operacions, no només càrrega (CA-001-102 inclòs).
 - **Alternatives considered:**
   - Una operació genèrica de desament que accepti qualsevol canvi: descartada; permetria canviar l'id o l'alias i editar tests i registres desats.
   - Permetre editar tests i registres desats: descartat (decisió c, 2026-10-28).
   - Substituir el registre desat en entrar una marca millor: descartat; la llista conserva les millores successives i la marca vigent és la darrera (RN-007).
   - Casos d'ús dins de les entitats del domini: descartat; necessiten repositoris i generador d'id, i el domini no fa I/O.
-- **D1 (confirmada) — lectura d'identitat per a la unicitat:** un DTO mínim (`correu`, `alias`, `extra="ignore"`) llegeix els dos camps com a text cru; el correu es normalitza com la validació i l'alias es llegeix tal com és (RN-003 no el normalitza). Si un camp falta o no és text, aquell nedador no participa a la unicitat d'aquell camp, però sí a la de l'altre. «Llegible» = JSON ben format que és un objecte.
+- **D1 (confirmada) — lectura d'identitat per a la unicitat:** un DTO mínim (`correu`, `alias`, `extra="ignore"`) llegeix els dos camps com a text cru; el correu es compara en minúscules i sense espais als extrems (el valor no canvia) i l'alias es llegeix tal com és (RN-003 no el normalitza). Si un camp falta o no és text, aquell nedador no participa a la unicitat d'aquell camp, però sí a la de l'altre; un nedador sense correu tampoc no hi participa. «Llegible» = JSON ben format que és un objecte.
 - **D2 (confirmada) — port `GeneradorId`:** `nou() -> IdNedador`, implementat amb `uuid4()` i injectat a l'alta. Detall a `plan.md`, § Decisions de disseny confirmades.
 - **Fora d'abast:** la CLI (`interfaces`). Els casos d'ús es proven directament.
 

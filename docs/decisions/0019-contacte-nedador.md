@@ -1,6 +1,6 @@
 # ADR-0019 — Contacte del nedador
 
-**Estat:** Acceptat. Substitueix sencer l'ADR-0017. Esmena RN-032 i manté RN-033 i RN-034 retirades (spec 001).
+**Estat:** Substituït per ADR-0020. Substituïa sencer l'ADR-0017. Esmena RN-032 i manté RN-033 i RN-034 retirades (spec 001).
 
 ## Context
 El correu identifica la persona (RN-032) i el mòbil és només una dada de contacte. Calia un format de correu precís i comprovable, i fixar en un sol ADR tot el contacte del nedador.

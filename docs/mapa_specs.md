@@ -77,9 +77,8 @@ Convencions de noms:
 | 006 | Composició de sessions | Plantilla (rol + fase) → parts (ADR-0004) → tècnica de la biblioteca → principals segons les proves objectiu i la seva prioritat → volum ajustat; l'LLM només redacta i adapta dins de límits | Punts de judici LLM; activació del principal II; pes per prioritat |
 | 007 | Progressió amb B/C | Resultats, bandes de progressió, alertes | — |
 | 008 | Sortides | Full de piscina, resum setmanal, plantilla de registre | Formats d'E/S |
-| 009 | Verificació del correu | Enviar un codi per correu i confirmar-lo per verificar que l'adreça existeix i és activa; és l'única spec que posa `correu_verificat` a `true` (ADR-0018) | Mecanisme d'enviament i de confirmació del codi |
 
-Nucli mínim: 000 → 001 → 002 → 002b → 003 → 005 → 006. La 009 és fora del nucli mínim. El model és multi-nedador des de la 001; la validació inicial es fa amb un nedador real com a cas de prova.
+Nucli mínim: 000 → 001 → 002 → 002b → 003 → 005 → 006. El model és multi-nedador des de la 001; la validació inicial es fa amb un nedador real com a cas de prova.
 
 ## Decisions preses
 Les decisions vigents són als ADR de `docs/decisions/`. Aquest mapa no en repeteix cap.

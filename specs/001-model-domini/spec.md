@@ -37,10 +37,12 @@ data/
 ## Entitats
 
 **Nedador** (`nedador.json`)
-- `correu`: obligatori. Normalització, format i unicitat: RN-032 (ADR-0019). És una dada personal.
-- `correu_verificat`: booleà, obligatori. En crear el nedador val `false`; modificar-ne el correu el torna a `false` només si el correu normalitzat canvia. Cap operació d'aquesta spec el posa a `true`: la verificació és una spec pròpia (ADR-0018).
-- `mobil`: obligatori; text no buit després de treure'n els espais als extrems (buit: ERROR). Cap altra validació: sense format, unicitat ni avís (ADR-0019). No intervé en cap regla de planificació. És una dada personal.
-- `canal_preferent`: `correu` o `mobil`; qualsevol altre valor és un error de format. Absent o `null`: RN-035.
+- `correu`: opcional (absent o `null` = sense correu). Format i unicitat: RN-032 (ADR-0020). Es desa tal com s'ha entrat. És una dada personal.
+
+  > **El correu electrònic és un camp de contacte opcional. El sistema no corregeix, normalitza ni verifica que el correu sigui rebible. Si s'introdueix un correu incorrecte, les notificacions no es podran lliurar; la responsabilitat és de qui l'ha introduït, que l'haurà de modificar. El sistema només comprova que el correu contingui el símbol @ i que el domini tingui un punt.**
+
+- `mobil`: obligatori; text no buit després de treure'n els espais en blanc als extrems (espais, tabuladors i salts de línia; buit: ERROR). Cap altra validació: sense format, unicitat ni avís (ADR-0020). No intervé en cap regla de planificació. És una dada personal.
+- `canal_preferent`: `correu` o `mobil`; qualsevol altre valor és un error de format. Absent o `null`: RN-035. `correu` en un nedador sense correu: RN-035 (avís).
 - `alias`: RN-003.
 - `arxivat`: booleà. En crear el nedador val `false` (RN-017).
 - `estils_preferents`: un o més codis, sense repetir. Admesos: Cr, Esq, Br, Pap, Ei (spec 000, §4). `Ei` indica un especialista en estils.
@@ -123,7 +125,7 @@ data/
 - El filtre passa per tots els nedadors i no s'atura al primer error. Un nedador amb un ERROR no es planifica fins que es corregeix.
 - El resultat és per nedador i per camp: alias (o l'UUID de la carpeta si el fitxer no es pot llegir), camp, valor, RN (o «format» si no n'hi ha) i acció.
 - Un nedador pot tenir diversos errors: els llista tots.
-- La unicitat (correu, RN-032; alias, RN-003) es comprova sobre tots els fitxers que es poden llegir, siguin vàlids o no. La unicitat només s'aplica a correu i alias. Una col·lisió identifica tots els nedadors implicats; un ERROR en un altre camp no n'exclou cap de la comprovació. També val per a l'alta.
+- La unicitat (correu, RN-032; alias, RN-003) es comprova sobre tots els fitxers que es poden llegir, siguin vàlids o no. El correu es compara en minúscules i sense espais als extrems; un nedador sense correu no hi participa. La unicitat només s'aplica a correu i alias. Una col·lisió identifica tots els nedadors implicats; un ERROR en un altre camp no n'exclou cap de la comprovació. També val per a l'alta.
 - Un fitxer que no es pot llegir és un ERROR propi i no participa a la unicitat.
 
 ## Modificació del nedador
@@ -132,8 +134,7 @@ data/
 
 **Modificables:** `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament` i `volum_setmanal`.
 - Una modificació torna a validar el nedador sencer, unicitat inclosa. Si hi ha un ERROR, no es desa res.
-- Un `correu` nou passa RN-032. L'id no canvia (RN-002).
-- `correu_verificat` no es rep com a dada: modificar el `correu` el torna a `false` només si el correu normalitzat canvia, i modificar qualsevol altre camp el conserva (ADR-0018).
+- Un `correu` nou passa RN-032 i es desa tal com s'ha entrat. L'id no canvia (RN-002).
 - Canviar `dies_entrenament` o `volum_setmanal` a mitja temporada: la 001 ho permet. La nova planificació és de la spec 005 (CA-001-84).
 
 **Amb operació pròpia:**
@@ -147,7 +148,7 @@ data/
 - Temps de registre en format `m:ss.cc` (spec 000).
 - Hi ha tres tipus de camp:
   - **Obligatori:** ha de ser-hi amb un valor vàlid. Si falta o és `null`, és error.
-  - **Informatiu** (`notes`, `detall_400`, `detall_200` i els seus camps): no intervé en cap regla de planificació. Pot faltar o ser `null`; tots dos casos volen dir «sense valor» i no generen avís.
+  - **Informatiu** (`correu`, `notes`, `detall_400`, `detall_200` i els seus camps): no intervé en cap regla de planificació. Pot faltar o ser `null`; tots dos casos volen dir «sense valor» i no generen avís.
   - **Opcional amb avís** (`seu`, `canal_preferent`): com un informatiu, però sense valor genera l'avís que indica la spec (RN-009, RN-035).
 - En desar, el sistema escriu tots els camps; un camp sense valor s'escriu `null`. No hi ha cap valor per defecte.
 
@@ -162,7 +163,7 @@ data/
 - Els fitxers de `data/` són locals i no es versionen.
 - Els fitxers s'editen a mà o els genera la importació (spec 002).
 - Spec de model: no té històries d'usuari ni checklist; els criteris d'acceptació són el contracte.
-- El format del correu és a RN-032 (ADR-0019). Fora d'abast d'aquesta spec: verificar que l'adreça existeix i és activa, que és una spec pròpia (ADR-0018, `docs/mapa_specs.md`), i les variants de Gmail (`BACKLOG.md`).
+- El format del correu és a RN-032 (ADR-0020) i es comprova només per caràcters, sense xarxa (menys de 10 ms). El sistema no verifica ni normalitza el correu.
 - El correu i el mòbil són dades personals. Quines dades poden arribar a un LLM ho fixarà l'ADR pendent de l'auditoria G0.
 - `data/avisos.jsonl` només creix i cap avís vigent no hi porta el correu ni el mòbil. Com es compleix el dret de supressió (RGPD, art. 17) a `nedador.json` i al registre ho fixa el pendent «ADR de dades personals: supressió» (`docs/estat.md`).
 
@@ -170,7 +171,7 @@ data/
 
 ### Sessions 2026-10-20 a 2026-10-22 (fora de `/speckit-clarify`; detall a l'historial git de la spec)
 
-- P: Què identifica un nedador? → Un id opac, que és el nom de la carpeta (RN-001, RN-002). El correu és una dada de `nedador.json` i és únic (RN-032); l'alias és obligatori (RN-003).
+- P: Què identifica un nedador? → Un id opac, que és el nom de la carpeta (RN-001, RN-002). El correu és una dada de `nedador.json` i és únic (RN-032); l'alias és obligatori (RN-003). Matisada per 2026-11-03 (vespre) (el correu és opcional).
 - P: Es pot esborrar un nedador? → No: s'arxiva (RN-004, RN-017).
 - P: Es pot planificar un nedador sense test CSS? → Sí: és apte i es genera l'avís «sense ritmes» (CA-001-14).
 - P: Quin test CSS s'aplica? → El test vigent: l'últim acceptat de la piscina del període. Registrar-ne un no canvia els ritmes fins que el coach l'accepta.
@@ -189,7 +190,7 @@ data/
 - P: Quines piscines s'admeten? → 25 m i 50 m; no hi ha altres mides oficials.
 - P: Quines proves s'admeten? → Només les proves individuals oficials per a la piscina (RN-030).
 - P: Com es defineix la temporada? → De l'1/10 al 30/09 de l'any següent; el nom de la carpeta en dona la definició (RN-031).
-- P: Com s'identifica la persona? → Pel correu, obligatori i únic; no es desen nom ni cognoms (RN-032).
+- P: Com s'identifica la persona? → Pel correu, obligatori i únic; no es desen nom ni cognoms (RN-032). Substituïda per 2026-10-25 (l'id és un UUID) i matisada per 2026-11-03 (vespre) (el correu és opcional i no identifica).
 - P: On es registren els avisos? → A `data/avisos.jsonl`, que només creix (§ Registre d'avisos).
 
 ### Sessió 2026-10-25 (esmena: id, alias i contacte)
@@ -236,8 +237,8 @@ data/
 
 ### Sessió 2026-10-29 (decisions A, B i C; correccions del G2)
 
-- Decisió A — P: Quin contacte té el nedador? → ADR-0017 substitueix l'ADR-0016. El correu és obligatori, únic entre tots els nedadors (arxivats inclosos) i intransferible; es normalitza (sense espais als extrems, en minúscules) abans de validar-lo i desar-lo, i té un format simple (RN-032). RN-033 i RN-034 queden retirades: el mòbil és obligatori, sense format, sense unicitat i sense avís. Substituïda per 2026-11-03 (ADR-0019 substitueix l'ADR-0017; el format és l'expressió regular de RN-032).
-- Decisió A — P: Es pot modificar el correu? → Sí: l'id no canvia (RN-002); el correu nou passa format i unicitat, i l'antic queda lliure (CA-001-79, 88).
+- Decisió A — P: Quin contacte té el nedador? → ADR-0017 substitueix l'ADR-0016. El correu és obligatori, únic entre tots els nedadors (arxivats inclosos) i intransferible; es normalitza (sense espais als extrems, en minúscules) abans de validar-lo i desar-lo, i té un format simple (RN-032). RN-033 i RN-034 queden retirades: el mòbil és obligatori, sense format, sense unicitat i sense avís. Substituïda per 2026-11-03 (ADR-0019 substitueix l'ADR-0017; el format és l'expressió regular de RN-032) i per 2026-11-03 (vespre) (ADR-0020).
+- Decisió A — P: Es pot modificar el correu? → Sí: l'id no canvia (RN-002); el correu nou passa format i unicitat, i l'antic queda lliure (CA-001-79, 88). Matisada per 2026-11-03 (vespre) (el correu es desa tal qual; CA-001-88 retirat, ara CA-001-109).
 - Decisió A — P: A què s'aplica la unicitat? → Només a correu i alias (RN-003, RN-032).
 - Decisió A — P: Un nedador amb un camp d'identitat il·legible (que falta o no és text) participa a la unicitat? → A la dels altres camps sí; a la d'aquell camp no. L'error del camp el dona el validador (CA-001-92).
 - Decisió B — P: Què és un millor registre? → El de competició, un sol per prova i piscina, amb `temps`, `data` i `competicio` (id del catàleg, obligatori). Un temps menor substitueix el desat; igual o pitjor, no es fa res, ni error ni avís (RN-007, CA-001-83, 89 a 91). Desfà la decisió del 2026-10-28 (millor registre derivat i només-afegir). Substituïda per 2026-11-03 (decisió 1).
@@ -254,12 +255,23 @@ data/
 - Decisió 1 — P: I una llista que no és ordenada al fitxer? → ERROR: dins de cada prova i piscina, cada marca ha de ser millor que l'anterior (RN-007, CA-001-06, 96).
 - Decisió 1 — P: Quina és la marca vigent? → L'última de la llista de la prova i piscina; és una consulta i no es desa (CA-001-97).
 - Decisió 1 — P: RN-010 i la competició d'un millor registre? → RN-010 torna a cobrir només les inscripcions. CA-001-94 i 95 retirats.
-- Decisió 3 — P: Quin format té el correu? → El de RN-032, que és una expressió regular completa aplicada després de normalitzar-lo (CA-001-87).
-- Decisió 3 — P: Es verifica que el correu existeix? → No a la 001: és una spec pròpia futura (ADR-0018). El nedador té `correu_verificat`, obligatori, `false` en crear-lo i en modificar-ne el correu; cap operació de la 001 el posa a `true` (CA-001-98 a 100).
-- N-1 — P: Quin és l'ADR vigent del contacte? → L'ADR-0019 substitueix sencer l'ADR-0017: correu obligatori, únic, normalitzat i amb l'expressió regular de RN-032; mòbil obligatori (no buit), sense format ni unicitat; `canal_preferent` sense canvis; la verificació és de l'ADR-0018.
+- Decisió 3 — P: Quin format té el correu? → El de RN-032, que és una expressió regular completa aplicada després de normalitzar-lo (CA-001-87). Substituïda per 2026-11-03 (vespre) (format mínim, sense normalitzar; ADR-0020).
+- Decisió 3 — P: Es verifica que el correu existeix? → No a la 001: és una spec pròpia futura (ADR-0018). El nedador té `correu_verificat`, obligatori, `false` en crear-lo i en modificar-ne el correu; cap operació de la 001 el posa a `true` (CA-001-98 a 100). Substituïda per 2026-11-03 (vespre) (no es verifica; `correu_verificat` desapareix).
+- N-1 — P: Quin és l'ADR vigent del contacte? → L'ADR-0019 substitueix sencer l'ADR-0017: correu obligatori, únic, normalitzat i amb l'expressió regular de RN-032; mòbil obligatori (no buit), sense format ni unicitat; `canal_preferent` sense canvis; la verificació és de l'ADR-0018. Substituïda per 2026-11-03 (vespre) (ADR-0020 substitueix l'ADR-0019 i l'ADR-0018).
 - N-3 — P: Quina data ha de tenir una marca nova? → Posterior a la de la marca vigent de la mateixa prova i piscina; si no ho és, ERROR (RN-007, CA-001-102). Un temps igual o pitjor continua sense fer res.
-- N-4 — P: Quan torna `correu_verificat` a `false`? → Només si el correu normalitzat canvia; un canvi de majúscules o d'espais el conserva (ADR-0018, CA-001-99, 103).
+- N-4 — P: Quan torna `correu_verificat` a `false`? → Només si el correu normalitzat canvia; un canvi de majúscules o d'espais el conserva (ADR-0018, CA-001-99, 103). Substituïda per 2026-11-03 (vespre) (`correu_verificat` desapareix; CA-001-99 i 103 retirats).
 - Correcció — P: Un mòbil compartit o sense format E.164 dona error o avís? → No: s'accepta sense error ni avís (CA-001-101).
+
+### Sessió 2026-11-03 (vespre) (esmena del correu: ADR-0020)
+
+- A — P: Quin és el contacte del nedador? → ADR-0020 substitueix l'ADR-0019 i l'ADR-0018. El correu és un camp de contacte opcional (absent o `null` = sense correu); el sistema no el corregeix, normalitza ni verifica. Si és incorrecte, les notificacions no es podran lliurar i la responsabilitat és de qui l'ha introduït. Es desa exactament tal com s'ha entrat.
+- A — P: Quin format té el correu? → Només es comprova per caràcters, sense xarxa: una `@`, part local no buida, domini no buit amb un punt i cap espai en blanc al mig; els espais dels extrems no compten (RN-032). L'expressió regular estricta i la normalització desapareixen (CA-001-85 a 87 retirats).
+- A — P: Com és la unicitat? → Si hi ha correu, és únic entre tots els nedadors (arxivats inclosos), comparat en minúscules i sense espais als extrems; el valor desat no canvia. Un nedador sense correu no hi participa.
+- B — P: Es verifica el correu? → No: ni correu de confirmació, ni MX, ni SMTP. `correu_verificat` desapareix de la documentació; CA-001-98 a 100 i 103 retirats. La spec 009 del mapa i les entrades del `BACKLOG.md` sobre verificació i variants de Gmail queden retirades.
+- C — P: Què passa amb `canal_preferent: correu` si no hi ha correu? → Avís (RN-035, CA-001-110). Absent o `null` continua sent avís; un valor fora de `correu` i `mobil`, error de format.
+- D — P: Quan és buit el `mobil`? → Si és buit després de treure'n els espais en blanc als extrems (espais, tabuladors i salts de línia); un mòbil amb només un tabulador o un salt de línia és un ERROR (CA-001-111).
+- E — P: I els CA que normalitzaven el correu o en miraven la verificació? → Retirats: CA-001-85, 86, 87, 88, 98, 99, 100 i 103. CA-001-01 i 44 es revisen; CA-001-101 (mòbil) continua vigent. CA nous: CA-001-104 a 111.
+- F — P: Quins canvis té el pla? → `tasks.md` (T035, T036, T038 a T042, T044, T047 i la taula CA → tasca), `plan.md` (D1: el correu es compara en minúscules i sense espais, el valor no canvia), `research.md`, `data-model.md`, contracte i quickstart. Recomptes: 98 CA actius (89 amb test, 9 pendents) i 13 retirats.
 
 ## CA retirats
 
@@ -267,14 +279,22 @@ Els números no es reutilitzen.
 
 | CA | Motiu |
 |---|---|
-| CA-001-55 | Format de mòbil: RN-033 retirada (ADR-0019) |
-| CA-001-56 | Mòbil compartit: RN-034 retirada (ADR-0019) |
-| CA-001-77 | Avís de mòbil compartit amb un ERROR en un altre camp: RN-034 retirada (ADR-0019) |
+| CA-001-55 | Format de mòbil: RN-033 retirada (ADR-0020) |
+| CA-001-56 | Mòbil compartit: RN-034 retirada (ADR-0020) |
+| CA-001-77 | Avís de mòbil compartit amb un ERROR en un altre camp: RN-034 retirada (ADR-0020) |
+| CA-001-85 | Normalització del correu (minúscules, espais): el correu es desa tal com s'entra (ADR-0020) |
+| CA-001-86 | Correu de format vàlid segons l'expressió regular: substituïda pel format mínim (CA-001-104, ADR-0020) |
+| CA-001-87 | Correus no vàlids segons l'expressió regular: substituïda pel format mínim (CA-001-105, ADR-0020) |
+| CA-001-88 | Modificar el correu (normalitzat; l'antic queda lliure): substituït pel CA-001-109 (ADR-0020) |
 | CA-001-94 | Piscina del registre igual a la de la competició: la competició és un nom informatiu (decisió 1, 2026-11-03) |
 | CA-001-95 | Esborrar una competició referenciada per un millor registre: RN-010 només cobreix les inscripcions (decisió 1, 2026-11-03) |
+| CA-001-98 | `correu_verificat` a `false` en l'alta: el camp desapareix (ADR-0020) |
+| CA-001-99 | `correu_verificat` en canviar el correu: el camp desapareix (ADR-0020) |
+| CA-001-100 | `correu_verificat` en canviar un altre camp: el camp desapareix (ADR-0020) |
+| CA-001-103 | `correu_verificat` en canviar només majúscules o espais: el camp desapareix (ADR-0020) |
 
 ## Criteris d'acceptació
-- **CA-001-01** — **Donat** un `nedador.json` vàlid, **quan** es carrega i es torna a desar, **aleshores** el contingut desat és equivalent a l'original (mateixos valors, amb el correu normalitzat; un camp informatiu absent equival a `null`).
+- **CA-001-01** — **Donat** un `nedador.json` vàlid, **quan** es carrega i es torna a desar, **aleshores** el contingut desat és equivalent a l'original (mateixos valors; el correu es desa i es torna a llegir idèntic, sense normalitzar; un camp informatiu absent equival a `null`).
 - **CA-001-02** — **Donat** un catàleg de competicions i un `inscripcions.json` vàlids, **quan** es carreguen i es tornen a desar, **aleshores** el contingut desat és equivalent a l'original.
 - **CA-001-03** — **Donat** un nedador sense estils preferents, sense dies d'entrenament o amb `volum_setmanal.min > max`, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp.
 - **CA-001-04** — **Donat** un test CSS amb t400 ≤ t200, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error.
@@ -317,7 +337,7 @@ Els números no es reutilitzen.
 - **CA-001-41** — **Donada** una `piscina` diferent de 25 o 50 en una competició, un test o un millor registre, **quan** es carrega, **aleshores** si és en una competició del catàleg, falla TOTA la càrrega; si és en un test o un millor registre, aquell nedador no es carrega; en tots dos casos dona un error que identifica el fitxer, el camp i el valor.
 - **CA-001-42** — **Donada** una inscripció o un millor registre amb una prova que no és oficial per a la seva piscina (p. ex. `100 Ei` en piscina de 50 m), **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica la prova i la piscina (RN-030).
 - **CA-001-43** — **Donada** una carpeta de temporada amb un nom que no segueix RN-031 (p. ex. `2026-28`), **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica la carpeta.
-- **CA-001-44** — **Donat** un nedador sense `correu`, amb `correu: null`, buit o només amb espais, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp (RN-032).
+- **CA-001-44** — **Donat** un nedador amb `correu` buit o només amb espais en blanc, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp (RN-032). Un correu absent o `null` és vàlid (CA-001-107).
 - **CA-001-45** — **Donats** dos nedadors existents, un d'ells arxivat, **quan** es crea un nedador nou, **aleshores** rep un id UUID v4 diferent dels dos (RN-002).
 - **CA-001-46** — **Donat** un nedador amb un `alias` que no compleix RN-003 (p. ex. `""`, `marc` sense sufix, `Marc_3f2a9c1` o `marc_cognom_3f2a9c1`), **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp.
 - **CA-001-47** — **Donada** una competició amb `seu: null`, **quan** es carrega, **aleshores** `data/avisos.jsonl` té una línia nova amb `rn: "RN-009"`, el fitxer, el camp `seu`, la data i hora i `decisio: null`.
@@ -355,10 +375,6 @@ Els números no es reutilitzen.
 - **CA-001-82** — **Donat** un test CSS desat, **quan** s'intenta editar, **aleshores** no es permet i el test no canvia; només es pot afegir un test nou o acceptar-lo.
 - **CA-001-83** — **Donat** un millor registre desat, **quan** s'afegeix un registre de la mateixa prova i piscina amb un temps menor, **aleshores** s'afegeix a la llista i el desat es conserva (RN-007); **quan** s'afegeix un registre de la mateixa prova a l'altra piscina, **aleshores** s'afegeix sense comparar-lo amb el de la primera, tingui el temps que tingui; **quan** s'intenta editar un registre desat, **aleshores** no es permet.
 - **CA-001-84** [PENDENT spec 005] — **Donat** un nedador al qual es canvia `dies_entrenament` o `volum_setmanal` a mitja temporada, **quan** es planifica, **aleshores** es torna a planificar amb la configuració nova i la planificació passada es conserva com a registre (des de quina setmana: ho decideix la spec 005).
-- **CA-001-85** — **Donat** un correu escrit amb majúscules o amb espais en blanc als extrems (espais, tabuladors o salts de línia; p. ex. `  Nedador@Example.COM `), **quan** es carrega, s'entra o es modifica, **aleshores** es normalitza a `nedador@example.com` abans de validar-lo i de desar-lo, i el fitxer desat porta el valor normalitzat (RN-032).
-- **CA-001-86** — **Donat** un correu de format vàlid (p. ex. `nedador@example.com`, o un de 254 caràcters), **quan** es valida, **aleshores** no dona cap error de format (RN-032).
-- **CA-001-87** — **Donat** un correu de format no vàlid, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp i el valor. Un exemple per cas: sense «@» (`nedador.example.com`), dues «@» (`a@b@example.com`), part local buida (`@example.com`), domini sense punt (`nedador@example`), TLD d'una lletra (`nedador@example.c`), domini sense etiqueta (`a@.com`), punts seguits al domini (`a@b..com`), part local que comença amb punt (`.a@b.com`), part local que acaba amb punt (`a.@b.com`), etiqueta del domini que comença amb guionet (`a@-b.com`), TLD amb una xifra (`a@b.c1`), espai dins del correu (`a b@c.com`), part local de 65 caràcters i 255 caràcters en total. **Donat** un correu de format vàlid amb majúscules i espais als extrems (`  A.B@Example.COM `), **quan** es carrega, **aleshores** es normalitza a `a.b@example.com` i no dona cap error (RN-032).
-- **CA-001-88** — **Donat** un nedador existent, **quan** se'n modifica el correu per un de format vàlid i que no té cap altre nedador, **aleshores** es desa normalitzat, l'id no canvia i el correu antic queda lliure: un nedador nou el pot fer servir (RN-032, RN-002).
 - **CA-001-89** — **Donat** un millor registre desat, **quan** s'afegeix un registre de la mateixa prova i piscina amb un temps igual o pitjor, **aleshores** no es fa res: el desat no canvia i no hi ha ni ERROR ni AVÍS (RN-007).
 - **CA-001-90** — **Donat** un millor registre sense `competicio`, amb `competicio: null` o amb `competicio: ""`, **quan** es carrega o s'afegeix, **aleshores** aquell nedador no es carrega (o el registre no s'afegeix) i dona un error que identifica el camp (RN-007).
 - **CA-001-91** — **Donat** un millor registre amb una `competicio` que no és al catàleg (o amb el catàleg buit), **quan** es carrega, **aleshores** el nedador es carrega, sense error ni avís: la competició és informativa (RN-007).
@@ -366,9 +382,13 @@ Els números no es reutilitzen.
 - **CA-001-93** — **Donat** un nedador amb `mobil: ""` o només amb espais, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error de format que identifica el camp.
 - **CA-001-96** — **Donats** tres millors registres de la mateixa prova i piscina amb els temps `1:10.00`, `1:08.00` i `1:09.00` en aquest ordre al fitxer, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica la prova i la piscina (RN-007).
 - **CA-001-97** — **Donat** un nedador amb tres marques d'una prova i piscina i una altra marca de la mateixa prova a l'altra piscina, **quan** es demana la `marca_vigent` d'aquella prova i piscina, **aleshores** s'obté l'última de la llista d'aquella piscina i la consulta no desa res.
-- **CA-001-98** — **Donat** un nedador nou, **quan** s'executa l'operació d'alta, **aleshores** `correu_verificat` val `false` (ADR-0018).
-- **CA-001-99** — **Donat** un nedador existent amb `correu_verificat: true` (fitxer editat a mà), **quan** se'n modifica el `correu` per un altre que, un cop normalitzat, és diferent, **aleshores** `correu_verificat` val `false` (ADR-0018).
-- **CA-001-100** — **Donat** un nedador existent amb `correu_verificat: true` (fitxer editat a mà), **quan** es modifica qualsevol camp que no és el `correu` (p. ex. `mobil`), **aleshores** `correu_verificat` es conserva a `true` (ADR-0018).
-- **CA-001-101** — **Donats** dos nedadors amb el mateix `mobil`, i un altre amb un `mobil` que no té format E.164 (p. ex. `600 00 00 00`), **quan** es carreguen, **aleshores** es carreguen tots, sense error ni avís (ADR-0019).
+- **CA-001-101** — **Donats** dos nedadors amb el mateix `mobil`, i un altre amb un `mobil` que no té format E.164 (p. ex. `600 00 00 00`), **quan** es carreguen, **aleshores** es carreguen tots, sense error ni avís (ADR-0020).
 - **CA-001-102** — **Donat** un millor registre desat amb data D, **quan** s'afegeix un registre de la mateixa prova i piscina amb un temps menor i una data igual o anterior a D, **aleshores** dona un error que identifica la prova i la piscina i la llista no canvia; **quan** es carrega un fitxer amb dues marques de la mateixa prova i piscina on la segona té una data igual o anterior a la de la primera, **aleshores** aquell nedador no es carrega i dona el mateix error (RN-007).
-- **CA-001-103** — **Donat** un nedador existent amb `correu_verificat: true` (fitxer editat a mà) i el correu `nedador@example.com`, **quan** se'n modifica el `correu` per `  Nedador@Example.COM ` (només canvien majúscules o espais), **aleshores** el correu normalitzat és el mateix i `correu_verificat` es conserva a `true` (ADR-0018).
+- **CA-001-104** — **Donat** un nedador amb un correu de format bàsic (p. ex. `a@b.c` o `  Pere@Exemple.cat `), **quan** el coach l'entra (alta), el modifica o es carrega, **aleshores** s'accepta i es desa idèntic, amb les majúscules i els espais dels extrems inclosos (RN-032).
+- **CA-001-105** — **Donat** un nedador amb un correu sense `@` (`nedador.example.com`), amb `@` sense part local (`@example.com`), amb `@` sense domini (`nedador@`), amb un domini sense punt (`nedador@example`) o amb un espai al mig (`a b@example.com`), **quan** el coach l'entra (alta), el modifica o es carrega, **aleshores** dona un ERROR que identifica el camp i el valor: a l'alta i a la modificació no es desa, a la càrrega aquell nedador no es carrega (RN-032). Un exemple per cas.
+- **CA-001-106** — **Donat** un nedador amb un correu amb un error tipogràfic (p. ex. `usari@gmial.com`), **quan** el coach l'entra (alta), el modifica o es carrega, **aleshores** s'accepta i es desa tal qual, sense error ni avís (RN-032).
+- **CA-001-107** — **Donat** un nedador sense `correu` (absent o `null`) i amb `canal_preferent: mobil`, **quan** el coach l'entra (alta), el modifica o es carrega, **aleshores** és vàlid, es desa amb `correu: null` i no dona cap error ni avís (RN-032).
+- **CA-001-108** — **Donats** dos nedadors amb els correus `A@b.com` i ` a@b.com `, un d'ells arxivat, **quan** es carreguen, o quan el coach dona d'alta o modifica un nedador amb un d'aquests correus mentre l'altre existeix, **aleshores** hi ha col·lisió: a la càrrega no es carrega cap dels dos i l'error identifica tots dos; a l'alta i a la modificació dona un ERROR i no es desa res. El valor desat de cada nedador no canvia (RN-032).
+- **CA-001-109** — **Donat** un nedador existent, **quan** el coach en modifica el correu per un valor nou vàlid que no té cap altre nedador (p. ex. `  Nou@Exemple.cat `), **aleshores** es desa tal qual, l'id no canvia i el correu antic queda lliure: un nedador nou el pot fer servir (RN-032, RN-002).
+- **CA-001-110** — **Donat** un nedador amb `canal_preferent: correu` i sense `correu`, **quan** el coach l'entra (alta), el modifica o es carrega, **aleshores** genera un AVÍS RN-035 que identifica l'alias i el camp, no bloqueja i, a la càrrega, es registra a `data/avisos.jsonl` amb `decisio: null` (RN-035).
+- **CA-001-111** — **Donat** un nedador amb `mobil` que només té un tabulador o un salt de línia, **quan** el coach l'entra (alta), el modifica o es carrega, **aleshores** dona un error de format que identifica el camp: a l'alta i a la modificació no es desa, a la càrrega aquell nedador no es carrega (ADR-0020).

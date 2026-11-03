@@ -7,7 +7,7 @@ Model del domini (`src/blondswim/domain/`). L'ordre dels camps és el de l'escri
 | Objecte | Representació | Validació |
 |---|---|---|
 | `IdNedador` | text, UUID v4 canònic en minúscules | RN-001, ADR-0014 |
-| `Correu` | text normalitzat | RN-032 |
+| `Correu` | text tal com s'entra; clau de comparació en minúscules i sense espais als extrems | RN-032 |
 | `Canal` | `correu` \| `mobil` | un altre valor és un error de format; absent o `null`: RN-035 |
 | `Alias` | text | RN-003 |
 | `Estil` | enum `Cr`, `Esq`, `Br`, `Pap`, `Ei` | spec 000 §4; als estils preferents només aquests cinc (CA-001-39) |
@@ -28,10 +28,9 @@ Tipus de camp (spec, § Format JSON): **obligatori** (ha de ser-hi amb valor), *
 | Camp | Tipus | Obligatori | Regla / CA |
 |---|---|---|---|
 | `versio_esquema` | int | sí | CA-001-17 |
-| `correu` | `Correu` | sí | RN-032; CA-001-24, 44, 85 a 88 |
-| `correu_verificat` | bool | sí | ADR-0018; `false` en crear-lo i quan el correu normalitzat canvia; CA-001-98 a 100, 103 |
-| `mobil` | text no buit (sense espais als extrems) | sí | ADR-0019; CA-001-54, 93, 101 |
-| `canal_preferent` | `Canal` \| null | opcional amb avís | RN-035; CA-001-57 a 60 |
+| `correu` | `Correu` \| null | no (informatiu; si hi és, RN-032) | RN-032, ADR-0020; CA-001-24, 44, 104 a 109 |
+| `mobil` | text no buit (sense espais en blanc als extrems) | sí | ADR-0020; CA-001-54, 93, 101, 111 |
+| `canal_preferent` | `Canal` \| null | opcional amb avís | RN-035 (també `correu` sense correu); CA-001-57 a 60, 110 |
 | `alias` | `Alias` | sí | RN-003; CA-001-26, 46, 50 a 53, 61 |
 | `arxivat` | bool | sí | RN-017; `false` en crear-lo |
 | `estils_preferents` | llista d'`Estil`, ≥ 1, sense repetir | sí | CA-001-03, 39 |
@@ -105,8 +104,7 @@ Una línia JSON per avís: `data_hora` (ISO 8601), `rn`, `fitxer`, `camp`, `valo
 | Tipus | Camps | Regla |
 |---|---|---|
 | Immutables | `id`, `alias`, `versio_esquema` | `versio_esquema` només canvia amb una migració; la modificació no els rep com a dada (CA-001-53) |
-| Modificables | `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal` | torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res (CA-001-79, 80); el correu antic queda lliure (CA-001-88) |
-| No es rep com a dada | `correu_verificat` | `false` en crear el nedador i quan el correu normalitzat canvia; es conserva en modificar qualsevol altre camp o només les majúscules o els espais del correu (ADR-0018; CA-001-98 a 100, 103) |
+| Modificables | `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal` | torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res (CA-001-79, 80); el correu nou es desa tal qual i l'antic queda lliure (CA-001-109) |
 | Operació pròpia | `arxivat` | arxivar i desarxivar (RN-017; CA-001-81) |
 | Operació pròpia | `tests_css` | només s'afegeixen; un test desat no s'edita; el coach l'accepta (CA-001-30, 82) |
 | Operació pròpia | `millors_registres` | només s'afegeix una marca millor que la vigent de la mateixa prova i piscina i de data posterior (RN-007; CA-001-83, 102); una d'igual o pitjor no fa res (CA-001-89); un registre desat no s'edita |
