@@ -23,6 +23,7 @@ vigents són als ADR acceptats de `docs/decisions/`; no les canviïs sense un AD
 - ADR-0013 — CSV com a format d'entrada
 - ADR-0014 — L'id del nedador és un UUID
 - ADR-0017 — Contacte del nedador
+- ADR-0018 — Verificació del correu
 
 ## Regles de treball
 - Treballa sempre a partir d'una spec de `specs/`. Si no n'hi ha, atura't i demana-la.

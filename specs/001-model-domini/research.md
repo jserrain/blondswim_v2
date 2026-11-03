@@ -22,7 +22,7 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
 
 ## R4. Temps `m:ss.cc`
 - **Decision:** objecte de valor `Temps` amb centèsimes enteres. Parseja `^\d+:[0-5]\d\.\d{2}$` i formata sempre amb dues xifres de centèsimes.
-- **Rationale:** compara sense errors de coma flotant (RN-006: t400 > t200; RN-007: un temps menor substitueix el millor registre) i rebutja `1:05.3` (CA-001-07).
+- **Rationale:** compara sense errors de coma flotant (RN-006: t400 > t200; RN-007: una marca nova només s'afegeix si el temps és menor que el vigent) i rebutja `1:05.3` (CA-001-07).
 - **Alternatives considered:**
   - `float` de segons: descartat; errors de coma flotant en comparar i en tornar a escriure.
   - `datetime.timedelta`: descartat; no imposa el format `m:ss.cc` ni les dues xifres de centèsimes.
@@ -33,33 +33,33 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
   - La validació retorna `Resultat(errors, avisos)`. Cada element té `rn` (o «format»), `fitxer`, `camp`, `valor`, `missatge` i acció, i s'identifica per l'alias (o per l'UUID de la carpeta si el fitxer no es pot llegir).
   - Un sol validador, amb les mateixes regles a l'entrada, a la càrrega i al filtre. El filtre passa per tots els nedadors i no s'atura al primer error.
   - La càrrega acumula els errors per nedador i exclou el nedador amb error; un error del catàleg fa fallar tota la càrrega.
-  - La unicitat (RN-032, RN-003) i RN-034 es comproven sobre tots els fitxers que es poden llegir, vàlids o no. Una col·lisió identifica tots els implicats. Un fitxer il·legible és un ERROR propi i no hi participa.
+  - La unicitat (RN-032, RN-003) es comprova sobre tots els fitxers que es poden llegir, vàlids o no. Una col·lisió identifica tots els implicats. Un fitxer il·legible és un ERROR propi i no hi participa.
   - `application` registra els avisos a través del port `RegistreAvisos`, amb la data i hora del port `Rellotge`.
   - `infrastructure` implementa el registre com a `data/avisos.jsonl` en mode afegir (spec 001, § Registre d'avisos).
 - **Rationale:** el principi IV demana avisos persistents i consultables; el domini continua sense I/O ni rellotge (principi I).
 - **Alternatives considered:** un registre per nedador. Descartat: els avisos del catàleg no són de cap nedador, i un sol fitxer es consulta millor.
 
 ## R6. Operacions de gestió
-- **Decision:** casos d'ús a `application`: alta (genera l'id UUID v4 i l'alias `<part>_<sufix>`, reintenta si l'alias col·lisiona, rebutja un ERROR; RN-002, RN-003; CA-001-45, 52, 61, 62, 70), esborrar nedador (sempre error, RN-004), arxivar i desarxivar (RN-017), modificar nedador, afegir test, acceptar test (CA-001-30), afegir un millor registre (substitueix el desat si el temps és menor; si és igual o pitjor, no fa res; RN-007), esborrar competició (RN-010).
+- **Decision:** casos d'ús a `application`: alta (genera l'id UUID v4 i l'alias `<part>_<sufix>`, reintenta si l'alias col·lisiona, rebutja un ERROR; RN-002, RN-003; CA-001-45, 52, 61, 62, 70), esborrar nedador (sempre error, RN-004), arxivar i desarxivar (RN-017), modificar nedador, afegir test, acceptar test (CA-001-30), afegir un millor registre (només s'afegeix si el temps és menor que la marca vigent de la mateixa prova i piscina; si és igual o pitjor, no fa res; RN-007), esborrar competició (RN-010). L'alta posa `correu_verificat` a `false` i modificar el correu el torna a `false` (ADR-0018).
   - Immutables: `id`, `alias`, `versio_esquema`. La modificació no els rep com a dada.
   - Modificables: `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal`. Una modificació torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res.
   - Un test o un millor registre desat no s'edita.
-- **Rationale:** els CA de gestió (21, 25, 30, 37, 45, 52, 53, 61, 62, 70, 79 a 83, 88, 89) necessiten operacions, no només càrrega.
+- **Rationale:** els CA de gestió (21, 25, 30, 37, 45, 52, 53, 61, 62, 70, 79 a 83, 88, 89) necessiten operacions, no només càrrega (CA-001-98 a 100 inclosos).
 - **Alternatives considered:**
   - Una operació genèrica de desament que accepti qualsevol canvi: descartada; permetria canviar l'id o l'alias i editar tests i registres desats.
   - Permetre editar tests i registres desats: descartat (decisió c, 2026-10-28).
-  - Desar tots els millors registres i derivar el millor: descartat el 2026-10-29 (decisió B); un sol registre de competició per prova i piscina és la dada que el coach consulta.
+  - Substituir el registre desat en entrar una marca millor: descartat; la llista conserva les millores successives i la marca vigent és la darrera (RN-007).
   - Casos d'ús dins de les entitats del domini: descartat; necessiten repositoris i generador d'id, i el domini no fa I/O.
-- **D1 (confirmada) — lectura d'identitat per a la unicitat:** un DTO mínim (`correu`, `alias`, `extra="ignore"`) llegeix els dos camps com a text cru i els normalitza com la validació. Si un camp falta o no és text, aquell nedador no participa a la unicitat d'aquell camp, però sí a la de l'altre. «Llegible» = JSON ben format que és un objecte.
+- **D1 (confirmada) — lectura d'identitat per a la unicitat:** un DTO mínim (`correu`, `alias`, `extra="ignore"`) llegeix els dos camps com a text cru; el correu es normalitza com la validació i l'alias es llegeix tal com és (RN-003 no el normalitza). Si un camp falta o no és text, aquell nedador no participa a la unicitat d'aquell camp, però sí a la de l'altre. «Llegible» = JSON ben format que és un objecte.
 - **D2 (confirmada) — port `GeneradorId`:** `nou() -> IdNedador`, implementat amb `uuid4()` i injectat a l'alta. Detall a `plan.md`, § Decisions de disseny confirmades.
 - **Fora d'abast:** la CLI (`interfaces`). Els casos d'ús es proven directament.
 
-## R7. Temporada i setmana derivades
+## R7. Temporada (definició) i setmana (consulta)
 - **Decision:**
-  - `Temporada.de_codi("AAAA-AA")` valida el nom (RN-031) i calcula `inici` i `fi`.
-  - `setmana_iso(data)` fa servir `date.isocalendar()`.
-  - Res d'això es desa. L'inici i el fi de temporada són una definició (RN-031); la setmana és una consulta.
-- **Rationale:** són valors derivats o definicions (principi V) i el rellotge no hi intervé.
+  - `Temporada.de_codi("AAAA-AA")` és a `domain/definicions.py`, l'únic lloc: valida el nom (RN-031) i dona l'`inici` i el `fi`. La temporada és una definició, no es deriva.
+  - `setmana_iso(data)` és una consulta a `derivats.py` i fa servir `date.isocalendar()`.
+  - Res d'això es desa.
+- **Rationale:** una definició i una consulta (principi V) i el rellotge no hi intervé.
 - **Alternatives considered:**
   - Desar `temporada.json` amb l'inici i el fi: descartat; duplicaria el que ja diu el nom de la carpeta.
   - Calcular la setmana amb una fórmula pròpia: descartat; `isocalendar()` ja implementa ISO 8601 i evita els errors de canvi d'any.

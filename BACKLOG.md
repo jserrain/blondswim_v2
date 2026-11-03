@@ -14,7 +14,7 @@ Idees per a la propera versió. Una idea per fila. Només passa a la versió nov
 | 3 | 25/10/2026 | Seguretat quan l'app s'exposi a un endpoint | Pendent | Mitjana |
 | 4 | 28/10/2026 | Replanificar a mitja temporada per canvi de dies o volum | Pendent | Mitjana |
 | 5 | 29/10/2026 | Historial de millors marques | Pendent | Baixa |
-| 6 | 29/10/2026 | Validació i verificació del correu (format, domini, bústia activa) | Pendent | Baixa |
+| 6 | 29/10/2026 | Variants de Gmail al correu | Pendent | Baixa |
 | 7 | 29/10/2026 | Parcials i pacing de cursa | Pendent | Mitjana |
 | 8 | 29/10/2026 | Conversió de marques 25 m ↔ 50 m | Pendent | Mitjana |
 | 9 | 29/10/2026 | Marques mínimes amb caducitat | Pendent | Mitjana |
@@ -92,22 +92,22 @@ Idees per a la propera versió. Una idea per fila. Només passa a la versió nov
 
 - **Font:** decisió B de la spec 001 (29/10/2026)
 - **Objectiu:** poder veure l'evolució d'una marca, no només l'última
-- **On encaixa:** spec futura de progressió (007); ara `millors_registres` desa un sol registre per prova i piscina (RN-007)
+- **On encaixa:** spec futura de progressió (007); `millors_registres` ja conserva les millores successives per prova i piscina (RN-007)
 - **Estat:** Pendent
 - **Prioritat:** Baixa
-- **Detall:** els tests CSS ja es desen tots; els millors registres no.
+- **Detall:** les dades ja es desen (llista de millores i tots els tests CSS); falta la consulta de l'evolució, que és d'una spec futura.
 - **Resultat:** —
 
-### 6. Validació i verificació del correu (format, domini, bústia activa)
+### 6. Variants de Gmail al correu
 
 - **Font:** ADR-0017 (29/10/2026)
-- **Objectiu:** assegurar que el correu del nedador existeix i arriba
-- **On encaixa:** spec d'importació (002) o d'un futur flux de contacte
+- **Objectiu:** decidir si les variants d'una mateixa bústia de Gmail (p. ex. amb punts o amb etiqueta després de «+») compten com un sol correu a la unicitat (RN-032)
+- **On encaixa:** esmena de RN-032, quan es decideixi
 - **Estat:** Pendent
 - **Prioritat:** Baixa
 - **Detall:**
-  - ADR-0017 només fixa un format simple (RN-032), sense llibreries externes.
-  - Pendent: format complet, comprovació del domini i bústia activa.
+  - RN-032 tracta cada adreça normalitzada com a diferent.
+  - La verificació de l'adreça ja no és aquí: és una spec pròpia (ADR-0018, `docs/mapa_specs.md`).
 - **Resultat:** —
 
 ### 7. Parcials i pacing de cursa

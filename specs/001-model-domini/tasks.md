@@ -9,7 +9,7 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/fitxers-json.md
 
-**Tests**: obligatoris. Cada CA no pendent té almenys una tasca de test amb `@pytest.mark.ca("CA-001-nn")`. CA-001-33, 34, 38, 58, 63, 64, 68, 72 i 84 són `[PENDENT]` i no tenen tasca. CA-001-55, 56 i 77 estan retirats. En total, 83 CA amb test (taula CA → tasca al final). A més, T050 cobreix el CA-000-10 de la spec 000 (els altres 23 CA de la 000 són `[PENDENT]`).
+**Tests**: obligatoris. Cada CA no pendent té almenys una tasca de test amb `@pytest.mark.ca("CA-001-nn")`. CA-001-33, 34, 38, 58, 63, 64, 68, 72 i 84 són `[PENDENT]` i no tenen tasca. CA-001-55, 56, 77, 94 i 95 estan retirats. En total, 87 CA amb test (taula CA → tasca al final). A més, T050 cobreix el CA-000-10 de la spec 000 (els altres 23 CA de la 000 són `[PENDENT]`).
 
 **Ordre dels IDs**: els IDs no segueixen l'ordre d'execució. L'ordre és el de les fases: T002 va al final (Polish); T035–T050 (US1b) s'executen abans de T017; T051–T052 amb US3 (després de T024) i T053–T054 amb US4 (després de T027).
 
@@ -18,11 +18,11 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 | Etiqueta | Bloc | CA |
 |---|---|---|
 | US1 | Nedador: càrrega, validació i desament (implementat amb la spec anterior; vegeu US1b) | 49, 01, 03, 04, 06, 07, 17, 24, 26, 27, 31, 32, 35, 36, 39, 40, 41 (test, millor registre), 42 (millor registre), 44, 46 |
-| US1b | UUID, alias, contacte i validació (validador únic, filtre, alta, modificació) | 24, 26, 27, 44, 46, 25, 45, 50, 51, 52, 53, 54, 57, 59, 60, 61, 62, 65, 66, 67, 69, 70, 73, 74, 75, 76, 78, 79, 80, 81, 82, 83, 85, 86, 87, 88, 89, 90, 92, 93 |
+| US1b | UUID, alias, contacte, marca de competició i validació (validador únic, filtre, alta, modificació) | 06, 24, 26, 27, 44, 46, 25, 45, 50, 51, 52, 53, 54, 57, 59, 60, 61, 62, 65, 66, 67, 69, 70, 73, 74, 75, 76, 78, 79, 80, 81, 82, 83, 85, 86, 87, 88, 89, 90, 91, 92, 93, 96, 97, 98, 99, 100, 101 |
 | US2 | Catàleg de competicions | 11, 12, 17 (catàleg), 36 (catàleg), 41 (competició), 71 |
-| US3 | Inscripcions de temporada i càrrega del catàleg | 02, 08, 09, 10, 17 (inscripcions), 19, 20, 22, 23, 29, 36 (inscripcions), 42 (inscripció), 43, 91, 94 |
+| US3 | Inscripcions de temporada i càrrega del catàleg | 02, 08, 09, 10, 17 (inscripcions), 19, 20, 22, 23, 29, 36 (inscripcions), 42 (inscripció), 43 |
 | US4 | Derivats i aptitud per planificar | 05, 13, 14, 15, 16, 18, 28 |
-| US5 | Operacions de gestió (competició i test) | 21, 30, 37, 95 |
+| US5 | Operacions de gestió (competició i test) | 21, 30, 37 |
 | US6 | Registre d'avisos | 47, 48 i 57 (línia al registre) |
 
 ## Format: `[ID] [P?] [Story] [Layer] Description`
@@ -56,7 +56,7 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 - [x] T009 [P] [infrastructure] Escriptura estable a `src/blondswim/infrastructure/json_io.py`: UTF-8, `indent=2`, `ensure_ascii=False`, salt de línia final, ordre de claus del data model, `null` explícits (research R3)
 - [x] T010 [P] [application] Ports a `src/blondswim/application/ports.py`: `RepositoriNedadors`, `RepositoriCataleg`, `RegistreAvisos`, `Rellotge` (Protocols)
 
-**Nota (esmena de la spec 001, 89 CA actius):** el codi i els tests de T003–T010 es van escriure amb la versió anterior de la spec (p. ex. `IdNedador` `n` + 4 dígits, sense `Canal`, `Resultat` sense acció, `Correu` sense normalitzar). El codi s'adapta a US1b (T040, T042, T043); els tests es reescriuen a T048 i T049. Aquí no es canvia res.
+**Nota (esmena de la spec 001, 96 CA actius):** el codi i els tests de T003–T010 es van escriure amb la versió anterior de la spec (p. ex. `IdNedador` `n` + 4 dígits, sense `Canal`, `Resultat` sense acció, `Correu` sense normalitzar). El codi s'adapta a US1b (T040, T042, T043); els tests es reescriuen a T048 i T049. Aquí no es canvia res.
 
 **Checkpoint**: base llesta
 
@@ -86,35 +86,35 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 ## Phase 3b: US1b — UUID, alias, contacte i validació
 
-**Goal**: adaptar el nedador a ADR-0014 i ADR-0017 (id UUID v4, alias, correu normalitzat i únic, mòbil, `canal_preferent`, un millor registre per prova i piscina) i construir el validador únic, la càrrega per nedador, el filtre i les operacions sobre el nedador (alta, modificació, arxivar i desarxivar, afegir tests i registres).
+**Goal**: adaptar el nedador a ADR-0014, ADR-0017 i ADR-0018 (id UUID v4, alias, correu normalitzat i únic, `correu_verificat`, mòbil, `canal_preferent`, millors registres com a llista de millores successives per prova i piscina, sense dependre del catàleg) i construir el validador únic, la càrrega per nedador, el filtre i les operacions sobre el nedador (alta, modificació, arxivar i desarxivar, afegir tests i registres).
 
 **Depends on**: US1 (T011–T016) i Foundational.
 
-**Independent Test**: els CA del bloc passen sense catàleg ni inscripcions. Els avisos es comproven al `Resultat`; la línia al registre és de US6. La comprovació que `competicio` és al catàleg (CA-001-91) és d'US3.
+**Independent Test**: els CA del bloc passen sense catàleg ni inscripcions. Els avisos es comproven al `Resultat`; la línia al registre és de US6. Tota la funcionalitat de la marca (afegir, ordre, marca vigent) és d'aquest bloc: `competicio` és un nom i no es comprova contra el catàleg.
 
 **Nota:** el codi fet (p. ex. `valors.py` amb `_RE_ID = n[0-9]{4}`) segueix la spec antiga; US1b el modifica. Decisions D1 i D2: `plan.md`, § Decisions de disseny confirmades.
 
 ### Tests (s'escriuen primer i han de fallar)
 
-- [ ] T048 [US1b] [domain] Reescriure els tests fets de T003 i T011 (`tests/unit/test_valors.py`, `tests/unit/test_nedador.py`) contra la spec nova, abans de T040: fixtures amb UUID v4, `alias`, `correu`, `mobil` i `canal_preferent`; `IdNedador` UUID en lloc de `n` + 4 dígits (CA-001-27); `Correu` segons RN-032 (CA-001-44); CA-001-06 segons el text vigent de la spec (dos registres de la mateixa prova i piscina → error, RN-007); CA-001-90 (`competicio` obligatori). Els marcadors `@pytest.mark.ca` només canvien on el CA ha canviat. T035, T036 i T038 depenen d'aquesta tasca (mateixos fitxers)
-- [ ] T049 [US1b] [infrastructure] Reescriure els tests fets de T007 i T012 (`tests/integration/test_dto.py`, `tests/integration/test_nedador_json.py`) contra la spec nova, abans de T040: fixtures amb UUID v4, `alias`, `correu`, `mobil` i `canal_preferent`; `competicio` (id) als millors registres. Mateixos CA que T012
-- [ ] T050 [P] [US1b] [domain] Test del CA-000-10 de la spec 000 a `tests/unit/test_millor_registre.py`, amb `@pytest.mark.ca("CA-000-10")`: un millor registre sense piscina és invàlid. Els altres 23 CA de la spec 000 no tenen tasca (vegeu «CA de la spec 000»)
-- [ ] T035 [P] [US1b] [domain] Tests de valors i alias a `tests/unit/test_valors.py` (ampliar després de T048) i `tests/unit/test_alias.py`: `IdNedador` rebutja `n0001`, majúscules i UUID v1 (CA-001-27); `Correu` normalitza `  Nedador@Example.COM ` (CA-001-85), accepta el format vàlid (CA-001-86) i rebutja un exemple per condició de RN-032 (CA-001-87); `Canal` només `correu` o `mobil` (CA-001-59); `Alias` `<part>_<sufix>` rebutja `""`, `marc`, `Marc_3f2a9c1` i `marc_cognom_3f2a9c1` (CA-001-46) i un sufix que no coincideix amb l'id (CA-001-51)
-- [ ] T036 [P] [US1b] [domain] Tests del validador únic a `tests/unit/test_validador.py`: CA-001-24, 26, 44, 50, 54, 57 (avís RN-035 al `Resultat`), 67, 69, 73, 76, 93 (`mobil` buit o només amb espais)
+- [ ] T048 [US1b] [domain] Reescriure els tests fets de T003 i T011 (`tests/unit/test_valors.py`, `tests/unit/test_nedador.py`) contra la spec nova, abans de T040: fixtures amb UUID v4, `alias`, `correu`, `mobil` i `canal_preferent`; `IdNedador` UUID en lloc de `n` + 4 dígits (CA-001-27); `Correu` segons RN-032 (CA-001-44); CA-001-06 segons el text vigent de la spec (dos registres consecutius amb el mateix temps → error, RN-007); CA-001-96 (llista no ordenada → error); CA-001-97 (`marca_vigent`); CA-001-90 (`competicio` obligatori, text no buit). Els marcadors `@pytest.mark.ca` només canvien on el CA ha canviat. T035, T036 i T038 depenen d'aquesta tasca (mateixos fitxers)
+- [ ] T049 [US1b] [infrastructure] Reescriure els tests fets de T007 i T012 (`tests/integration/test_dto.py`, `tests/integration/test_nedador_json.py`) contra la spec nova, abans de T040: fixtures amb UUID v4, `alias`, `correu`, `mobil` i `canal_preferent`; `correu_verificat` i `competicio` (nom) als millors registres. Mateixos CA que T012; el CA-001-01 compara amb el correu normalitzat
+- [ ] T050 [P] [US1b] [infrastructure] Test del CA-000-10 de la spec 000 a `tests/integration/test_millor_registre_json.py`, amb `@pytest.mark.ca("CA-000-10")`, abans de T044: un millor registre sense `piscina` (absent o `null`) al JSON és un error del DTO que identifica el camp. Al domini `piscina` ja és un tipus obligatori: no cal test a `domain`. Els altres 23 CA de la spec 000 no tenen tasca (vegeu «CA de la spec 000»)
+- [ ] T035 [P] [US1b] [domain] Tests de valors i alias a `tests/unit/test_valors.py` (ampliar després de T048) i `tests/unit/test_alias.py`: `IdNedador` rebutja `n0001`, majúscules i UUID v1 (CA-001-27); `Correu` normalitza `  Nedador@Example.COM ` (CA-001-85), accepta el format vàlid (CA-001-86) i rebutja un exemple per cas de CA-001-87 (RN-032), amb el vàlid amb majúscules i espais inclòs; `Canal` només `correu` o `mobil` (CA-001-59); `Alias` `<part>_<sufix>` rebutja `""`, `marc`, `Marc_3f2a9c1` i `marc_cognom_3f2a9c1` (CA-001-46) i un sufix que no coincideix amb l'id (CA-001-51)
+- [ ] T036 [P] [US1b] [domain] Tests del validador únic a `tests/unit/test_validador.py`: CA-001-24, 26, 44, 50, 54, 57 (avís RN-035 al `Resultat`), 67, 69, 73, 76, 91 (`competicio` que no és al catàleg: cap error ni avís), 93 (`mobil` buit o només amb espais), 96 (llista de marques no ordenada: ERROR que identifica la prova i la piscina), 101 (`mobil` compartit o sense format E.164: cap error ni avís)
 - [ ] T037 [P] [US1b] [application] Tests de càrrega i filtre a `tests/unit/test_carrega_filtre.py`, amb repositoris en memòria: CA-001-60, 65, 66, 74, 78. El CA-001-78 (entrada, càrrega i filtre) fa servir l'alta: depèn de T047 i el seu test no passa fins que T047 és feta
 - [ ] T038 [P] [US1b] [infrastructure] Tests de fitxer a `tests/integration/test_nedador_json.py` (ampliar després de T049), abans de T044: CA-001-27 (carpeta que no és UUID v4), 57 (`canal_preferent` absent ≡ `null`), 59 (`"whatsapp"`: error de format amb alias, camp, valor i opcions), 75 (JSON trencat: ERROR propi amb l'UUID de la carpeta, fora de la unicitat), 85 (el fitxer desat porta el correu normalitzat), 92 i la regla de D1 (un camp d'identitat que falta o no és text no participa a la unicitat d'aquell camp, però sí a la de l'altre)
-- [ ] T039 [P] [US1b] [application] Tests de les operacions a `tests/unit/test_gestio_nedador.py`, amb repositoris en memòria i `GeneradorId` fix: CA-001-25, 45, 52, 53, 61, 62, 70, 79, 80, 81, 82, 83 (substitució d'un millor registre), 88 (el correu antic queda lliure), 89 (un temps igual o pitjor no fa res), 90 (afegir un registre sense `competicio`)
+- [ ] T039 [P] [US1b] [application] Tests de les operacions a `tests/unit/test_gestio_nedador.py`, amb repositoris en memòria i `GeneradorId` fix: CA-001-25, 45, 52, 53, 61, 62, 70, 79, 80, 81, 82, 83 (afegir una marca millor; les piscines no es comparen), 88 (el correu antic queda lliure), 89 (un temps igual o pitjor no fa res), 90 (afegir un registre sense `competicio`), 97 (`marca_vigent`: l'última de la llista de la prova i piscina, després d'afegir marques), 98 (l'alta deixa `correu_verificat` a `false`), 99 (modificar el correu el torna a `false`), 100 (modificar un altre camp el conserva)
 
 ### Implementació
 
-- [ ] T040 [US1b] [domain] Adaptar `src/blondswim/domain/valors.py` (T004): `IdNedador` (RN-001); `Correu` normalitzat i amb format (RN-032); `Canal` `correu` \| `mobil`; `Alias` i generació de l'alias (RN-003). Elimina la regla antiga `n` + 4 dígits
-- [ ] T041 [US1b] [domain] Adaptar `Nedador` a `src/blondswim/domain/nedador.py` (T013): `mobil` obligatori, `canal_preferent` opcional amb avís, `alias`, `arxivat`, `MillorRegistre` amb `competicio` (id, obligatori); afegir `CanviNedador` amb només `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament` i `volum_setmanal` (no pot portar `id`, `alias` ni `versio_esquema`; CA-001-53) i una funció pura d'afegir un millor registre: el nou substitueix el desat de la mateixa prova i piscina si el temps és menor; si és igual o pitjor, torna la llista sense canvis (RN-007; CA-001-83, 89). Sense cap mètode que editi un test o un registre desat (CA-001-82, 83). Revisa la docstring que cita RN-007: ha de descriure la RN-007 vigent
-- [ ] T042 [US1b] [domain] Validador únic a `src/blondswim/domain/validacio.py` (adapta T005 i T014): `ErrorValidacio` i `Avis` amb `accio`; un nedador acumula tots els errors (RN-001, 003, 005, 006, 007, 030, 032 i format, inclòs `mobil` buit; CA-001-93) i els avisos (RN-035); validació entre nedadors: col·lisió de correu o alias (ERROR que identifica tots els implicats; CA-001-24, 26, 69, 76). RN-007: dos registres de la mateixa prova i piscina i `competicio` absent són ERROR (CA-001-06, 90). Resultat per nedador i per camp: alias (o UUID), camp, valor, RN o «format», acció
+- [ ] T040 [US1b] [domain] Adaptar `src/blondswim/domain/valors.py` (T004): `IdNedador` (RN-001); `Correu` normalitzat i amb el format de RN-032; `Temporada.de_codi` a `definicions.py` (T006; RN-031), l'únic lloc; `Canal` `correu` \| `mobil`; `Alias` i generació de l'alias (RN-003). Elimina la regla antiga `n` + 4 dígits
+- [ ] T041 [US1b] [domain] Adaptar `Nedador` a `src/blondswim/domain/nedador.py` (T013): `mobil` obligatori, `correu_verificat` obligatori, `canal_preferent` opcional amb avís, `alias`, `arxivat`, `MillorRegistre` amb `competicio` (nom, text no buit; sense catàleg); afegir `CanviNedador` amb només `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament` i `volum_setmanal` (no pot portar `id`, `alias` ni `versio_esquema`; CA-001-53) i una funció pura d'afegir un millor registre: s'afegeix si el temps és menor que la marca vigent de la mateixa prova i piscina (o si no n'hi ha cap); si és igual o pitjor, torna la llista sense canvis; les piscines no es comparen (RN-007; CA-001-83, 89). Consulta pura `marca_vigent(nedador, prova, piscina)`: l'última de la llista (CA-001-97). Sense cap mètode que editi un test o un registre desat (CA-001-82, 83). Revisa la docstring que cita RN-007: ha de descriure la RN-007 vigent
+- [ ] T042 [US1b] [domain] Validador únic a `src/blondswim/domain/validacio.py` (adapta T005 i T014): `ErrorValidacio` i `Avis` amb `accio`; un nedador acumula tots els errors (RN-001, 003, 005, 006, 007, 030, 032 i format, inclòs `mobil` buit; CA-001-93) i els avisos (RN-035); validació entre nedadors: col·lisió de correu o alias (ERROR que identifica tots els implicats; CA-001-24, 26, 69, 76). RN-007: una marca no millor que l'anterior de la mateixa prova i piscina (igual o pitjor) és ERROR (CA-001-06, 96); `competicio` absent, `null` o buit és ERROR (CA-001-90); no es comprova contra el catàleg (CA-001-91). Resultat per nedador i per camp: alias (o UUID), camp, valor, RN o «format», acció
 - [ ] T043 [US1b] [application] Ampliar `src/blondswim/application/ports.py` (T010): `RepositoriNedadors` (llegir nedadors, llegir identitats dels fitxers llegibles, desar) i `GeneradorId` (`nou() -> IdNedador`)
-- [ ] T044 [US1b] [infrastructure] Adaptar `dto.py`, `mappers.py` i `repositoris.py` (T015, T016): camps `mobil`, `canal_preferent` (absent ≡ `null`; valor fora de `correu`/`mobil` → error de format amb alias, camp, valor i opcions), `alias`, `arxivat`, `competicio` als millors registres; nom de carpeta (RN-001); fitxer il·legible (JSON trencat o que no és un objecte) → ERROR propi amb l'UUID; DTO mínim d'identitat (D1): `correu` i `alias` com a text cru, normalitzats com la validació, `extra="ignore"`; si un camp falta o no és text, el nedador no participa a la unicitat d'aquell camp, però sí a la de l'altre (CA-001-92; tests a T038); `generador_id.py` amb `uuid4()`
+- [ ] T044 [US1b] [infrastructure] Adaptar `dto.py`, `mappers.py` i `repositoris.py` (T015, T016): camps `mobil`, `correu_verificat` (obligatori), `canal_preferent` (absent ≡ `null`; valor fora de `correu`/`mobil` → error de format amb alias, camp, valor i opcions), `alias`, `arxivat`, `competicio` (nom) als millors registres; nom de carpeta (RN-001); fitxer il·legible (JSON trencat o que no és un objecte) → ERROR propi amb l'UUID; DTO mínim d'identitat (D1): `correu` i `alias` com a text cru; el correu normalitzat com la validació i l'alias tal com és, `extra="ignore"`; si un camp falta o no és text, el nedador no participa a la unicitat d'aquell camp, però sí a la de l'altre (CA-001-92; tests a T038); `generador_id.py` amb `uuid4()`
 - [ ] T045 [US1b] [application] Càrrega per nedador a `src/blondswim/application/carrega.py`: un ERROR exclou només aquell nedador; una col·lisió d'unicitat n'exclou tots els implicats; la resta es carrega; el registre d'avisos s'afegeix a T032 (CA-001-60, 65, 66)
 - [ ] T046 [US1b] [application] Filtre de validació a `src/blondswim/application/filtre.py`: passa per tots els nedadors, no s'atura al primer error, llista tots els errors i avisos per nedador i camp; fitxer il·legible com a ERROR propi; el nedador amb un ERROR no es planifica; entrada, càrrega i filtre donen el mateix resultat (CA-001-67, 73, 74, 75, 78)
-- [ ] T047 [US1b] [application] Operacions a `src/blondswim/application/gestio.py`: alta (genera id i alias; si l'alias existeix, id nou; un ERROR no es desa; la unicitat compta els fitxers llegibles; CA-001-45, 52, 61, 62, 70), modificar amb `CanviNedador` (valida el nedador sencer, unicitat inclosa; amb un ERROR no es desa res; l'id i l'alias no canvien; el correu antic queda lliure; CA-001-25, 53, 79, 80, 88), arxivar i desarxivar (CA-001-81), afegir test amb `acceptat: false` i afegir millor registre amb la substitució de T041 (CA-001-83, 89, 90), sense cap operació d'edició (CA-001-82, 83)
+- [ ] T047 [US1b] [application] Operacions a `src/blondswim/application/gestio.py`: alta (genera id i alias; si l'alias existeix, id nou; un ERROR no es desa; la unicitat compta els fitxers llegibles; `correu_verificat` a `false`; CA-001-45, 52, 61, 62, 70, 98), modificar amb `CanviNedador` (valida el nedador sencer, unicitat inclosa; amb un ERROR no es desa res; l'id i l'alias no canvien; el correu antic queda lliure; si el correu canvia, `correu_verificat` torna a `false` i en canviar un altre camp es conserva; CA-001-25, 53, 79, 80, 88, 99, 100), arxivar i desarxivar (CA-001-81), afegir test amb `acceptat: false` i afegir millor registre amb la regla de T041 (CA-001-83, 89, 90), sense cap operació d'edició (CA-001-82, 83)
 
 **Checkpoint**: US1b verda
 
@@ -136,13 +136,13 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 **Depends on**: US2 (catàleg)
 
-- [ ] T020 [P] [US3] [domain] Tests a `tests/unit/test_inscripcions.py`: CA-001-08, 09, 10, 19, 20, 22, 23, 29, 42 (inscripció), 91 (`competicio` d'un millor registre que no és al catàleg), 94 (piscina del registre diferent de la de la competició)
+- [ ] T020 [P] [US3] [domain] Tests a `tests/unit/test_inscripcions.py`: CA-001-08, 09, 10, 19, 20, 22, 23, 29, 42 (inscripció)
 - [ ] T021 [P] [US3] [infrastructure] Tests a `tests/integration/test_inscripcions_json.py`: CA-001-02, 17 (`versio_esquema` desconegut d'`inscripcions.json`: aquell nedador no es carrega), 36 (`inscripcions.json` desat idèntic byte a byte), 43
 - [ ] T022 [US3] [domain] `Participacio` i `Inscripcio` a `src/blondswim/domain/inscripcions.py`. `proves`: «≥ 1» (RN-014); una participació per competició (RN-012); una inscripció per prova (RN-016)
-- [ ] T023 [US3] [domain] Validació creuada amb el catàleg (RN-011, RN-013, RN-015, RN-030 segons la piscina de la competició; RN-007 per a la `competicio` dels millors registres: existeix al catàleg i té la mateixa piscina; CA-001-91, 94) a `src/blondswim/domain/validacio.py`
+- [ ] T023 [US3] [domain] Validació creuada amb el catàleg (RN-011, RN-013, RN-015, RN-030 segons la piscina de la competició, només per a les inscripcions) a `src/blondswim/domain/validacio.py`
 - [ ] T024 [US3] [infrastructure] DTO, mapper i lectura de `temporades/<AAAA-AA>/inscripcions.json` a `src/blondswim/infrastructure/mappers.py` i `repositoris.py`; una carpeta que no segueix RN-031 → error
 - [ ] T051 [P] [US3] [application] Tests de càrrega del catàleg i de les inscripcions a `tests/unit/test_carrega_cataleg.py`, amb repositoris en memòria: CA-001-11, 17, 41 i 71 (un ERROR del catàleg falla TOTA la càrrega) i CA-001-19 (un ERROR d'inscripcions exclou només aquell nedador; la resta es carrega)
-- [ ] T052 [US3] [application] Càrrega del catàleg i de les inscripcions a `src/blondswim/application/carrega.py` i `filtre.py`: un ERROR del catàleg (RN-008, RN-031, format) falla TOTA la càrrega; un ERROR d'inscripcions (RN-011 a RN-016, RN-030) exclou només aquell nedador; el filtre ho llista per nedador i camp com a US1b (CA-001-11, 17, 19, 41, 71)
+- [ ] T052 [US3] [application] Càrrega del catàleg i de les inscripcions a `src/blondswim/application/carrega.py` i `filtre.py`: un ERROR del catàleg (RN-008, RN-031, format) falla TOTA la càrrega; un ERROR d'inscripcions (RN-011 a RN-016, RN-030 d'inscripcions) exclou només aquell nedador; el filtre ho llista per nedador i camp com a US1b (CA-001-11, 17, 19, 41, 71)
 
 ---
 
@@ -151,7 +151,7 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 **Depends on**: US1, US1b i US3. T054 també depèn de T031 (US6).
 
 - [ ] T025 [P] [US4] [domain] Tests a `tests/unit/test_derivats.py`: CA-001-05, 13, 14, 15, 16, 18, 28
-- [ ] T026 [US4] [domain] Consultes `setmana_iso`, `test_vigent` i `proves_objectiu`, i `Temporada.de_codi` (definició, RN-031), a `src/blondswim/domain/derivats.py`. Cap d'aquests valors es desa
+- [ ] T026 [US4] [domain] Consultes `setmana_iso`, `test_vigent` i `proves_objectiu` a `src/blondswim/domain/derivats.py`. Cap d'aquests valors es desa. La temporada és una definició (`Temporada.de_codi`, `definicions.py`, T040; RN-031) i la `marca_vigent` és a T041
 - [ ] T027 [US4] [domain] Aptitud per planificar a `src/blondswim/domain/validacio.py`: bloquegen RN-017 i RN-018; avisos RN-019 i RN-020 al `Resultat`
 - [ ] T053 [P] [US4] [application] Tests del cas d'ús d'aptitud a `tests/unit/test_aptitud.py`, amb registre d'avisos en memòria i rellotge fix: CA-001-13 i 14 (l'avís es registra amb `decisio: null`), 15, 28
 - [ ] T054 [US4] [application] Cas d'ús d'aptitud per planificar a `src/blondswim/application/aptitud.py`: aplica T027 i registra els avisos RN-019 i RN-020 al registre d'avisos (T031) amb `decisio: null`, sense confirmació. Depèn de T027 i T031
@@ -162,8 +162,8 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 **Depends on**: US1b i US3. L'alta, la modificació, arxivar i desarxivar i afegir tests i registres són a T047.
 
-- [ ] T028 [P] [US5] [application] Tests a `tests/unit/test_gestio.py`, amb repositoris en memòria: CA-001-21, 30, 37, 95
-- [ ] T029 [US5] [application] Casos d'ús a `src/blondswim/application/gestio.py`: esborrar nedador (sempre error, el nedador no canvia; RN-004), acceptar test (el test nou passa a ser el vigent; CA-001-30), esborrar competició (error si té participacions o és referenciada per un millor registre, RN-010)
+- [ ] T028 [P] [US5] [application] Tests a `tests/unit/test_gestio.py`, amb repositoris en memòria: CA-001-21, 30, 37
+- [ ] T029 [US5] [application] Casos d'ús a `src/blondswim/application/gestio.py`: esborrar nedador (sempre error, el nedador no canvia; RN-004), acceptar test (el test nou passa a ser el vigent; CA-001-30), esborrar competició (error si té participacions, RN-010)
 
 ---
 
@@ -179,7 +179,8 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 ## Phase 9: Polish
 
-- [ ] T002 [project] Canviar `tracabilitat = "avis"` per `"bloquejant"` a `pyproject.toml` (`[tool.blondswim]`) quan tots els CA no pendents de la 001 tinguin test, després de T032 i T054 (AGENTS.md).- [ ] T033 [project] Executar quickstart.md: `bash scripts/verify.sh` ha d'acabar «LLEST PER SEGUIR», amb la traçabilitat bloquejant
+- [ ] T002 [project] Canviar `tracabilitat = "avis"` per `"bloquejant"` a `pyproject.toml` (`[tool.blondswim]`) quan tots els CA no pendents de la 001 tinguin test, després de T032 i T054 (AGENTS.md).
+- [ ] T033 [project] Executar quickstart.md: `bash scripts/verify.sh` ha d'acabar «LLEST PER SEGUIR», amb la traçabilitat bloquejant
 - [ ] T034 [project] Actualitzar `docs/mapa_specs.md`: la spec 001 és implementada
 
 ---
@@ -209,7 +210,7 @@ Task: "T012 Tests de fitxer a tests/integration/test_nedador_json.py"
 
 ## Taula CA → tasca
 
-Els CA pendents no tenen tasca: 33, 34 (spec 004), 38, 58, 63, 64, 68, 72 (spec 002), 84 (spec 005). Els CA 55, 56 i 77 estan retirats.
+Els CA pendents no tenen tasca: 33, 34 (spec 004), 38, 58, 63, 64, 68, 72 (spec 002), 84 (spec 005). Els CA 55, 56, 77, 94 i 95 estan retirats.
 
 | CA | Tasques de test | CA | Tasques de test |
 |---|---|---|---|
@@ -251,12 +252,14 @@ Els CA pendents no tenen tasca: 33, 34 (spec 004), 38, 58, 63, 64, 68, 72 (spec 
 | 39 | T011 | 88 | T039 |
 | 40 | T011 | 89 | T039 |
 | 41 | T011, T017, T051 | 90 | T048, T039 |
-| 42 | T011, T020 | 91 | T020 |
+| 42 | T011, T020 | 91 | T036 |
 | 43 | T021 | 92 | T038 |
-| 93 | T036 | 94 | T020 |
-| 95 | T028 | | |
+| 93 | T036 | 96 | T036, T048 |
+| 97 | T039, T048 | 98 | T039 |
+| 99 | T039 | 100 | T039 |
+| 101 | T036 | | |
 
-Total: 83 CA amb tasca; 0 CA no pendents sense tasca. CA-000-10 (spec 000): T050.
+Total: 87 CA amb tasca; 0 CA no pendents sense tasca. CA-000-10 (spec 000): T050.
 
 ## CA de la spec 000
 
