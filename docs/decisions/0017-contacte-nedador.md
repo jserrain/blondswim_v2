@@ -1,6 +1,6 @@
 # ADR-0017 — Contacte del nedador
 
-**Estat:** Acceptat. Substitueix l'ADR-0016. Esmena RN-032 i retira RN-033 i RN-034 (spec 001).
+**Estat:** Substituït per ADR-0019. Substituïa l'ADR-0016, esmenava RN-032 i retirava RN-033 i RN-034 (spec 001).
 
 ## Context
 L'ADR-0016 demanava un mòbil en E.164 i avisava si es compartia. No s'ha vist cap ús per al format ni per a l'avís, i el correu continua sent la dada que identifica la persona (RN-032), sense format definit.

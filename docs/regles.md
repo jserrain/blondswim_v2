@@ -44,10 +44,10 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-029 | Canvi de període de piscina sense test | avís | planificació | spec 004 |
 | RN-030 | Prova oficial segons la piscina | bloquejant | càrrega | spec 001 |
 | RN-031 | Temporada de natació | bloquejant | càrrega | spec 001 |
-| RN-032 | Correu del nedador | bloquejant | càrrega, gestió | spec 001, ADR-0017 |
-| RN-033 | Mòbil del nedador (Retirada) | — | — | ADR-0017 |
-| RN-034 | Mòbil compartit (Retirada) | — | — | ADR-0017 |
-| RN-035 | Canal preferent absent | avís | càrrega, importació | spec 001, ADR-0017 |
+| RN-032 | Correu del nedador | bloquejant | càrrega, gestió | spec 001, ADR-0019 |
+| RN-033 | Mòbil del nedador (Retirada) | — | — | ADR-0019 |
+| RN-034 | Mòbil compartit (Retirada) | — | — | ADR-0019 |
+| RN-035 | Canal preferent absent | avís | càrrega, importació | spec 001, ADR-0019 |
 
 ## Nedador
 
@@ -93,33 +93,33 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 ### RN-007 — Millor marca de competició per prova i piscina
 - **Tipus:** bloquejant · **Moment:** càrrega, gestió
-- **Regla:** `millors_registres` és una llista de millores successives de la marca de competició per prova (`{estil, distancia}`) i piscina. Tots els camps del registre són obligatoris: prova, piscina (25 o 50), temps, data i `competicio` (el nom de la competició, text no buit). La competició és informativa: no es comprova contra el catàleg. Les marques de 25 m i de 50 m no es comparen mai. En afegir una marca, només s'afegeix si és millor que la marca vigent de la mateixa prova i piscina (l'última de la llista); si és igual o pitjor, no es fa res (ni error ni avís). Dins de cada prova i piscina, cada marca de la llista és millor que l'anterior; si no ho és (fitxer editat a mà), ERROR. Els tests CSS no segueixen aquesta regla: es desen tots, per estudiar-ne l'evolució.
+- **Regla:** `millors_registres` és una llista de millores successives de la marca de competició per prova (`{estil, distancia}`) i piscina. Tots els camps del registre són obligatoris: prova, piscina (25 o 50), temps, data i `competicio` (el nom de la competició, text no buit). La competició és informativa: no es comprova contra el catàleg. Les marques de 25 m i de 50 m no es comparen mai. En afegir una marca, només s'afegeix si és millor que la marca vigent de la mateixa prova i piscina (l'última de la llista); si és igual o pitjor, no es fa res (ni error ni avís). Dins de cada prova i piscina, cada marca de la llista és millor que l'anterior; si no ho és (fitxer editat a mà), ERROR. La data d'una marca nova ha de ser posterior a la de la marca vigent de la mateixa prova i piscina; si no ho és, ERROR (en afegir-la, només si el temps és menor; en carregar, per a cada marca respecte de l'anterior). Els tests CSS no segueixen aquesta regla: es desen tots, per estudiar-ne l'evolució.
 - **Missatge:** identifica la prova i la piscina (o el camp `competicio`).
 - **Font:** spec 001.
 - **Coherència:** revisada contra RN-006 (els tests CSS no es substitueixen), RN-008, RN-010, RN-011 (la competició d'una marca és un nom i no apunta al catàleg: cap d'elles no hi actua) i RN-030 (la prova ha de ser oficial per a la piscina). Sense conflicte.
 
 ### RN-032 — Correu del nedador
 - **Tipus:** bloquejant · **Moment:** càrrega, gestió
-- **Regla:** tot nedador té un `correu` obligatori, únic entre tots els nedadors (arxivats inclosos) i intransferible. Es normalitza (sense espais als extrems, en minúscules) abans de validar-lo i de desar-lo. Un cop normalitzat, ha de complir l'expressió regular següent; si no, ERROR:
+- **Regla:** tot nedador té un `correu` obligatori, únic entre tots els nedadors (arxivats inclosos) i intransferible. Es normalitza (sense espais en blanc als extrems —espais, tabuladors i salts de línia—, en minúscules) abans de validar-lo i de desar-lo. Un cop normalitzat, ha de complir l'expressió regular següent; si no, ERROR:
   ```
   ^(?=.{1,254}$)(?=[^@]{1,64}@)[a-z0-9!#$%&'*+/=?^_`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$
   ```
   Es pot modificar (l'id no canvia, RN-002): el correu nou passa format i unicitat, i l'antic queda lliure.
 - **Missatge:** identifica el camp i el valor, o els ids dels nedadors que comparteixen correu.
-- **Font:** spec 001, ADR-0017.
+- **Font:** spec 001, ADR-0019.
 - **Coherència:** revisada contra RN-002 (l'id no depèn del correu i no canvia quan el correu canvia), RN-003 (l'alias és un identificador a part) i RN-004 (els arxivats compten). La unicitat només s'aplica a correu i alias. Sense conflicte.
 
 ### RN-033 — Mòbil del nedador (Retirada)
-- **Estat:** Retirada (ADR-0017, 2026-10-29). El `mobil` no té format, unicitat ni avís. No es reutilitza l'ID.
+- **Estat:** Retirada (ADR-0019). El `mobil` no té format, unicitat ni avís. No es reutilitza l'ID.
 
 ### RN-034 — Mòbil compartit (Retirada)
-- **Estat:** Retirada (ADR-0017, 2026-10-29). Compartir el `mobil` entre nedadors no genera cap avís. No es reutilitza l'ID.
+- **Estat:** Retirada (ADR-0019). Compartir el `mobil` entre nedadors no genera cap avís. No es reutilitza l'ID.
 
 ### RN-035 — Canal preferent absent
 - **Tipus:** avís · **Moment:** càrrega, importació
 - **Regla:** un `canal_preferent` absent o `null` genera un avís. No bloqueja. Un valor fora de `correu` i `mobil` no és d'aquesta regla: és un error de format del camp (spec 001, § Entitats).
 - **Missatge:** identifica l'alias i el camp.
-- **Font:** spec 001, ADR-0017.
+- **Font:** spec 001, ADR-0019.
 - **Coherència:** revisada contra RN-032: `correu` i `mobil` són obligatoris, de manera que tots dos canals existeixen sempre i qualsevol valor admès és utilitzable. No hi ha cap valor per defecte (principi V). Sense conflicte.
 
 ## Catàleg de competicions

@@ -3,17 +3,17 @@
 Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és normatiu.
 
 ## On som
-- Branca: `001-model-domini`. Spec 001 amb les decisions del 2026-11-03 (marca de competició com a llista de millores, format del correu, ADR-0018) i les correccions de G1 i G2 del 29/10, pendent de passar G1 i G2 de nou; 96 CA actius (87 amb test, 9 pendents), 5 retirats (CA-001-55, 56, 77, 94 i 95); 19 CA amb test als markers de `tests/`.
+- Branca: `001-model-domini`. Spec 001 amb les decisions del 2026-11-03 (marca de competició com a llista de millores, format del correu, ADR-0018) i les correccions de G1 i G2 del 29/10, pendent de passar G1 i G2 de nou; 98 CA actius (89 amb test, 9 pendents), 5 retirats (CA-001-55, 56, 77, 94 i 95); 19 CA amb test als markers de `tests/`.
 - Constitució 1.3.0 (G0 r2: passa amb condicions).
-- `tasks.md` (54 tasques, 87 CA amb tasca; IDs fora d'ordre, vegeu la nota): fetes Setup (T001), Foundational (T003–T010) i US1 (T011–T016), contra la spec anterior. US1b (T035–T050), US3 (T051–T052) i US4 (T053–T054) amb tasques noves, pendents d'implementar. Decisions D1 i D2 confirmades (`plan.md`).
+- `tasks.md` (54 tasques, 89 CA amb tasca; IDs fora d'ordre, vegeu la nota): fetes Setup (T001), Foundational (T003–T010) i US1 (T011–T016), contra la spec anterior. US1b (T035–T050), US3 (T051–T052) i US4 (T053–T054) amb tasques noves, pendents d'implementar. Decisions D1 i D2 confirmades (`plan.md`).
 - Següent pas: fase US1b, començant per T048 i T049 (reescriure els tests fets), que modifica el codi fet (p. ex. `_RE_ID = n[0-9]{4}` a `valors.py`); després, US2 (T017–T019).
 - Durant la implementació, `verify.sh` mostra «Traçabilitat CA» com a AVÍS (CA sense test encara). Passa a bloquejant amb T002, al final.
 
 ## Decisions recents (detall als ADR i a la spec)
-- Identitat = `IdNedador`, UUID v4 (ADR-0014); alias obligatori i immutable `<part>_<sufix>` (RN-003). Contacte: ADR-0017 substitueix l'ADR-0016; correu obligatori, únic, normalitzat i amb el format de RN-032; mòbil obligatori i no buit, sense cap altra validació (RN-033 i RN-034 retirades); canal preferent (RN-035). `correu_verificat` obligatori, `false` en crear-lo i en modificar el correu; la verificació és una spec pròpia (ADR-0018, spec 009 del mapa). Pendent: G1 i G2 de l'esmena i implementació.
+- Identitat = `IdNedador`, UUID v4 (ADR-0014); alias obligatori i immutable `<part>_<sufix>` (RN-003). Contacte: ADR-0019 (substitueix l'ADR-0017); correu obligatori, únic, normalitzat i amb el format de RN-032; mòbil obligatori i no buit, sense cap altra validació (RN-033 i RN-034 retirades); canal preferent (RN-035). `correu_verificat` obligatori, `false` en crear-lo i quan el correu normalitzat canvia; la verificació és una spec pròpia (ADR-0018, spec 009 del mapa). Pendent: G1 i G2 de l'esmena i implementació.
 - Millor registre: llista de millores successives per prova i piscina, només de competició; `competicio` és un nom informatiu (RN-007). Els tests CSS es desen tots.
 - Nedador identificat pel correu, únic; no es desen nom ni cognoms (RN-032).
-- Temporada 1/10–30/09, derivada del nom de la carpeta (RN-031); proves oficials per piscina (RN-030).
+- Temporada 1/10–30/09, definida pel nom de la carpeta (RN-031); proves oficials per piscina (RN-030).
 - Tres tipus de camp: obligatori, informatiu (pot faltar) i opcional amb avís (spec 001, § Format JSON).
 - Avisos a `data/avisos.jsonl`, que només creix.
 - Pydantic v2 estricte, només a `infrastructure`; definicions de RN com a constants del domini (principi V).
@@ -23,7 +23,7 @@ Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és norm
 - Spec de pagaments (Bizum): pagador com a entitat pròpia amb nedadors associats. Per decidir: Bizum comerços o particular, rebuts, quotes mensuals o per sessió.
 - Esmena 1.4.0: ADR de dades cap a l'LLM, «canvis petits» (II), raons de II, IV, VI, VII i VIII, secció «Fora d'abast». Abans de la primera spec amb judici LLM.
 - ADR de dades personals: supressió (dret de supressió del RGPD davant la regla d'arxivar sense esborrar) a `nedador.json` (correu i mòbil) i al registre d'avisos (`avisos.jsonl`); es decidirà quan un nedador ho demani. També al `BACKLOG.md`.
-- G1 i G2 de l'esmena (ADR-0017, ADR-0018, RN-007, RN-032, tasques T048–T054).
+- G1 i G2 de l'esmena (ADR-0018, ADR-0019, RN-007, RN-032, tasques T048–T054).
 - Spec 002: abast reduït (sense històric), àlies «lliure» → `Cr`, CSV o Excel.
 
 ## Flux de treball

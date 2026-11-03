@@ -6,7 +6,7 @@
 
 ## Summary
 
-Implementar les entitats, els invariants i el format JSON de la spec 001: nedador (id UUID v4 i alias immutables, contacte: correu normalitzat i únic amb `correu_verificat`, i mòbil; ADR-0014, ADR-0017 i ADR-0018), tests CSS, millors registres (llista de millores successives), catàleg de competicions i inscripcions per temporada. També les operacions de gestió que els CA exigeixen (alta, modificació, arxivar i desarxivar, afegir tests i registres), un sol validador amb nivells ERROR i AVÍS per nedador, el filtre de validació i l'aptitud per planificar.
+Implementar les entitats, els invariants i el format JSON de la spec 001: nedador (id UUID v4 i alias immutables, contacte: correu normalitzat i únic amb `correu_verificat`, i mòbil; ADR-0014, ADR-0018 i ADR-0019), tests CSS, millors registres (llista de millores successives), catàleg de competicions i inscripcions per temporada. També les operacions de gestió que els CA exigeixen (alta, modificació, arxivar i desarxivar, afegir tests i registres), un sol validador amb nivells ERROR i AVÍS per nedador, el filtre de validació i l'aptitud per planificar.
 
 Enfocament:
 - Domini pur amb objectes de valor immutables.
@@ -38,7 +38,7 @@ Sense LLM. El rellotge només s'injecta per registrar avisos.
 
 **Constraints**: domini sense I/O, LLM, rellotge ni dependències externes; escriptura estable byte a byte (CA-001-36); errors en català amb fitxer, camp i valor
 
-**Scale/Scope**: desenes de nedadors i de competicions per temporada; 96 CA actius (87 amb test, 9 pendents) i 5 retirats (CA-001-55, 56, 77, 94 i 95)
+**Scale/Scope**: desenes de nedadors i de competicions per temporada; 98 CA actius (89 amb test, 9 pendents) i 5 retirats (CA-001-55, 56, 77, 94 i 95)
 
 ## Constitution Check
 
@@ -50,10 +50,10 @@ Sense LLM. El rellotge només s'injecta per registrar avisos.
 - [x] **IV. El sistema avisa; el coach decideix:** errors i avisos acumulats per nedador i per camp, amb motiu i acció; un sol validador; avisos registrats a `data/avisos.jsonl` amb `decisio` (research R5; CA-001-47, 48, 57, 67, 73). Un avís mai no bloqueja; un ERROR no es desa ni es carrega.
 - [x] **V. Dades honestes:** setmana, test vigent, marca vigent i proves objectiu es deriven; la temporada és una definició (RN-031), no es deriva. No hi ha valors per defecte en carregar. Només hi ha constants per a definicions (RN-030, RN-031), com permet la versió 1.3.0.
 - [x] **VI. El pla es persisteix i es versiona:** no aplica. La 001 no genera plans.
-- [x] **VII. Traçabilitat de la spec al test:** cada tasca porta capa; cada un dels 87 CA no pendents té test amb `@pytest.mark.ca` (taula CA → tasca a `tasks.md`). La traçabilitat passa a «bloquejant» amb T002, quan tots tenen test (AGENTS.md).
+- [x] **VII. Traçabilitat de la spec al test:** cada tasca porta capa; cada un dels 89 CA no pendents té test amb `@pytest.mark.ca` (taula CA → tasca a `tasks.md`). La traçabilitat passa a «bloquejant» amb T002, quan tots tenen test (AGENTS.md).
 - [x] **VIII. Documents genèrics i sense història:** els exemples de contracte fan servir valors fictius.
 
-**Re-check post-disseny:** compleix tots els principis, amb l'esmena de la spec 001 (96 CA actius), l'ADR-0017 i l'ADR-0018. Les decisions D1 i D2 (§ Decisions de disseny confirmades) no canvien cap principi.
+**Re-check post-disseny:** compleix tots els principis, amb l'esmena de la spec 001 (98 CA actius), l'ADR-0018 i l'ADR-0019. Les decisions D1 i D2 (§ Decisions de disseny confirmades) no canvien cap principi.
 
 ## Project Structure
 

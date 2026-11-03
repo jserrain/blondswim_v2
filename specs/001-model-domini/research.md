@@ -40,11 +40,11 @@ Fase 0 de `/speckit-plan`. Cada decisió resol un punt obert del Technical Conte
 - **Alternatives considered:** un registre per nedador. Descartat: els avisos del catàleg no són de cap nedador, i un sol fitxer es consulta millor.
 
 ## R6. Operacions de gestió
-- **Decision:** casos d'ús a `application`: alta (genera l'id UUID v4 i l'alias `<part>_<sufix>`, reintenta si l'alias col·lisiona, rebutja un ERROR; RN-002, RN-003; CA-001-45, 52, 61, 62, 70), esborrar nedador (sempre error, RN-004), arxivar i desarxivar (RN-017), modificar nedador, afegir test, acceptar test (CA-001-30), afegir un millor registre (només s'afegeix si el temps és menor que la marca vigent de la mateixa prova i piscina; si és igual o pitjor, no fa res; RN-007), esborrar competició (RN-010). L'alta posa `correu_verificat` a `false` i modificar el correu el torna a `false` (ADR-0018).
+- **Decision:** casos d'ús a `application`: alta (genera l'id UUID v4 i l'alias `<part>_<sufix>`, reintenta si l'alias col·lisiona, rebutja un ERROR; RN-002, RN-003; CA-001-45, 52, 61, 62, 70), esborrar nedador (sempre error, RN-004), arxivar i desarxivar (RN-017), modificar nedador, afegir test, acceptar test (CA-001-30), afegir un millor registre (només s'afegeix si el temps és menor que la marca vigent de la mateixa prova i piscina i la data és posterior (si no, ERROR); si el temps és igual o pitjor, no fa res; RN-007), esborrar competició (RN-010). L'alta posa `correu_verificat` a `false` i modificar el correu el torna a `false` només si el correu normalitzat canvia (ADR-0018).
   - Immutables: `id`, `alias`, `versio_esquema`. La modificació no els rep com a dada.
   - Modificables: `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal`. Una modificació torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res.
   - Un test o un millor registre desat no s'edita.
-- **Rationale:** els CA de gestió (21, 25, 30, 37, 45, 52, 53, 61, 62, 70, 79 a 83, 88, 89) necessiten operacions, no només càrrega (CA-001-98 a 100 inclosos).
+- **Rationale:** els CA de gestió (21, 25, 30, 37, 45, 52, 53, 61, 62, 70, 79 a 83, 88, 89) necessiten operacions, no només càrrega (CA-001-98 a 100, 102 i 103 inclosos).
 - **Alternatives considered:**
   - Una operació genèrica de desament que accepti qualsevol canvi: descartada; permetria canviar l'id o l'alias i editar tests i registres desats.
   - Permetre editar tests i registres desats: descartat (decisió c, 2026-10-28).

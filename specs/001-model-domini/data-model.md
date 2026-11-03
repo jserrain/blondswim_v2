@@ -29,8 +29,8 @@ Tipus de camp (spec, § Format JSON): **obligatori** (ha de ser-hi amb valor), *
 |---|---|---|---|
 | `versio_esquema` | int | sí | CA-001-17 |
 | `correu` | `Correu` | sí | RN-032; CA-001-24, 44, 85 a 88 |
-| `correu_verificat` | bool | sí | ADR-0018; `false` en crear-lo i en modificar el correu; CA-001-98 a 100 |
-| `mobil` | text no buit (sense espais als extrems) | sí | ADR-0017; CA-001-54, 93, 101 |
+| `correu_verificat` | bool | sí | ADR-0018; `false` en crear-lo i quan el correu normalitzat canvia; CA-001-98 a 100, 103 |
+| `mobil` | text no buit (sense espais als extrems) | sí | ADR-0019; CA-001-54, 93, 101 |
 | `canal_preferent` | `Canal` \| null | opcional amb avís | RN-035; CA-001-57 a 60 |
 | `alias` | `Alias` | sí | RN-003; CA-001-26, 46, 50 a 53, 61 |
 | `arxivat` | bool | sí | RN-017; `false` en crear-lo |
@@ -63,7 +63,7 @@ L'id no és al fitxer: és el nom de la carpeta.
 | `data` | data | sí |
 | `competicio` | nom de la competició (text no buit); informatiu, no es comprova contra el catàleg | sí (CA-001-90, 91) |
 
-Llista de millores successives per prova i piscina, només de competició (RN-007). En afegir-ne una: només s'afegeix si és millor que la marca vigent de la mateixa prova i piscina (CA-001-83); si és igual o pitjor, no es fa res (CA-001-89). Les marques de 25 m i de 50 m no es comparen. Una llista no ordenada en un fitxer: ERROR (CA-001-06, 96). Els tests CSS es desen tots.
+Llista de millores successives per prova i piscina, només de competició (RN-007). En afegir-ne una: només s'afegeix si és millor que la marca vigent de la mateixa prova i piscina (CA-001-83); si és igual o pitjor, no es fa res (CA-001-89). Les marques de 25 m i de 50 m no es comparen. La data d'una marca nova ha de ser posterior a la de la vigent; si no, ERROR (CA-001-102). Una llista no ordenada en un fitxer: ERROR (CA-001-06, 96, 102). Els tests CSS es desen tots.
 
 ### Competició (`competicions/<AAAA-AA>.json`, catàleg)
 Fitxer: `{versio_esquema, competicions: [...]}`.
@@ -106,10 +106,10 @@ Una línia JSON per avís: `data_hora` (ISO 8601), `rn`, `fitxer`, `camp`, `valo
 |---|---|---|
 | Immutables | `id`, `alias`, `versio_esquema` | `versio_esquema` només canvia amb una migració; la modificació no els rep com a dada (CA-001-53) |
 | Modificables | `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal` | torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res (CA-001-79, 80); el correu antic queda lliure (CA-001-88) |
-| No es rep com a dada | `correu_verificat` | `false` en crear el nedador i en modificar el correu; es conserva en modificar qualsevol altre camp (ADR-0018; CA-001-98 a 100) |
+| No es rep com a dada | `correu_verificat` | `false` en crear el nedador i quan el correu normalitzat canvia; es conserva en modificar qualsevol altre camp o només les majúscules o els espais del correu (ADR-0018; CA-001-98 a 100, 103) |
 | Operació pròpia | `arxivat` | arxivar i desarxivar (RN-017; CA-001-81) |
 | Operació pròpia | `tests_css` | només s'afegeixen; un test desat no s'edita; el coach l'accepta (CA-001-30, 82) |
-| Operació pròpia | `millors_registres` | només s'afegeix una marca millor que la vigent de la mateixa prova i piscina; una d'igual o pitjor no fa res (RN-007; CA-001-83, 89); un registre desat no s'edita |
+| Operació pròpia | `millors_registres` | només s'afegeix una marca millor que la vigent de la mateixa prova i piscina i de data posterior (RN-007; CA-001-83, 102); una d'igual o pitjor no fa res (CA-001-89); un registre desat no s'edita |
 
 Canvi de `dies_entrenament` o `volum_setmanal` a mitja temporada: la 001 el permet; la replanificació és de la spec 005 (CA-001-84).
 
