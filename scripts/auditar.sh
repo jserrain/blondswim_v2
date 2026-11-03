@@ -167,8 +167,10 @@ gate_spec() {
     avis "G1-S03 Sense checklist"
   fi
 
-  # S04: res de plan/tasks ni codi
-  if [[ -e "$F/plan.md" || -e "$F/tasks.md" ]]; then
+  # S04: res de plan/tasks ni codi (no s'aplica a una spec d'un sol fitxer, que no té branca pròpia)
+  if [[ "$unic" -eq 1 ]]; then
+    info "G1-S04 Spec d'un sol fitxer: no es comprova codi de la branca"
+  elif [[ -e "$F/plan.md" || -e "$F/tasks.md" ]]; then
     if ls docs/auditoria/g1-"$nnn"-20*.md >/dev/null 2>&1; then
       info "G1-S04 Ja existeix plan.md o tasks.md (re-auditoria: hi ha un informe G1 anterior)"
     else
@@ -178,7 +180,8 @@ gate_spec() {
     ok "G1-S04 Sense plan/tasks"
   fi
   local base="${BASE:-main}" canvis
-  if git rev-parse --verify -q "$base" >/dev/null; then
+  if [[ "$unic" -eq 1 ]]; then :
+  elif git rev-parse --verify -q "$base" >/dev/null; then
     canvis=$(git diff --name-only "$base"...HEAD -- src tests 2>/dev/null | wc -l | tr -d ' ')
     if [[ "$canvis" -gt 0 ]]; then
       if ls docs/auditoria/g1-"$nnn"-20*.md >/dev/null 2>&1; then
