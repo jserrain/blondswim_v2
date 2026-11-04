@@ -2,6 +2,8 @@
 # Hook Stop: ruff + mypy + lint-imports. Si fallen, retorna l'error a Claude (exit 2)
 # com a màxim 2 vegades seguides per sessió; a la 3a deixa aturar i avisa.
 input=$(cat)
+# Les comprovacions s'executen sempre des de l'arrel del projecte, sigui quin sigui el directori de Claude
+cd "${CLAUDE_PROJECT_DIR:-$(git -C "$(dirname "$0")" rev-parse --show-toplevel)}" || exit 0
 camp() { printf '%s' "$input" | python3 -c "import sys,json; print(json.load(sys.stdin).get('$1', ''))" 2>/dev/null; }
 sid=$(camp session_id); actiu=$(camp stop_hook_active)
 comptador="${TMPDIR:-/tmp}/blondswim-stop-${sid:-sense-sessio}"
