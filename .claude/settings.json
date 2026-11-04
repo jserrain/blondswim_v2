@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "out=$(uv run ruff check . 2>&1 && uv run mypy src 2>&1 && uv run lint-imports 2>&1) || { echo \"$out\" | tail -n 20 >&2; exit 2; }"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop_check.sh\""
           }
         ]
       }
