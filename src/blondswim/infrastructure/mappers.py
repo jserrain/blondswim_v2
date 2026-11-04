@@ -13,10 +13,17 @@ from blondswim.domain.nedador import (
     TestCss,
     VolumSetmanal,
 )
-from blondswim.domain.validacio import ErrorCarrega, ErrorValidacio, valida_nedador
-from blondswim.domain.valors import Alias, Correu, Temps
+from blondswim.domain.validacio import (
+    ErrorCarrega,
+    ErrorValidacio,
+    Identitat,
+    fitxer_nedador,
+    valida_nedador,
+)
+from blondswim.domain.valors import Alias, Canal, Correu, IdNedador, Temps
 from blondswim.infrastructure.dto import (
     DetallProvaDto,
+    IdentitatDto,
     MillorRegistreDto,
     NedadorDto,
     TestCssDto,
@@ -25,6 +32,7 @@ from blondswim.infrastructure.dto import (
 )
 
 VERSIO_ESQUEMA = 1
+_ACCIO = "Corregeix el camp al fitxer del nedador"
 
 
 def _camp(prefix: str, camp: str) -> str:
@@ -43,81 +51,123 @@ def _valor_a(brut: object, camp: str) -> object:
     return brut
 
 
+def _qui(brut: object, id_nedador: IdNedador) -> str:
+    """L'alias del JSON si hi és; si no, l'UUID de la carpeta."""
+    alias = brut.get("alias") if isinstance(brut, dict) else None
+    return alias if isinstance(alias, str) and alias else str(id_nedador)
+
+
 class _Acumulador:
     """Recull els errors de construcció del domini sense aturar-se al primer."""
 
-    def __init__(self, fitxer: str) -> None:
-        self.fitxer = fitxer
+    def __init__(self, id_nedador: IdNedador, qui: str) -> None:
+        self.id_nedador = id_nedador
+        self.qui = qui
         self.errors: list[ErrorValidacio] = []
+
+    def afegeix(self, rn: str, camp: str, valor: object, missatge: str) -> None:
+        self.errors.append(
+            ErrorValidacio(
+                rn or "format",
+                fitxer_nedador(self.id_nedador),
+                camp,
+                valor,
+                missatge,
+                _ACCIO,
+                self.qui,
+            )
+        )
 
     def valor[T](self, camp: str, rn: str, brut: str, fabrica: Callable[[str], T]) -> T | None:
         try:
             return fabrica(brut)
         except ValueError as excepcio:
-            self.errors.append(ErrorValidacio(rn, self.fitxer, camp, brut, str(excepcio)))
+            self.afegeix(rn, camp, brut, str(excepcio))
             return None
 
     def entitat[T](self, prefix: str, fabrica: Callable[[], T]) -> T | None:
         try:
             return fabrica()
         except ErrorInvariant as excepcio:
-            self.errors.extend(
-                ErrorValidacio(v.rn, self.fitxer, _camp(prefix, v.camp), v.valor, v.missatge)
-                for v in excepcio.violacions
-            )
+            for v in excepcio.violacions:
+                self.afegeix(v.rn, _camp(prefix, v.camp), v.valor, v.missatge)
             return None
 
 
-def llegeix_nedador(text: str, fitxer: str) -> Nedador:
+def llegeix_nedador(text: str, id_nedador: IdNedador) -> Nedador:
     """Llegeix `nedador.json`; si no és vàlid, `ErrorCarrega` amb tots els errors."""
+    acc = _Acumulador(id_nedador, str(id_nedador))
     try:
         brut = json.loads(text)
     except json.JSONDecodeError:
-        raise ErrorCarrega((ErrorValidacio("", fitxer, "", None, "JSON invàlid"),)) from None
+        acc.afegeix("format", "", None, "JSON invàlid")
+        raise ErrorCarrega(tuple(acc.errors)) from None
     if not isinstance(brut, dict):
-        raise ErrorCarrega((ErrorValidacio("", fitxer, "", None, "ha de ser un objecte"),))
+        acc.afegeix("format", "", None, "ha de ser un objecte")
+        raise ErrorCarrega(tuple(acc.errors))
+    acc.qui = _qui(brut, id_nedador)
     if "versio_esquema" in brut:
         versio = brut["versio_esquema"]
         if type(versio) is not int or versio != VERSIO_ESQUEMA:
             missatge = f"versió d'esquema no admesa (cal {VERSIO_ESQUEMA})"
-            raise ErrorCarrega((ErrorValidacio("", fitxer, "versio_esquema", versio, missatge),))
+            acc.afegeix("format", "versio_esquema", versio, missatge)
+            raise ErrorCarrega(tuple(acc.errors))
     try:
         dto = NedadorDto.model_validate_json(text)
     except ValidationError as excepcio:
-        raise ErrorCarrega(
-            tuple(
-                ErrorValidacio("", fitxer, e.camp, _valor_a(brut, e.camp), e.missatge)
-                for e in errors_en_catala(excepcio)
-            )
-        ) from None
-    return de_dto(dto, fitxer)
+        for e in errors_en_catala(excepcio):
+            missatge = e.missatge
+            if e.camp == "canal_preferent":
+                missatge += f" (opcions: {', '.join(c.value for c in Canal)})"
+            acc.afegeix("format", e.camp, _valor_a(brut, e.camp), missatge)
+        raise ErrorCarrega(tuple(acc.errors)) from None
+    return de_dto(dto, id_nedador, acc.qui)
 
 
-def de_dto(dto: NedadorDto, fitxer: str) -> Nedador:
-    acc = _Acumulador(fitxer)
-    correu = acc.valor("correu", "RN-032", dto.correu, Correu)
+def llegeix_identitat(text: str) -> Identitat | None:
+    """El correu i l'alias com a text cru (D1); `None` si el fitxer no és llegible.
+
+    Un camp que falta o no és text queda a `None`: no participa a la unicitat d'aquell camp.
+    """
+    try:
+        dto = IdentitatDto.model_validate_json(text)
+    except ValidationError:
+        return None
+    return Identitat(
+        correu=dto.correu if isinstance(dto.correu, str) else None,
+        alias=dto.alias if isinstance(dto.alias, str) else None,
+    )
+
+
+def de_dto(dto: NedadorDto, id_nedador: IdNedador, qui: str) -> Nedador:
+    acc = _Acumulador(id_nedador, qui)
+    correu = None if dto.correu is None else Correu(dto.correu)
     alias = acc.valor("alias", "RN-003", dto.alias, Alias) if dto.alias is not None else None
     tests = [_de_test(acc, f"tests_css.{i}", t) for i, t in enumerate(dto.tests_css)]
     registres = [
         _de_registre(acc, f"millors_registres.{i}", r) for i, r in enumerate(dto.millors_registres)
     ]
-    nedador = None
-    if correu is not None:
-        nedador = acc.entitat(
-            "",
-            lambda: Nedador(
-                correu=correu,
-                arxivat=dto.arxivat,
-                estils_preferents=tuple(dto.estils_preferents),
-                dies_entrenament=tuple(dto.dies_entrenament),
-                volum_setmanal=VolumSetmanal(dto.volum_setmanal.min, dto.volum_setmanal.max),
-                tests_css=tuple(t for t in tests if t is not None),
-                millors_registres=tuple(r for r in registres if r is not None),
-                alias=alias,
-            ),
-        )
+    nedador = acc.entitat(
+        "",
+        lambda: Nedador(
+            correu=correu,
+            mobil=dto.mobil,
+            canal_preferent=dto.canal_preferent,
+            arxivat=dto.arxivat,
+            estils_preferents=tuple(dto.estils_preferents),
+            dies_entrenament=tuple(dto.dies_entrenament),
+            volum_setmanal=VolumSetmanal(dto.volum_setmanal.min, dto.volum_setmanal.max),
+            tests_css=tuple(t for t in tests if t is not None),
+            millors_registres=tuple(r for r in registres if r is not None),
+            alias=alias,
+        ),
+    )
     if nedador is not None:
-        acc.errors.extend(valida_nedador(nedador, fitxer).errors)
+        # Un error amb el mateix camp i la mateixa RN (p. ex. l'alias) ja s'ha informat.
+        reportats = {(e.camp, e.rn) for e in acc.errors}
+        acc.errors.extend(
+            e for e in valida_nedador(id_nedador, nedador).errors if (e.camp, e.rn) not in reportats
+        )
     if acc.errors or nedador is None:
         raise ErrorCarrega(tuple(acc.errors))
     return nedador
@@ -129,7 +179,7 @@ def _de_detall(acc: _Acumulador, prefix: str, dto: DetallProvaDto | None) -> Det
     parcials = None
     if dto.parcials is not None:
         convertits = [
-            acc.valor(f"{prefix}.parcials.{i}", "", text, Temps.de_text)
+            acc.valor(f"{prefix}.parcials.{i}", "format", text, Temps.de_text)
             for i, text in enumerate(dto.parcials)
         ]
         if any(temps is None for temps in convertits):
@@ -141,8 +191,8 @@ def _de_detall(acc: _Acumulador, prefix: str, dto: DetallProvaDto | None) -> Det
 
 
 def _de_test(acc: _Acumulador, prefix: str, dto: TestCssDto) -> TestCss | None:
-    t400 = acc.valor(f"{prefix}.t400", "", dto.t400, Temps.de_text)
-    t200 = acc.valor(f"{prefix}.t200", "", dto.t200, Temps.de_text)
+    t400 = acc.valor(f"{prefix}.t400", "format", dto.t400, Temps.de_text)
+    t200 = acc.valor(f"{prefix}.t200", "format", dto.t200, Temps.de_text)
     detall_400 = _de_detall(acc, f"{prefix}.detall_400", dto.detall_400)
     detall_200 = _de_detall(acc, f"{prefix}.detall_200", dto.detall_200)
     if t400 is None or t200 is None:
@@ -156,7 +206,7 @@ def _de_test(acc: _Acumulador, prefix: str, dto: TestCssDto) -> TestCss | None:
 
 
 def _de_registre(acc: _Acumulador, prefix: str, dto: MillorRegistreDto) -> MillorRegistre | None:
-    temps = acc.valor(f"{prefix}.temps", "", dto.temps, Temps.de_text)
+    temps = acc.valor(f"{prefix}.temps", "format", dto.temps, Temps.de_text)
     if temps is None:
         return None
     return MillorRegistre(dto.estil, dto.distancia, dto.piscina, temps, dto.data, dto.competicio)
@@ -165,7 +215,9 @@ def _de_registre(acc: _Acumulador, prefix: str, dto: MillorRegistreDto) -> Millo
 def a_dto(nedador: Nedador) -> NedadorDto:
     return NedadorDto(
         versio_esquema=VERSIO_ESQUEMA,
-        correu=nedador.correu.valor,
+        correu=None if nedador.correu is None else nedador.correu.valor,
+        mobil=nedador.mobil,
+        canal_preferent=nedador.canal_preferent,
         alias=None if nedador.alias is None else nedador.alias.valor,
         arxivat=nedador.arxivat,
         estils_preferents=list(nedador.estils_preferents),

@@ -4,8 +4,10 @@ import re
 from dataclasses import dataclass
 from enum import Enum, IntEnum
 
-_RE_ID = re.compile(r"n[0-9]{4}")
-_RE_ALIAS = re.compile(r"[a-z0-9-]{2,20}")
+_RE_ID = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}")
+_RE_PART_ALIAS = re.compile(r"[a-z0-9-]{2,12}")
+_RE_ALIAS = re.compile(r"[a-z0-9-]{2,12}_[0-9a-f]{7}")
+_MIDA_SUFIX_ALIAS = 7
 _RE_TEMPS = re.compile(r"([0-9]+):([0-5][0-9])\.([0-9]{2})")
 _RE_TEMPORADA = re.compile(r"([0-9]{4})-([0-9]{2})")
 
@@ -49,9 +51,20 @@ class Prioritat(Enum):
     SECUNDARIA = "secundària"
 
 
+class Canal(Enum):
+    """RN-035."""
+
+    CORREU = "correu"
+    MOBIL = "mobil"
+
+
+# Espais en blanc dels extrems que no compten (RN-032): espais, tabuladors i salts de línia.
+BLANCS = " \t\n"
+
+
 @dataclass(frozen=True)
 class IdNedador:
-    """RN-001."""
+    """RN-001: UUID v4 canònic en minúscules (ADR-0014)."""
 
     valor: str
 
@@ -65,19 +78,26 @@ class IdNedador:
 
 @dataclass(frozen=True)
 class Correu:
-    """RN-032 (format). La unicitat es valida entre nedadors."""
+    """RN-032. Conserva el valor tal com s'ha entrat; no es corregeix ni es normalitza.
+
+    El format es consulta amb `format_valid` (l'ERROR el dona el validador); la unicitat
+    es valida entre nedadors amb `clau`.
+    """
 
     valor: str
 
-    def __post_init__(self) -> None:
-        if not self.valor or any(c.isspace() for c in self.valor):
-            raise ValueError(f"correu invàlid: {self.valor!r}")
+    @property
+    def clau(self) -> str:
+        """Clau de comparació: en minúscules i sense blancs als extrems."""
+        return self.valor.strip(BLANCS).lower()
 
-    def __eq__(self, altre: object) -> bool:
-        return isinstance(altre, Correu) and self.valor.casefold() == altre.valor.casefold()
-
-    def __hash__(self) -> int:
-        return hash(self.valor.casefold())
+    @property
+    def format_valid(self) -> bool:
+        net = self.valor.strip(BLANCS)
+        local, arroba, domini = net.rpartition("@")
+        return bool(
+            arroba and local and domini and "." in domini and not any(c.isspace() for c in net)
+        )
 
     def __str__(self) -> str:
         return self.valor
@@ -85,13 +105,24 @@ class Correu:
 
 @dataclass(frozen=True)
 class Alias:
-    """RN-003 (format). La unicitat es valida entre nedadors."""
+    """RN-003 (format `<part>_<sufix>`). La unicitat es valida entre nedadors."""
 
     valor: str
 
     def __post_init__(self) -> None:
-        if not _RE_ALIAS.fullmatch(self.valor) or _RE_ID.fullmatch(self.valor):
+        if not _RE_ALIAS.fullmatch(self.valor):
             raise ValueError(f"alias invàlid: {self.valor!r}")
+
+    @classmethod
+    def genera(cls, part: str, id_nedador: IdNedador) -> "Alias":
+        """L'alias definitiu: la part del coach i els 7 primers caràcters de l'id."""
+        if not _RE_PART_ALIAS.fullmatch(part):
+            raise ValueError(f"part d'alias invàlida: {part!r}")
+        return cls(f"{part}_{id_nedador.valor[:_MIDA_SUFIX_ALIAS]}")
+
+    def coincideix_amb(self, id_nedador: IdNedador) -> bool:
+        """El sufix és els 7 primers caràcters de l'id."""
+        return self.valor.rpartition("_")[2] == id_nedador.valor[:_MIDA_SUFIX_ALIAS]
 
     def __str__(self) -> str:
         return self.valor

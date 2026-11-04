@@ -1,9 +1,9 @@
 """Nedador i entitats relacionades (data-model.md)."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 
-from blondswim.domain.valors import Alias, Correu, Dia, Estil, Piscina, Prova, Temps
+from blondswim.domain.valors import Alias, Canal, Correu, Dia, Estil, Piscina, Prova, Temps
 
 _PARCIALS_400 = 4
 _PARCIALS_200 = 2
@@ -112,7 +112,10 @@ class TestCss:
 
 @dataclass(frozen=True)
 class MillorRegistre:
-    """Únic per (estil, distància, piscina) (RN-007); la prova és oficial (RN-030)."""
+    """Una millora de la marca d'una prova i piscina (RN-007); la prova és oficial (RN-030).
+
+    `competicio` és el nom de la competició, informatiu i sense catàleg.
+    """
 
     estil: Estil
     distancia: int
@@ -125,12 +128,22 @@ class MillorRegistre:
     def prova(self) -> Prova:
         return Prova(self.distancia, self.estil)
 
+    @property
+    def descripcio(self) -> str:
+        return f"{self.distancia} {self.estil.value} a piscina de {self.piscina.value} m"
+
 
 @dataclass(frozen=True)
 class Nedador:
-    """L'id no hi és: és el nom de la carpeta (RN-001)."""
+    """L'id no hi és: és el nom de la carpeta (RN-001).
 
-    correu: Correu
+    `correu` és opcional (RN-032); `mobil` és obligatori, però el pot deixar buit un fitxer
+    editat a mà: ho comprova el validador. `canal_preferent` absent és un avís (RN-035).
+    """
+
+    correu: Correu | None
+    mobil: str
+    canal_preferent: Canal | None
     arxivat: bool
     estils_preferents: tuple[Estil, ...]
     dies_entrenament: tuple[Dia, ...]
@@ -162,3 +175,83 @@ class Nedador:
                 )
             )
         _verifica(violacions)
+
+
+class _SenseCanvi:
+    """Valor de `CanviNedador.correu` quan el correu no canvia (`None` el treu)."""
+
+    def __repr__(self) -> str:
+        return "SENSE_CANVI"
+
+
+SENSE_CANVI = _SenseCanvi()
+
+
+@dataclass(frozen=True)
+class CanviNedador:
+    """Camps modificables (RN-002, RN-003: l'id i l'alias no canvien mai).
+
+    Un camp a `None` no canvia; l'excepció és `correu`, on `None` el treu i
+    `SENSE_CANVI` el deixa com és (RN-032). Cap camp de la resta no pot ser `None`.
+    """
+
+    correu: Correu | _SenseCanvi | None = SENSE_CANVI
+    mobil: str | None = None
+    canal_preferent: Canal | None = None
+    estils_preferents: tuple[Estil, ...] | None = None
+    dies_entrenament: tuple[Dia, ...] | None = None
+    volum_setmanal: VolumSetmanal | None = None
+
+    def aplica(self, nedador: Nedador) -> Nedador:
+        """El nedador amb el canvi aplicat; `ErrorInvariant` si en trenca un invariant."""
+        canvis: dict[str, object] = {
+            camp: valor
+            for camp in (
+                "mobil",
+                "canal_preferent",
+                "estils_preferents",
+                "dies_entrenament",
+                "volum_setmanal",
+            )
+            if (valor := getattr(self, camp)) is not None
+        }
+        if not isinstance(self.correu, _SenseCanvi):
+            canvis["correu"] = self.correu
+        return replace(nedador, **canvis)  # type: ignore[arg-type]
+
+
+def _vigent(
+    registres: tuple[MillorRegistre, ...], prova: Prova, piscina: Piscina
+) -> MillorRegistre | None:
+    for registre in reversed(registres):
+        if registre.prova == prova and registre.piscina is piscina:
+            return registre
+    return None
+
+
+def marca_vigent(nedador: Nedador, prova: Prova, piscina: Piscina) -> MillorRegistre | None:
+    """L'última marca de la llista per a la prova i la piscina (RN-007); no es desa."""
+    return _vigent(nedador.millors_registres, prova, piscina)
+
+
+def afegeix_registre(
+    registres: tuple[MillorRegistre, ...], nou: MillorRegistre
+) -> tuple[MillorRegistre, ...]:
+    """RN-007: afegeix `nou` si és millor que la marca vigent de la prova i la piscina.
+
+    Un temps igual o pitjor no fa res (torna la llista sense canvis). Un temps millor amb
+    una data no posterior a la de la vigent és un `ErrorInvariant`. Les piscines no es comparen.
+    """
+    vigent = _vigent(registres, nou.prova, nou.piscina)
+    if vigent is None:
+        return (*registres, nou)
+    if nou.temps >= vigent.temps:
+        return registres
+    if nou.data <= vigent.data:
+        missatge = (
+            f"la data de la marca ({nou.data}) ha de ser posterior a la de la vigent "
+            f"({vigent.data}): {nou.descripcio}"
+        )
+        camp = f"millors_registres.{len(registres)}"
+        raise ErrorInvariant((Violacio("RN-007", camp, nou.descripcio, missatge),))
+    return (*registres, nou)

@@ -1,6 +1,9 @@
 """Definicions fixades a les regles de negoci (research R2). Únic lloc amb aquests valors."""
 
-from blondswim.domain.valors import Estil, Piscina, Prova
+from dataclasses import dataclass
+from datetime import date, timedelta
+
+from blondswim.domain.valors import CodiTemporada, Estil, Piscina, Prova
 
 # RN-030 — proves individuals oficials: estil -> piscina -> distàncies.
 _TOTES = {Piscina.CURTA, Piscina.LLARGA}
@@ -24,3 +27,20 @@ def es_prova_oficial(prova: Prova, piscina: Piscina) -> bool:
 # RN-031 — la temporada comença l'1 d'octubre.
 INICI_TEMPORADA_MES = 10
 INICI_TEMPORADA_DIA = 1
+
+
+@dataclass(frozen=True)
+class Temporada:
+    """RN-031: de l'1 d'octubre d'`AAAA` al 30 de setembre de l'any següent."""
+
+    codi: CodiTemporada
+    inici: date
+    fi: date
+
+    @classmethod
+    def de_codi(cls, text: str) -> "Temporada":
+        """`ValueError` si el nom no és `AAAA-AA` coherent."""
+        codi = CodiTemporada(text)
+        inici = date(codi.any_inici, INICI_TEMPORADA_MES, INICI_TEMPORADA_DIA)
+        seguent = date(codi.any_inici + 1, INICI_TEMPORADA_MES, INICI_TEMPORADA_DIA)
+        return cls(codi, inici, seguent - timedelta(days=1))

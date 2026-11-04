@@ -5,7 +5,7 @@ from datetime import date
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-from blondswim.domain.valors import Dia, Estil, Piscina
+from blondswim.domain.valors import Canal, Dia, Estil, Piscina
 
 _MISSATGES = {
     "model_type": "ha de ser un objecte",
@@ -65,7 +65,9 @@ class NedadorDto(DtoBase):
     """`nedador.json`. L'ordre dels camps és el de l'escriptura (research R3)."""
 
     versio_esquema: int
-    correu: str
+    correu: str | None = None
+    mobil: str
+    canal_preferent: Canal | None = None
     alias: str | None = None
     arxivat: bool
     estils_preferents: list[Estil]
@@ -73,6 +75,20 @@ class NedadorDto(DtoBase):
     volum_setmanal: VolumSetmanalDto
     tests_css: list[TestCssDto]
     millors_registres: list[MillorRegistreDto]
+
+
+class IdentitatDto(BaseModel):
+    """DTO mínim d'identitat per a la unicitat (D1): `correu` i `alias` com a valor cru.
+
+    No és estricte: un camp que falta o no és text no fa fallar la lectura; el mapper
+    el deixa fora de la unicitat d'aquell camp. Un fitxer que no és un objecte JSON
+    ben format falla.
+    """
+
+    model_config = ConfigDict(extra="ignore", frozen=True)
+
+    correu: object = None
+    alias: object = None
 
 
 @dataclass(frozen=True)
