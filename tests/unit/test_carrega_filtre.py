@@ -1,8 +1,8 @@
 import pytest
+
 from blondswim.application.carrega import carrega_nedadors
 from blondswim.application.filtre import filtra
 from blondswim.application.gestio import NouNedador, alta
-
 from blondswim.domain.nedador import VolumSetmanal
 from blondswim.domain.valors import Canal, Correu, Dia, Estil
 from tests.unit.fakes import (

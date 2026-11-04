@@ -2,6 +2,8 @@ from dataclasses import FrozenInstanceError, replace
 from datetime import date
 
 import pytest
+
+from blondswim.application import gestio
 from blondswim.application.gestio import (
     NouNedador,
     afegeix_millor_registre,
@@ -11,8 +13,6 @@ from blondswim.application.gestio import (
     desarxiva,
     modifica,
 )
-
-from blondswim.application import gestio
 from blondswim.domain.nedador import CanviNedador, VolumSetmanal, marca_vigent
 from blondswim.domain.valors import Alias, Canal, Correu, Dia, Estil, IdNedador, Piscina, Prova
 from tests.unit.fakes import (

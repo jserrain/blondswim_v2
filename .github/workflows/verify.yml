@@ -1,0 +1,24 @@
+name: verify
+
+# verify.sh a Linux a cada push; a macOS també a les PR (els minuts de macOS són més cars).
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ github.event_name == 'push' && fromJSON('["ubuntu-latest"]') || fromJSON('["ubuntu-latest", "macos-latest"]') }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Entorn
+        run: uv sync --locked
+      - name: verify.sh
+        run: bash scripts/verify.sh
