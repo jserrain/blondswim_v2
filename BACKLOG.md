@@ -12,6 +12,16 @@ Idees per a la propera versió. Una idea per fila. Només passa a la versió nov
 | 1 | 25/10/2026 | Sèrie USRPT: crol a ritme de cursa 100 L | Pendent | Alta |
 | 2 | 25/10/2026 | Definir patrons d'entrenament per enriquir el model | Pendent | Mitjana |
 | 3 | 25/10/2026 | Seguretat quan l'app s'exposi a un endpoint | Pendent | Mitjana |
+| 4 | 28/10/2026 | Replanificar a mitja temporada per canvi de dies o volum | Pendent | Mitjana |
+| 5 | 29/10/2026 | Historial de millors marques | Pendent | Baixa |
+| 7 | 29/10/2026 | Parcials i pacing de cursa | Pendent | Mitjana |
+| 8 | 29/10/2026 | Conversió de marques 25 m ↔ 50 m | Pendent | Mitjana |
+| 9 | 29/10/2026 | Marques mínimes amb caducitat | Pendent | Mitjana |
+| 10 | 29/10/2026 | Categoria per edat (data de naixement) | Pendent | Baixa |
+| 11 | 29/10/2026 | Tipus de cronometratge | Pendent | Baixa |
+| 12 | 29/10/2026 | ADR de dades personals: supressió | Pendent | Mitjana |
+
+Nota: decisió ADR-0020: no es verifica ni es normalitza. El número 6 (variants de Gmail) i la verificació del correu queden retirats; els números no es reutilitzen.
 
 ## Notes
 
@@ -64,6 +74,91 @@ Idees per a la propera versió. Una idea per fila. Només passa a la versió nov
     - Relació compte → nedadors amb rol (coach / nedador), que és la base de l'autorització.
   - Descartat: id derivat d'un hash de l'UUID amb el correu o el mòbil (no afegeix unicitat, trenca la immutabilitat de l'id i hi introdueix una dada personal).
   - Fora d'abast: notificacions push pròpies, gestió de contrasenyes i 2FA propis.
+- **Resultat:** —
+
+### 4. Replanificar a mitja temporada per canvi de dies o volum
+
+- **Font:** G1 r2 de la spec 001 (28/10/2026)
+- **Objectiu:** que un canvi de `dies_entrenament` o `volum_setmanal` a mitja temporada torni a planificar amb la configuració nova
+- **On encaixa:** spec 005 (CA-001-84)
+- **Estat:** Pendent
+- **Prioritat:** Mitjana
+- **Detall:**
+  - La 001 permet el canvi; la planificació passada es conserva com a registre.
+  - Per decidir a la 005: des de quina setmana s'aplica la configuració nova.
+  - Altres canvis del nedador (filtre de validació, camps immutables, operacions de modificació, arxivar i desarxivar) són de la 001.
+- **Resultat:** —
+
+### 5. Historial de millors marques
+
+- **Font:** decisió B de la spec 001 (29/10/2026)
+- **Objectiu:** poder veure l'evolució d'una marca, no només l'última
+- **On encaixa:** spec futura de progressió (007); `millors_registres` ja conserva les millores successives per prova i piscina (RN-007)
+- **Estat:** Pendent
+- **Prioritat:** Baixa
+- **Detall:** les dades ja es desen (llista de millores i tots els tests CSS); falta la consulta de l'evolució, que és d'una spec futura.
+- **Resultat:** —
+
+### 7. Parcials i pacing de cursa
+
+- **Font:** G1 de la spec 001
+- **Objectiu:** registrar parcials de cursa i comparar-los amb el ritme previst
+- **On encaixa:** spec 007
+- **Estat:** Pendent
+- **Prioritat:** Mitjana
+- **Detall:** la 001 només desa els parcials informatius dels tests CSS (`detall_400`, `detall_200`).
+- **Resultat:** —
+
+### 8. Conversió de marques 25 m ↔ 50 m
+
+- **Font:** idea pròpia
+- **Objectiu:** comparar marques de piscines diferents
+- **On encaixa:** spec 004 (zones i càrrega) o 003 (periodització)
+- **Estat:** Pendent
+- **Prioritat:** Mitjana
+- **Detall:** cal definir el factor de conversió i qui el pot ajustar (principi V).
+- **Resultat:** —
+
+### 9. Marques mínimes amb caducitat
+
+- **Font:** idea pròpia
+- **Objectiu:** fixar marques mínimes per competició o categoria, amb data de caducitat
+- **On encaixa:** spec 003
+- **Estat:** Pendent
+- **Prioritat:** Mitjana
+- **Detall:** no es modela a la 001.
+- **Resultat:** —
+
+### 10. Categoria per edat (data de naixement)
+
+- **Font:** idea pròpia
+- **Objectiu:** derivar la categoria del nedador per l'edat
+- **On encaixa:** spec futura; per això caldria la data de naixement, que és una dada personal
+- **Estat:** Pendent
+- **Prioritat:** Baixa
+- **Detall:** la 001 no desa la data de naixement. Afecta l'ADR de supressió (nota 12).
+- **Resultat:** —
+
+### 11. Tipus de cronometratge
+
+- **Font:** idea pròpia
+- **Objectiu:** distingir marques manuals de marques electròniques
+- **On encaixa:** `millors_registres` i tests CSS, en una spec futura
+- **Estat:** Pendent
+- **Prioritat:** Baixa
+- **Detall:** la 001 no registra el tipus de cronometratge.
+- **Resultat:** —
+
+### 12. ADR de dades personals: supressió
+
+- **Font:** G0 i G1 de la spec 001; `docs/estat.md`
+- **Objectiu:** decidir com es compleix el dret de supressió (RGPD, art. 17) davant la regla d'arxivar sense esborrar (RN-004)
+- **On encaixa:** ADR propi, quan un nedador ho demani
+- **Estat:** Pendent
+- **Prioritat:** Mitjana
+- **Detall:**
+  - Afecta `nedador.json` (correu i mòbil) i el registre d'avisos `data/avisos.jsonl`, que només creix.
+  - Cap avís vigent no porta el correu ni el mòbil (RN-034 retirada).
 - **Resultat:** —
 
 ## Plantilla per a una nota nova

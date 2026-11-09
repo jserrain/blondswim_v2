@@ -34,7 +34,10 @@ check "Python 3.12"            uv run python -c "import sys; assert sys.version_
 # Estructura
 check "Capes Clean Architecture" bash -c 'for l in domain application infrastructure interfaces; do test -f src/blondswim/$l/__init__.py || exit 1; done'
 check "Carpetes del projecte"    bash -c 'for d in tests/unit tests/integration specs docs/decisions data; do test -d $d || exit 1; done'
-check "Pre-commit instal·lat"    test -f .git/hooks/pre-commit
+# A la CI (GitHub Actions defineix CI=true) no hi ha hook de pre-commit ni clau API: es salten.
+salta() { printf "SALTAT %s (CI)\n" "$1"; }
+if [ "${CI:-}" = "true" ]; then salta "Pre-commit instal·lat"
+else check "Pre-commit instal·lat"    test -f .git/hooks/pre-commit; fi
 
 # Portes de qualitat (sense --fix: només lectura)
 check "ruff lint"      uv run ruff check .
@@ -48,7 +51,8 @@ check_avis "Traçabilitat CA" uv run python scripts/check_tracabilitat.py
 check ".gitignore (.venv, .env)" bash -c 'grep -qxE "\.venv/?" .gitignore && grep -qx ".env" .gitignore'
 check ".env no versionat"        bash -c '[ -z "$(git ls-files .env)" ]'
 check "Cap clau al repo"         bash -c '! git grep -q --untracked "sk-""ant-"'
-check "Clau API llegible"        uv run python -c "from blondswim.infrastructure.secrets import anthropic_api_key as k; assert len(k()) > 50"
+if [ "${CI:-}" = "true" ]; then salta "Clau API llegible"
+else check "Clau API llegible"        uv run python -c "from blondswim.infrastructure.secrets import anthropic_api_key as k; assert len(k()) > 50"; fi
 
 echo
 if [ "$fails" -eq 0 ]; then

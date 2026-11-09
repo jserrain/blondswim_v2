@@ -46,7 +46,14 @@ entre elles.
 - Un valor derivat no es desa mai: es calcula quan cal.
 - Una dada obligatòria que falta és un error. Una dada opcional desconeguda es desa com a
   `null`; genera avís només si la spec ho indica.
-- Els paràmetres vénen de les dades o de la spec, mai de constants al codi.
+- Els paràmetres ajustables (els que el coach pot voler canviar o que varien per nedador
+  o per temporada) vénen de les dades o de la configuració, mai de constants al codi.
+- Les definicions fixades al glossari o a una RN (codis, mides de piscina, proves
+  oficials, límits de temporada) poden ser constants del domini: en un sol lloc del codi,
+  amb l'ID de la font citat i comprovades per un criteri d'acceptació.
+
+Raó: a la v1, valors que havien de variar (temporada, volums) eren fixos al codi; en canvi,
+les definicions externes només canvien quan canvia la seva font.
 
 ### VI. El pla es persisteix i es versiona
 - Un pla generat es desa i se'n guarden les versions. No es regenera ni se sobreescriu
@@ -116,4 +123,4 @@ a `docs/regles.md`.
 - El *Constitution Check* de `/speckit-plan` i `/speckit-analyze` verifica el compliment.
   Una violació s'ha de justificar o corregir abans d'implementar.
 
-**Version**: 1.2.1 | **Ratified**: 2026-10-18 | **Last Amended**: 2026-10-23
+**Version**: 1.3.0 | **Ratified**: 2026-10-18 | **Last Amended**: 2026-10-23

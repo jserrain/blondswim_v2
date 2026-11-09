@@ -14,7 +14,7 @@ from pathlib import Path
 
 ARREL = Path(__file__).resolve().parent.parent
 SPEC = re.compile(r"^(\d{3}[a-z]?)-")
-CRITERI = re.compile(r"^- \*\*(CA-(\d{3}[a-z]?)-\d{2})\*\*( \[PENDENT [^\]]+\])?", re.M)
+CRITERI = re.compile(r"^- \*\*(CA-(\d{3}[a-z]?)-\d{2,})\*\*( \[PENDENT [^\]]+\])?", re.M)
 APROVADA = "**Estat:** Aprovada"
 MODES = ("avis", "bloquejant")
 

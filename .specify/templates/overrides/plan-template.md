@@ -44,7 +44,7 @@
 - [ ] **II. Primer la spec:** cap regla de negoci fora de la spec; els punts oberts, marcats [NEEDS CLARIFICATION].
 - [ ] **III. Regles de negoci identificades i amb una sola font:** cada regla té RN-NNN a `docs/regles.md`; les regles noves, comprovades contra les existents.
 - [ ] **IV. El sistema avisa; el coach decideix:** cap guarda silenciosa; avisos persistents; l'LLM només en regles de judici, amb entrades, sortida i comprovació.
-- [ ] **V. Dades honestes:** cap valor derivat desat; cap valor per defecte; paràmetres de les dades o de la spec.
+- [ ] **V. Dades honestes:** cap valor derivat desat; cap valor per defecte; paràmetres ajustables a dades o configuració; definicions com a constants del domini en un sol lloc, amb l'ID de la font i un CA.
 - [ ] **VI. El pla es persisteix i es versiona.**
 - [ ] **VII. Traçabilitat de la spec al test:** cada tasca té capa; cada CA-ID no pendent té test amb `@pytest.mark.ca`.
 - [ ] **VIII. Documents genèrics i sense història:** cap nedador, competició ni data fora dels tests i dels exemples.

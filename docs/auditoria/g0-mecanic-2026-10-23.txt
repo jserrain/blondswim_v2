@@ -1,14 +1,14 @@
 == Gate 0: Constitució (2026-10-23) ==
   OK     G0-E01 Existeix .specify/memory/constitution.md
   OK     G0-E02 Sense marcadors de plantilla
-  OK     G0-E03 Versió semver: 1.2.1
+  OK     G0-E03 Versió semver: 1.3.0
   OK     G0-E03 Ratificació: 2026-10-18
   OK     G0-E03 Última esmena: 2026-10-23
   PISTA  G0-E04 Hi ha secció de governança
   OK     G0-E05 Historial git del fitxer: 6 commits
   INFO   Principis (### I., II., …): 8
-  INFO   Principis amb línia 'Raó:'/'Rationale:': 2
-  PISTA  G0-Q02 6 principi(s) sense raó explícita
+  INFO   Principis amb línia 'Raó:'/'Rationale:': 3
+  PISTA  G0-Q02 5 principi(s) sense raó explícita
 -- Fonts normatives (G0-C05) --
   OK     G0-C05 docs/regles.md
   OK     G0-C05 docs/decisions/ amb ADR
@@ -30,7 +30,7 @@
   PISTA  G0-P07 Aïllament/VCS trobat: branca
   PISTA  G0-P08 Observabilitat trobat: registren
   AVÍS   G0-P09 Avaluació cap paraula clau
-  PISTA  G0-P10 Proves trobat: pytest,test,tests
+  PISTA  G0-P10 Proves trobat: proves,pytest,test,tests
 -- Coherència --
   PISTA  G0-C01 Remet a la constitució: AGENTS.md
   PISTA  G0-C02 .specify/templates/overrides/plan-template.md té Constitution Check

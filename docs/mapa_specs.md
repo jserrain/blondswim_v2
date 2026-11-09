@@ -11,7 +11,7 @@ Aquest document és genèric: no conté dades de cap nedador ni de cap temporada
 5. Les competicions A són els objectius; les B i les C serveixen per avaluar la progressió.
 6. L'objectiu de la planificació és el màxim rendiment en les proves on participa el nedador.
 7. Planificació per cicles inspirada en TrainingPeaks: macrocicle (temporada), mesocicles (fases i blocs), microcicle (setmana).
-8. Les sessions s'adapten a cada nedador i a les seves proves objectiu. Es composen amb plantilla i metodologia; la tècnica surt de la biblioteca d'exercicis del coach (ADR-0003, ADR-0005).
+8. Les sessions s'adapten a cada nedador i a les seves proves objectiu. Es composen amb plantilla i metodologia; la tècnica surt de la biblioteca d'exercicis del coach (ADR-0004, ADR-0005).
 
 ## Principis (lliçons de la v1)
 
@@ -19,7 +19,7 @@ Aquest document és genèric: no conté dades de cap nedador ni de cap temporada
 |---|---|
 | Un valor derivat no es desa mai (setmana ISO, volum d'una sèrie, temps estimat) | Setmana sense any, columnes desplaçades, ordenació errònia al canvi d'any |
 | Cap valor per defecte que amagui una dada que falta: dada desconeguda = `null` + avís | Metres buits → 0, fitxa amb valors per defecte que activaven lògica antiga |
-| Els paràmetres són del nedador o de la spec, mai constants al codi | Temporada i volums fixos per a tothom |
+| Els paràmetres ajustables són dades; les definicions, constants del domini amb l'ID de la font | Temporada i volums fixos per a tothom |
 | Cada regla té una sola font | 18 grups de regles duplicades amb valors diferents |
 | Tota regla té tipus: bloquejant, avís o judici LLM | Regles «dures» que no es comprovaven o que esgotaven reintents |
 | Abans d'acceptar una regla nova, es comprova contra les existents | Regles apilades que es bloquejaven entre elles |
@@ -39,7 +39,6 @@ data/
   nedadors/<id>/
     nedador.json                  # spec 001
     temporades/<AAAA-AA>/
-      temporada.json              # spec 001
       inscripcions.json           # spec 001
       pla/                        # macrocicle i setmanes, versionats (specs 003-006)
       registre/                   # execució real (spec 007)
@@ -49,11 +48,11 @@ Convencions de noms:
 - **Dins de l'espai del nedador, el nom del fitxer no porta l'id**: la carpeta ja l'identifica (una sola font).
 - La temporada és una carpeta (`2026-27`), no un sufix: inscripcions, pla i registre d'una temporada van junts i les temporades anteriors es conserven.
 - **Els fitxers que surten del sistema** (full de piscina, informe) sí que porten l'id i la setmana: `<tipus>_<id>_<AAAA>-W<ss>.xlsx`, perquè viatgen sols.
-- On es desen els Excels d'entrada (ADR-0007) ho decideix la spec 002.
+- On es desen els CSV d'entrada (ADR-0013) ho decideix la spec 002.
 
 ## Composició de sessions
 
-- L'històric d'entrenaments és un arxiu per al coach; no és font de sessions ni es passa a l'LLM (ADR-0003).
+- L'històric d'entrenaments no s'importa ni és font de sessions (ADR-0012).
 - La sessió es construeix: plantilla (rol + fase) → parts segons l'ADR-0004 → tècnica de la biblioteca del coach (ADR-0005) → principals segons les proves objectiu i la seva prioritat → volum ajustat. L'LLM només redacta i adapta dins d'aquests límits.
 - Abans de planificar un nedador, la biblioteca de tècnica ha de cobrir els seus estils (ADR-0005).
 
@@ -69,12 +68,12 @@ Convencions de noms:
 | # | Spec | Contingut | Decisions que la bloquegen |
 |---|---|---|---|
 | 000 | Glossari | Zones (A0, A1, A2, A3, Vel, MPLA, TOLA), notació (`c/`, `d/`, `r/N`), abreviatures, termes de cicle (macro, meso, micro, fase, bloc), classes A/B/C | — (aprovada) |
-| 001 | Model de domini | Nedador (estils preferents, disponibilitat, zones), Temporada, Competició (del nedador), Prova, Inscripció per dia, Prova objectiu (prioritat, marca, objectiu), Setmana (derivada de la data). Invariants i roundtrip JSON | — (aprovada) |
-| 002 | Importació i normalització | Excel de calendari → catàleg; Excel d'inscripcions → inscripcions del nedador (ADR-0007); Excel d'entrenaments → arxiu, sense etiquetar (ADR-0003). Regles per a cada irregularitat de `fonts_dades.md`. Informe d'errors; mai valors inventats | Ubicació dels Excels d'entrada; conversió `c/` → `d/`; identificació del nedador en importar (id o alias com a argument) i, si l'Excel porta el nom, validar-lo contra `nedador.json` i avisar si no coincideix |
+| 001 | Model de domini | Nedador (estils preferents, disponibilitat, zones), Temporada, Competició (del nedador), Prova, Inscripció per dia, Prova objectiu (prioritat, marca, objectiu), Setmana (derivada de la data). Invariants i roundtrip JSON | — (aprovada i implementada) |
+| 002 | Importació i normalització | CSV de calendari → catàleg; CSV d'inscripcions → inscripcions del nedador (ADR-0013). Regles per a cada irregularitat de `fonts_dades.md`. Informe d'errors; mai valors inventats. Resum per nivells, codi de sortida i confirmació d'avisos | Ubicació dels CSV d'entrada; identificació del nedador en importar (id o alias com a argument) |
 | 002b | Biblioteca d'exercicis de tècnica | Exercicis per estil confeccionats pel coach, format, metres per exercici, cobertura per estil (ADR-0005) | Format de l'exercici; com es tria per a les proves objectiu |
 | 003 | Periodització | Fases cap enrere des de cada A, blocs càrrega:recuperació, doble pic, finestra insuficient, activació quan la competició és en cap de setmana, tractament de B i C, períodes no disponibles | Model de taper; mínims de fase; regla de doble pic |
 | 004 | Zones i càrrega | CSS → zones; nedador sense CSS; càrrega per RPE de sessió (pendent d'ADR-0009) | Model de càrrega; mode sense zones |
-| 005 | Microcicle | Plantilla per nombre de dies, rols de sessió, repartiment del rang de volum per fase i tipus de setmana | Plantilla per dies; tolerància de volum |
+| 005 | Microcicle | Plantilla per nombre de dies, rols de sessió, repartiment del rang de volum per fase i tipus de setmana. Replanificació per canvi de dies o volum | Plantilla per dies; tolerància de volum |
 | 006 | Composició de sessions | Plantilla (rol + fase) → parts (ADR-0004) → tècnica de la biblioteca → principals segons les proves objectiu i la seva prioritat → volum ajustat; l'LLM només redacta i adapta dins de límits | Punts de judici LLM; activació del principal II; pes per prioritat |
 | 007 | Progressió amb B/C | Resultats, bandes de progressió, alertes | — |
 | 008 | Sortides | Full de piscina, resum setmanal, plantilla de registre | Formats d'E/S |

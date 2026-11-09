@@ -1,0 +1,37 @@
+# Estat del projecte
+
+Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és normatiu.
+
+## On som
+- Branca: `001-model-domini`. Spec 001 amb les decisions del 2026-11-03 (marca de competició com a llista de millores, correu opcional sense verificar ni normalitzar, ADR-0020) i les correccions de G1 i G2; G1 i G2 signats (2026-11-03, r3); 99 CA actius (90 amb test, 9 pendents), 13 retirats (CA-001-55, 56, 77, 85, 86, 87, 88, 94, 95, 98, 99, 100 i 103).
+- Constitució 1.3.0 (G0 r2: passa amb condicions).
+- `tasks.md`: les 54 tasques fetes (Setup, Foundational, US1, US1b, US2–US6 i Polish). Decisions D1 i D2 confirmades (`plan.md`).
+- Implementació de la 001 acabada (totes les tasques): traçabilitat bloquejant. Següent pas: revisió independent i pull request a `main`; després, spec 002.
+- Traçabilitat bloquejant (T002): cada CA no pendent té test.
+
+## Decisions recents (detall als ADR i a la spec)
+- Identitat = `IdNedador`, UUID v4 (ADR-0014); alias obligatori i immutable `<part>_<sufix>` (RN-003). Contacte: ADR-0020 (substitueix l'ADR-0019 i l'ADR-0018); correu opcional, desat tal com s'entra, amb format mínim (una `@` i un punt al domini) i únic sense distingir majúscules; sense verificació ni normalització; mòbil obligatori i no buit (espais, tabuladors i salts de línia), sense cap altra validació (RN-033 i RN-034 retirades); canal preferent (RN-035, també `correu` sense correu). Pendent: G1 i G2 de l'esmena i implementació.
+- Millor registre: llista de millores successives per prova i piscina, només de competició; `competicio` és un nom informatiu (RN-007). Els tests CSS es desen tots.
+- No es desen nom ni cognoms; el correu és un contacte opcional que no identifica el nedador (RN-032).
+- Temporada 1/10–30/09, definida pel nom de la carpeta (RN-031); proves oficials per piscina (RN-030).
+- Tres tipus de camp: obligatori, informatiu (pot faltar) i opcional amb avís (spec 001, § Format JSON).
+- Avisos a `data/avisos.jsonl`, que només creix.
+- Pydantic v2 estricte, només a `infrastructure`; definicions de RN com a constants del domini (principi V).
+- L'històric d'entrenaments no s'importa (ADR-0012).
+
+## Pendents
+- Spec de pagaments (Bizum): pagador com a entitat pròpia amb nedadors associats. Per decidir: Bizum comerços o particular, rebuts, quotes mensuals o per sessió.
+- Esmena 1.4.0: ADR de dades cap a l'LLM, «canvis petits» (II), raons de II, IV, VI, VII i VIII, secció «Fora d'abast». Abans de la primera spec amb judici LLM.
+- ADR de dades personals: supressió (dret de supressió del RGPD davant la regla d'arxivar sense esborrar) a `nedador.json` (correu i mòbil) i al registre d'avisos (`avisos.jsonl`); es decidirà quan un nedador ho demani. També al `BACKLOG.md`.
+- G1 i G2 de l'esmena (ADR-0020, RN-007, RN-032, RN-035, tasques T048–T054).
+- Spec 002: abast reduït (sense històric), àlies «lliure» → `Cr`, CSV o Excel.
+
+## Flux de treball
+1. Xat nou per bloc, començant per aquest fitxer i la spec en curs.
+2. Spec, clarify, pla i tasques al xat, en format Spec Kit.
+3. Auditoria: Part A a consola (`bash scripts/auditar.sh …`); Part B al xat, només sobre el que ha canviat.
+4. Abans d'obrir Claude Code: `bash scripts/preflight.sh docs/prompts/<spec>-<fase>.md` ha d'acabar «LLEST».
+5. Implementació a Claude Code: una sessió per fase, `/clear` entre fases, model econòmic i prompt de `docs/prompts/`.
+6. Verificació a consola: `bash scripts/verify.sh 2>&1 | grep -E 'FAIL|AVÍS|LLEST|BLOQUEJAT' -A5`.
+7. Patches: `bash scripts/aplicar.sh <fitxer.patch>`.
+- Spec 000 (inventari 2026-10-29): CA-000-10 té tasca (T050); CA-000-01 és `[PENDENT spec 004]` i CA-000-02 a 09 i 11 a 24, `[PENDENT spec 006]`.

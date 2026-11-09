@@ -1,0 +1,128 @@
+"""Ajuts dels tests d'integració: fixtures JSON del nedador i escriptura a `tmp_path`."""
+
+import json
+from pathlib import Path
+
+from blondswim.domain.valors import CodiTemporada, IdNedador
+
+# UUID v4 fictius; ID_X comparteix els 7 primers caràcters amb ID_A.
+ID_A = IdNedador("3f2a9c1e-7b4d-4e8a-9c2f-1d6b5e0a8f47")
+ID_B = IdNedador("9b1c2d3e-4f5a-4b6c-8d7e-0a1b2c3d4e5f")
+ID_X = IdNedador("3f2a9c1f-0000-4000-8000-000000000000")
+
+
+def nedador_json(alias: str = "exemple_3f2a9c1") -> dict[str, object]:
+    return {
+        "versio_esquema": 1,
+        "correu": "nedador@example.com",
+        "mobil": "+34600000000",
+        "canal_preferent": "correu",
+        "alias": alias,
+        "arxivat": False,
+        "estils_preferents": ["Cr", "Ei"],
+        "dies_entrenament": ["dl", "dc", "dv"],
+        "volum_setmanal": {"min": 8000, "max": 12000},
+        "tests_css": [
+            {
+                "data": "2000-01-15",
+                "piscina": 25,
+                "t400": "6:30.00",
+                "t200": "3:10.00",
+                "acceptat": True,
+                "detall_400": {"parcials": None, "bracades_per_llarg": None, "sr": None, "rpe": 8},
+                "detall_200": {"parcials": None, "bracades_per_llarg": None, "sr": None, "rpe": 9},
+                "notes": None,
+            }
+        ],
+        "millors_registres": [
+            {
+                "estil": "Cr",
+                "distancia": 100,
+                "piscina": 25,
+                "temps": "1:16.00",
+                "data": "2000-01-22",
+                "competicio": "Exemple anterior",
+            },
+            {
+                "estil": "Cr",
+                "distancia": 100,
+                "piscina": 25,
+                "temps": "1:15.00",
+                "data": "2000-03-04",
+                "competicio": "Exemple",
+            },
+        ],
+    }
+
+
+TEMPORADA = CodiTemporada("1999-00")
+
+
+def cataleg_json() -> dict[str, object]:
+    return {
+        "versio_esquema": 1,
+        "competicions": [
+            {
+                "id": "c001",
+                "nom": "Exemple",
+                "dates": ["2000-03-04", "2000-03-05"],
+                "piscina": 25,
+                "seu": None,
+            },
+            {
+                "id": "c002",
+                "nom": "Altre exemple",
+                "dates": ["2000-05-20"],
+                "piscina": 50,
+                "seu": "Seu exemple",
+            },
+        ],
+    }
+
+
+def escriu_cataleg(arrel: Path, dades: object, nom: str = f"{TEMPORADA}.json") -> Path:
+    """Escriu `competicions/<nom>`; `dades` pot ser un objecte JSON o text cru."""
+    cami = arrel / "competicions" / nom
+    cami.parent.mkdir(parents=True, exist_ok=True)
+    text = dades if isinstance(dades, str) else json.dumps(dades, indent=2)
+    cami.write_text(text, encoding="utf-8")
+    return cami
+
+
+def escriu(arrel: Path, dades: object, id_nedador: IdNedador = ID_A) -> Path:
+    """Escriu `nedador.json`; `dades` pot ser un objecte JSON o text cru (fitxer trencat)."""
+    cami = arrel / "nedadors" / str(id_nedador) / "nedador.json"
+    cami.parent.mkdir(parents=True)
+    text = dades if isinstance(dades, str) else json.dumps(dades, indent=2)
+    cami.write_text(text, encoding="utf-8")
+    return cami
+
+
+def inscripcions_json() -> dict[str, object]:
+    return {
+        "versio_esquema": 1,
+        "participacions": [
+            {
+                "id_competicio": "c001",
+                "classe": "A",
+                "proves": [
+                    {
+                        "prova": {"distancia": 100, "estil": "Cr"},
+                        "dia": "2000-03-04",
+                        "prioritat": "principal",
+                    }
+                ],
+            }
+        ],
+    }
+
+
+def escriu_inscripcions(
+    arrel: Path, dades: object, id_nedador: IdNedador = ID_A, temporada: str = str(TEMPORADA)
+) -> Path:
+    """Escriu `nedadors/<id>/temporades/<temporada>/inscripcions.json` (objecte o text cru)."""
+    cami = arrel / "nedadors" / str(id_nedador) / "temporades" / temporada / "inscripcions.json"
+    cami.parent.mkdir(parents=True, exist_ok=True)
+    text = dades if isinstance(dades, str) else json.dumps(dades, indent=2)
+    cami.write_text(text, encoding="utf-8")
+    return cami

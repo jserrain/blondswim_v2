@@ -1,0 +1,23 @@
+== Gate 1: Spec 000-glossari (2026-11-03) ==
+  OK     G1-S01 Spec d'un sol fitxer: specs/000-glossari.md
+  INFO   G1-S01 Spec d'un sol fitxer: no s'hi aplica la regla branca = carpeta
+  AVÍS   G1-S02 Sense ## Clarifications (spec d'un sol fitxer, anterior a Spec Kit)
+  INFO   G1-S03 Spec d'un sol fitxer: sense checklist
+  OK     G1-S04 Sense plan/tasks
+  FALLA  G1-S04 13 fitxer(s) de src/ o tests/ canviats respecte de main
+  INFO   G1-S05 Estat: Aprovada
+  OK     G1-Q02 Criteris d'acceptació definits: 24
+  OK     G1-Q03 CA únics
+  OK     G1-Q03 Tots els CA són de la spec 000
+  OK     G1-Q02 Tots els CA en format Donat/quan/aleshores
+  INFO   G1-Q02 CA marcats [PENDENT spec NNN]: 23
+  OK     G1-Q04 3 RN referenciades, totes definides
+  OK     G1-Q05 Zero [NEEDS CLARIFICATION]
+  AVÍS   G1-Q05 Sense ## Assumptions
+  OK     G1-Q07 Sense dates concretes
+  AVÍS   G1-Q01 Sense històries P1/P2
+  INFO   G1-Q08 FR-NNN: 0 · SC-NNN: 0
+  AVÍS   G1-A02 Sense secció de dades/accions sensibles
+  INFO   G1-A03 Sense punts de judici LLM
+
+Resultat: 1 FALLA(ES)

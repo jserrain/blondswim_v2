@@ -1,0 +1,25 @@
+== Gate 2: Pla i tasques 001-model-domini (2026-10-23) ==
+  OK     G2-S01 Existeix spec.md
+  OK     G2-S01 Existeix plan.md
+  OK     G2-S01 Existeix tasks.md
+  OK     G2-S01 Existeix research.md
+  OK     G2-S01 Existeix data-model.md
+  OK     G2-S01 Existeix quickstart.md
+  OK     G2-S01 Hi ha contracts/
+  OK     G2-S02 Zero NEEDS CLARIFICATION al pla
+  OK     G2-S02 Spec aprovada
+  OK     G2-S03 Constitution Check sense caselles buides
+  OK     G2-S03 Els 8 principis avaluats
+  OK     G2-S04 Cap violació a Complexity Tracking
+  OK     G2-S05 Sense codi respecte de main
+  INFO   Tasques: 34
+  OK     G2-T01 Totes amb ID, capa única i format correcte
+  OK     G2-T02 IDs únics
+  OK     G2-T02 IDs consecutius
+  OK     G2-T03 Totes amb ruta
+  OK     G2-Q01 Tots els CA no pendents tenen tasca de test (46)
+  OK     G2-Q02 Cap tasca amb CA inexistent
+  OK     G2-Q03 24 RN citades, totes definides
+  OK     G2-Q04 Totes les capes del pla tenen tasques
+
+Resultat: cap FALLA

@@ -14,13 +14,15 @@ Una capa només importa capes inferiors.
 Els principis són a la constitució (`.specify/memory/constitution.md`). Les decisions
 vigents són als ADR acceptats de `docs/decisions/`; no les canviïs sense un ADR nou.
 
-- ADR-0003 — Històric d'entrenaments com a arxiu de referència
 - ADR-0004 — Estructura de la sessió
 - ADR-0005 — Biblioteca d'exercicis de tècnica, confeccionada pel coach
 - ADR-0006 — Catàleg comú de competicions i inscripcions per nedador
-- ADR-0007 — Excel com a format d'entrada
 - ADR-0008 — Sèries prescrites com a zona + descans
 - ADR-0011 — Sessió de test CSS sense tècnica
+- ADR-0012 — Sense importació de l'històric d'entrenaments
+- ADR-0013 — CSV com a format d'entrada
+- ADR-0014 — L'id del nedador és un UUID
+- ADR-0020 — Contacte del nedador
 
 ## Regles de treball
 - Treballa sempre a partir d'una spec de `specs/`. Si no n'hi ha, atura't i demana-la.
@@ -32,8 +34,8 @@ vigents són als ADR acceptats de `docs/decisions/`; no les canviïs sense un AD
 - Abans de donar una tasca per acabada: `bash scripts/verify.sh` en verd.
 - Traçabilitat CA → test: `tracabilitat` a `[tool.blondswim]` de `pyproject.toml`.
   Val `"avis"` mentre no hi ha implementació: `verify.sh` mostra els criteris sense test i
-  no bloqueja. Es canvia a `"bloquejant"` en el commit que comença la implementació de la
-  primera spec, i no es torna a canviar. Els marcadors òrfens i els errors d'ID bloquegen
+  no bloqueja. Es canvia a `"bloquejant"` quan tots els criteris de la primera spec
+  implementada tenen test, i no es torna a canviar. Els marcadors òrfens i els errors d'ID bloquegen
   sempre.
 - No executis scripts ni ordres de consola (`verify.sh`, tests, git, uv). Dona l'ordre
   exacta perquè l'executi l'usuari. Només les executes si t'ho demana. Els hooks de
