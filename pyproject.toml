@@ -53,7 +53,7 @@ markers = [
 
 [tool.blondswim]
 # Traçabilitat dels criteris d'acceptació: "avis" o "bloquejant" (AGENTS.md).
-tracabilitat = "avis"
+tracabilitat = "bloquejant"
 
 [tool.importlinter]
 root_package = "blondswim"

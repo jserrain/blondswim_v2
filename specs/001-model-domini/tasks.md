@@ -179,9 +179,9 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 ## Phase 9: Polish
 
-- [ ] T002 [project] Canviar `tracabilitat = "avis"` per `"bloquejant"` a `pyproject.toml` (`[tool.blondswim]`) quan tots els CA no pendents de la 001 tinguin test, després de T032 i T054 (AGENTS.md).
-- [ ] T033 [project] Executar quickstart.md: `bash scripts/verify.sh` ha d'acabar «LLEST PER SEGUIR», amb la traçabilitat bloquejant
-- [ ] T034 [project] Actualitzar `docs/mapa_specs.md`: la spec 001 és implementada
+- [x] T002 [project] Canviar `tracabilitat = "avis"` per `"bloquejant"` a `pyproject.toml` (`[tool.blondswim]`) quan tots els CA no pendents de la 001 tinguin test, després de T032 i T054 (AGENTS.md).
+- [x] T033 [project] Executar quickstart.md: `bash scripts/verify.sh` ha d'acabar «LLEST PER SEGUIR», amb la traçabilitat bloquejant
+- [x] T034 [project] Actualitzar `docs/mapa_specs.md`: la spec 001 és implementada
 
 ---
 

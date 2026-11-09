@@ -3,11 +3,11 @@
 Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és normatiu.
 
 ## On som
-- Branca: `001-model-domini`. Spec 001 amb les decisions del 2026-11-03 (marca de competició com a llista de millores, correu opcional sense verificar ni normalitzar, ADR-0020) i les correccions de G1 i G2; G1 i G2 signats (2026-11-03, r3); 99 CA actius (90 amb test, 9 pendents), 13 retirats (CA-001-55, 56, 77, 85, 86, 87, 88, 94, 95, 98, 99, 100 i 103); 19 CA amb test als markers de `tests/`.
+- Branca: `001-model-domini`. Spec 001 amb les decisions del 2026-11-03 (marca de competició com a llista de millores, correu opcional sense verificar ni normalitzar, ADR-0020) i les correccions de G1 i G2; G1 i G2 signats (2026-11-03, r3); 99 CA actius (90 amb test, 9 pendents), 13 retirats (CA-001-55, 56, 77, 85, 86, 87, 88, 94, 95, 98, 99, 100 i 103).
 - Constitució 1.3.0 (G0 r2: passa amb condicions).
-- `tasks.md` (54 tasques, 90 CA amb tasca; IDs fora d'ordre, vegeu la nota): fetes Setup (T001), Foundational (T003–T010), US1 (T011–T016) US1b (T035–T050: UUID, alias, contacte, validador únic, millor marca, càrrega, filtre i operacions) US2 (T017–T019: catàleg) i US3 (T020–T024, T051–T052: inscripcions i càrrega amb el catàleg). US3 (T051–T052) i US4 (T053–T054) amb tasques noves, pendents d'implementar. Decisions D1 i D2 confirmades (`plan.md`).
-- Següent pas: US4 (T025–T027, T053–T054).
-- Durant la implementació, `verify.sh` mostra «Traçabilitat CA» com a AVÍS (CA sense test encara). Passa a bloquejant amb T002, al final.
+- `tasks.md`: les 54 tasques fetes (Setup, Foundational, US1, US1b, US2–US6 i Polish). Decisions D1 i D2 confirmades (`plan.md`).
+- Implementació de la 001 acabada (totes les tasques): traçabilitat bloquejant. Següent pas: revisió independent i pull request a `main`; després, spec 002.
+- Traçabilitat bloquejant (T002): cada CA no pendent té test.
 
 ## Decisions recents (detall als ADR i a la spec)
 - Identitat = `IdNedador`, UUID v4 (ADR-0014); alias obligatori i immutable `<part>_<sufix>` (RN-003). Contacte: ADR-0020 (substitueix l'ADR-0019 i l'ADR-0018); correu opcional, desat tal com s'entra, amb format mínim (una `@` i un punt al domini) i únic sense distingir majúscules; sense verificació ni normalització; mòbil obligatori i no buit (espais, tabuladors i salts de línia), sense cap altra validació (RN-033 i RN-034 retirades); canal preferent (RN-035, també `correu` sense correu). Pendent: G1 i G2 de l'esmena i implementació.
