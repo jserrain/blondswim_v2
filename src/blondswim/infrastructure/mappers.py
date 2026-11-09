@@ -314,6 +314,17 @@ def llegeix_inscripcions(
             afegeix("format", e.camp, _valor_a(brut, e.camp), e.missatge)
         raise ErrorCarrega(tuple(errors)) from None
 
+    # RN-012 s'avalua sobre el DTO, independentment dels altres errors (els llista tots)
+    vistes: set[str] = set()
+    for i, p in enumerate(dto.participacions):
+        if p.id_competicio in vistes:
+            afegeix(
+                "RN-012",
+                f"participacions.{i}.id_competicio",
+                p.id_competicio,
+                f"hi ha més d'una participació a {p.id_competicio!r}",
+            )
+        vistes.add(p.id_competicio)
     participacions: list[Participacio] = []
     for i, p in enumerate(dto.participacions):
         proves = tuple(

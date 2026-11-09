@@ -56,10 +56,11 @@ def test_versio_desconeguda_d_inscripcions_dona_error_d_aquell_nedador(
 
 @pytest.mark.ca("CA-001-43")
 def test_carpeta_de_temporada_que_no_segueix_rn_031_dona_error(tmp_path: Path) -> None:
+    escriu_inscripcions(tmp_path, inscripcions_json())
     escriu_inscripcions(tmp_path, inscripcions_json(), temporada="2026-28")
-    with pytest.raises(ErrorCarrega) as exc:
-        RepositoriNedadorsJson(tmp_path).temporades(ID_A)
-    (error,) = exc.value.errors
+    repositori = RepositoriNedadorsJson(tmp_path)
+    assert repositori.temporades(ID_A) == [TEMPORADA]  # la vàlida es continua llegint
+    (error,) = repositori.errors_temporades(ID_A)
     assert error.rn == "RN-031"
     assert error.fitxer == f"nedadors/{ID_A}/temporades/2026-28"
 
@@ -86,3 +87,25 @@ def test_json_trencat_dona_error(tmp_path: Path) -> None:
     escriu_inscripcions(tmp_path, "{no és json")
     with pytest.raises(ErrorCarrega):
         RepositoriNedadorsJson(tmp_path).carrega_inscripcions(ID_A, CodiTemporada("1999-00"))
+
+
+def test_inscripcions_que_no_son_utf8_donen_error_d_aquell_nedador(tmp_path: Path) -> None:
+    escriu_inscripcions(tmp_path, inscripcions_json())
+    cami = tmp_path / "nedadors" / str(ID_A) / "temporades" / str(TEMPORADA) / "inscripcions.json"
+    cami.write_bytes(b'{"versio_esquema": 1, "participacions": [], "x": "\xe9"}')
+    with pytest.raises(ErrorCarrega) as exc:
+        RepositoriNedadorsJson(tmp_path).carrega_inscripcions(ID_A, TEMPORADA)
+    assert "no es pot llegir" in exc.value.errors[0].missatge
+
+
+def test_totes_les_participacions_repetides_i_els_altres_errors_es_llisten(
+    tmp_path: Path,
+) -> None:
+    dades = inscripcions_json()
+    participacio = dades["participacions"][0]  # type: ignore[index]
+    sense_proves = {**participacio, "id_competicio": "c002", "proves": []}
+    dades["participacions"] = [participacio, participacio, sense_proves]
+    escriu_inscripcions(tmp_path, dades)
+    with pytest.raises(ErrorCarrega) as exc:
+        RepositoriNedadorsJson(tmp_path).carrega_inscripcions(ID_A, TEMPORADA)
+    assert sorted(e.rn for e in exc.value.errors) == ["RN-012", "RN-014"]

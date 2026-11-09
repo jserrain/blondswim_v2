@@ -43,6 +43,7 @@ class ResultatCarrega:
     resultats: dict[IdNedador, Resultat]
     inscripcions: dict[IdNedador, dict[CodiTemporada, Inscripcions]] = field(default_factory=dict)
     avisos_cataleg: tuple[Avis, ...] = ()
+    errors_carpetes: tuple[ErrorValidacio, ...] = ()
 
 
 class _Catalegs:
@@ -76,13 +77,11 @@ def _carrega_inscripcions(
     repositori: RepositoriNedadors, catalegs: _Catalegs, id_nedador: IdNedador, qui: str
 ) -> tuple[dict[CodiTemporada, Inscripcions], tuple[ErrorValidacio, ...]]:
     """Les inscripcions validades del nedador; els errors l'exclouen (no els del catàleg)."""
-    try:
-        temporades = repositori.temporades(id_nedador)
-    except ErrorCarrega as excepcio:
-        return {}, excepcio.errors
     totes: dict[CodiTemporada, Inscripcions] = {}
-    errors: list[ErrorValidacio] = []
-    for temporada in temporades:
+    errors: list[ErrorValidacio] = [
+        replace(e, nedador=qui) for e in repositori.errors_temporades(id_nedador)
+    ]
+    for temporada in repositori.temporades(id_nedador):
         try:
             inscripcions = repositori.carrega_inscripcions(id_nedador, temporada)
         except ErrorCarrega as excepcio:
@@ -139,6 +138,11 @@ def _carrega(
 ) -> ResultatCarrega:
     identitats = repositori.identitats()
     catalegs = _Catalegs(cataleg)
+    if cataleg is not None:
+        # Tots els catàlegs es validen sempre: un ERROR fa fallar TOTA la càrrega encara que cap
+        # nedador hi tingui inscripcions, i els avisos (RN-009) es recullen igualment.
+        for temporada in cataleg.temporades():
+            catalegs.de(temporada)
     nedadors: dict[IdNedador, Nedador] = {}
     resultats: dict[IdNedador, Resultat] = {}
     inscripcions: dict[IdNedador, dict[CodiTemporada, Inscripcions]] = {}
@@ -164,4 +168,5 @@ def _carrega(
         resultats=resultats,
         inscripcions=inscripcions,
         avisos_cataleg=tuple(catalegs.avisos),
+        errors_carpetes=tuple(repositori.errors_carpetes()),
     )

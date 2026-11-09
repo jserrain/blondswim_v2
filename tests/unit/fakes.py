@@ -97,6 +97,8 @@ class RepositoriMemoria:
         self.inscripcions_il_legibles: dict[
             tuple[IdNedador, CodiTemporada], tuple[ErrorValidacio, ...]
         ] = {}
+        self.carpetes_dolentes: list[ErrorValidacio] = []
+        self.temporades_dolentes: dict[IdNedador, list[ErrorValidacio]] = {}
 
     def semina(self, id_nedador: IdNedador, nedador: Nedador) -> None:
         self.nedadors[id_nedador] = nedador
@@ -128,9 +130,15 @@ class RepositoriMemoria:
     ) -> None:
         self.inscripcions_il_legibles[(id_nedador, temporada)] = errors
 
+    def errors_carpetes(self) -> list[ErrorValidacio]:
+        return list(self.carpetes_dolentes)
+
     def temporades(self, id_nedador: IdNedador) -> list[CodiTemporada]:
         claus = {*self.inscripcions, *self.inscripcions_il_legibles}
         return sorted({t for i, t in claus if i == id_nedador}, key=lambda t: t.valor)
+
+    def errors_temporades(self, id_nedador: IdNedador) -> list[ErrorValidacio]:
+        return list(self.temporades_dolentes.get(id_nedador, ()))
 
     def carrega_inscripcions(self, id_nedador: IdNedador, temporada: CodiTemporada) -> Inscripcions:
         if (id_nedador, temporada) in self.inscripcions_il_legibles:
@@ -154,6 +162,9 @@ class CatalegMemoria:
         self.catalegs: dict[CodiTemporada, Cataleg] = {}
         self.il_legibles: dict[CodiTemporada, tuple[ErrorValidacio, ...]] = {}
         self.demanats: list[CodiTemporada] = []
+
+    def temporades(self) -> list[CodiTemporada]:
+        return sorted({*self.catalegs, *self.il_legibles}, key=lambda t: t.valor)
 
     def carrega(self, temporada: CodiTemporada) -> Cataleg:
         self.demanats.append(temporada)

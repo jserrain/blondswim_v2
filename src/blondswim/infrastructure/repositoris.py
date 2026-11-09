@@ -28,6 +28,27 @@ from blondswim.infrastructure.mappers import (
 )
 
 
+def _llegeix_text(cami: Path, fitxer: str, qui: str = "") -> str:
+    """El text UTF-8 del fitxer; si no es pot llegir, `ErrorCarrega` d'aquell fitxer."""
+    try:
+        return cami.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as excepcio:
+        motiu = "no existeix" if isinstance(excepcio, FileNotFoundError) else "no es pot llegir"
+        raise ErrorCarrega(
+            (
+                ErrorValidacio(
+                    "format",
+                    fitxer,
+                    "",
+                    None,
+                    f"el fitxer {motiu} (cal UTF-8)",
+                    "Corregeix o restaura el fitxer",
+                    qui,
+                ),
+            )
+        ) from None
+
+
 class RepositoriNedadorsJson:
     """`<arrel>/nedadors/<id>/nedador.json`. L'id és el nom de la carpeta (RN-001).
 
@@ -83,7 +104,11 @@ class RepositoriNedadorsJson:
             cami = self._arrel / fitxer_nedador(id_nedador)
             if not cami.is_file():
                 continue
-            identitat = llegeix_identitat(cami.read_text(encoding="utf-8"))
+            try:
+                text = cami.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue  # un fitxer il·legible no participa a la unicitat (D1)
+            identitat = llegeix_identitat(text)
             if identitat is not None:
                 identitats[id_nedador] = identitat
         return identitats
@@ -92,19 +117,34 @@ class RepositoriNedadorsJson:
         escriu(self._arrel / fitxer_nedador(id_nedador), a_dto(nedador))
 
     def _llegeix(self, id_nedador: IdNedador) -> str:
-        return (self._arrel / fitxer_nedador(id_nedador)).read_text(encoding="utf-8")
+        relatiu = fitxer_nedador(id_nedador)
+        return _llegeix_text(self._arrel / relatiu, relatiu, str(id_nedador))
 
-    def temporades(self, id_nedador: IdNedador) -> list[CodiTemporada]:
-        """Les temporades amb `inscripcions.json`. Una carpeta que no segueix RN-031 és un
-        ERROR d'aquell nedador (CA-001-43)."""
+    def _carpetes_temporada(self, id_nedador: IdNedador) -> list[Path]:
         carpeta = self._arrel / "nedadors" / str(id_nedador) / "temporades"
         if not carpeta.is_dir():
             return []
+        return sorted(p for p in carpeta.iterdir() if p.is_dir())
+
+    def temporades(self, id_nedador: IdNedador) -> list[CodiTemporada]:
+        """Les temporades amb un nom vàlid (RN-031) i `inscripcions.json`; les carpetes mal
+        anomenades són a `errors_temporades`."""
         temporades: list[CodiTemporada] = []
-        errors: list[ErrorValidacio] = []
-        for cami in sorted(p for p in carpeta.iterdir() if p.is_dir()):
+        for cami in self._carpetes_temporada(id_nedador):
             try:
                 temporada = CodiTemporada(cami.name)
+            except ValueError:
+                continue
+            if (cami / "inscripcions.json").is_file():
+                temporades.append(temporada)
+        return temporades
+
+    def errors_temporades(self, id_nedador: IdNedador) -> list[ErrorValidacio]:
+        """Un ERROR (RN-031) per cada carpeta de temporada mal anomenada (CA-001-43)."""
+        errors: list[ErrorValidacio] = []
+        for cami in self._carpetes_temporada(id_nedador):
+            try:
+                CodiTemporada(cami.name)
             except ValueError:
                 errors.append(
                     ErrorValidacio(
@@ -117,17 +157,11 @@ class RepositoriNedadorsJson:
                         str(id_nedador),
                     )
                 )
-                continue
-            if (cami / "inscripcions.json").is_file():
-                temporades.append(temporada)
-        if errors:
-            raise ErrorCarrega(tuple(errors))
-        return temporades
+        return errors
 
     def carrega_inscripcions(self, id_nedador: IdNedador, temporada: CodiTemporada) -> Inscripcions:
-        text = (self._arrel / fitxer_inscripcions(id_nedador, temporada)).read_text(
-            encoding="utf-8"
-        )
+        relatiu = fitxer_inscripcions(id_nedador, temporada)
+        text = _llegeix_text(self._arrel / relatiu, relatiu, str(id_nedador))
         return llegeix_inscripcions(text, id_nedador, temporada, str(id_nedador))
 
     def desa_inscripcions(
@@ -167,6 +201,17 @@ class RepositoriCatalegJson:
                 )
         return errors
 
+    def temporades(self) -> list[CodiTemporada]:
+        """Totes les temporades amb catàleg; un nom que no segueix RN-031 llança `ErrorCarrega`
+        (falla TOTA la càrrega, CA-001-71)."""
+        errors = self._errors_noms()
+        if errors:
+            raise ErrorCarrega(tuple(errors))
+        carpeta = self._arrel / "competicions"
+        if not carpeta.is_dir():
+            return []
+        return [CodiTemporada(c.stem) for c in sorted(carpeta.glob("*.json"))]
+
     def carrega(self, temporada: CodiTemporada) -> Cataleg:
         errors = self._errors_noms()
         if errors:
@@ -176,7 +221,7 @@ class RepositoriCatalegJson:
             # La càrrega del sistema només demana el catàleg si hi ha inscripcions d'aquella
             # temporada (T052): l'absència no impedeix carregar nedadors.
             raise CatalegAbsent(temporada)
-        return llegeix_cataleg(cami.read_text(encoding="utf-8"), temporada)
+        return llegeix_cataleg(_llegeix_text(cami, fitxer_cataleg(temporada)), temporada)
 
     def desa(self, temporada: CodiTemporada, cataleg: Cataleg) -> None:
         escriu(self._arrel / fitxer_cataleg(temporada), cataleg_a_dto(cataleg))

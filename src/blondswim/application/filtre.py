@@ -5,14 +5,17 @@ from dataclasses import dataclass
 from blondswim.application.carrega import carrega_nedadors
 from blondswim.application.ports import RepositoriCataleg, RepositoriNedadors
 from blondswim.domain.cataleg import Cataleg
-from blondswim.domain.validacio import Resultat
+from blondswim.domain.validacio import ErrorValidacio, Resultat
 from blondswim.domain.valors import IdNedador
 
 
 @dataclass(frozen=True)
 class ResultatFiltre:
+    """`errors_carpetes`: carpetes de nedador que no són un UUID v4 (RN-001)."""
+
     resultats: dict[IdNedador, Resultat]
     planificables: tuple[IdNedador, ...]
+    errors_carpetes: tuple[ErrorValidacio, ...] = ()
 
 
 def filtra(
@@ -23,4 +26,5 @@ def filtra(
     return ResultatFiltre(
         resultats=carregats.resultats,
         planificables=tuple(carregats.nedadors),
+        errors_carpetes=carregats.errors_carpetes,
     )

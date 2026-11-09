@@ -303,9 +303,9 @@ def esborra_competicio(
             qui = _qui(id_nedador, repositori.carrega(id_nedador))
         except ErrorCarrega:
             qui = str(id_nedador)
+        if temporada not in repositori.temporades(id_nedador):
+            continue
         try:
-            if temporada not in repositori.temporades(id_nedador):
-                continue
             inscripcions = repositori.carrega_inscripcions(id_nedador, temporada)
         except ErrorCarrega:
             afectats.append(f"{qui} (inscripcions il·legibles)")
