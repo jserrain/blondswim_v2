@@ -79,7 +79,7 @@ def _qui(id_nedador: IdNedador, nedador: Nedador) -> str:
 
 
 def _valida_i_desa(
-    repositori: RepositoriNedadors[object], id_nedador: IdNedador, nedador: Nedador
+    repositori: RepositoriNedadors, id_nedador: IdNedador, nedador: Nedador
 ) -> ResultatOperacio:
     """El mateix validador que la càrrega: el nedador sencer i la unicitat sobre els llegibles."""
     identitats = dict(repositori.identitats())
@@ -92,7 +92,7 @@ def _valida_i_desa(
 
 
 def alta(
-    repositori: RepositoriNedadors[object], generador: GeneradorId, nou: NouNedador
+    repositori: RepositoriNedadors, generador: GeneradorId, nou: NouNedador
 ) -> ResultatOperacio:
     """Genera l'id i l'alias; si l'id o l'alias ja existeixen, en genera de nous."""
     existents = set(repositori.ids())
@@ -135,9 +135,7 @@ def alta(
     return _valida_i_desa(repositori, id_nedador, nedador)
 
 
-def _carrega(
-    repositori: RepositoriNedadors[object], id_nedador: IdNedador
-) -> Nedador | ResultatOperacio:
+def _carrega(repositori: RepositoriNedadors, id_nedador: IdNedador) -> Nedador | ResultatOperacio:
     try:
         return repositori.carrega(id_nedador)
     except ErrorCarrega as excepcio:
@@ -145,7 +143,7 @@ def _carrega(
 
 
 def modifica(
-    repositori: RepositoriNedadors[object], id_nedador: IdNedador, canvi: CanviNedador
+    repositori: RepositoriNedadors, id_nedador: IdNedador, canvi: CanviNedador
 ) -> ResultatOperacio:
     """Valida el nedador sencer; l'id i l'alias no canvien (RN-002, RN-003)."""
     actual = _carrega(repositori, id_nedador)
@@ -161,7 +159,7 @@ def modifica(
 
 
 def _canvia_arxivat(
-    repositori: RepositoriNedadors[object], id_nedador: IdNedador, arxivat: bool
+    repositori: RepositoriNedadors, id_nedador: IdNedador, arxivat: bool
 ) -> ResultatOperacio:
     actual = _carrega(repositori, id_nedador)
     if isinstance(actual, ResultatOperacio):
@@ -169,17 +167,17 @@ def _canvia_arxivat(
     return _valida_i_desa(repositori, id_nedador, replace(actual, arxivat=arxivat))
 
 
-def arxiva(repositori: RepositoriNedadors[object], id_nedador: IdNedador) -> ResultatOperacio:
+def arxiva(repositori: RepositoriNedadors, id_nedador: IdNedador) -> ResultatOperacio:
     """RN-004: un nedador no s'esborra, s'arxiva."""
     return _canvia_arxivat(repositori, id_nedador, True)
 
 
-def desarxiva(repositori: RepositoriNedadors[object], id_nedador: IdNedador) -> ResultatOperacio:
+def desarxiva(repositori: RepositoriNedadors, id_nedador: IdNedador) -> ResultatOperacio:
     return _canvia_arxivat(repositori, id_nedador, False)
 
 
 def afegeix_test(
-    repositori: RepositoriNedadors[object], id_nedador: IdNedador, test: TestCss
+    repositori: RepositoriNedadors, id_nedador: IdNedador, test: TestCss
 ) -> ResultatOperacio:
     """Els tests es desen tots; un de nou entra amb `acceptat: false` (CA-001-82)."""
     actual = _carrega(repositori, id_nedador)
@@ -194,7 +192,7 @@ def afegeix_test(
 
 
 def afegeix_millor_registre(
-    repositori: RepositoriNedadors[object], id_nedador: IdNedador, registre: MillorRegistre
+    repositori: RepositoriNedadors, id_nedador: IdNedador, registre: MillorRegistre
 ) -> ResultatOperacio:
     """RN-007: s'afegeix només si millora la marca vigent; igual o pitjor no fa res."""
     actual = _carrega(repositori, id_nedador)

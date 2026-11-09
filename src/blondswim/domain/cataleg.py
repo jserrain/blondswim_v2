@@ -46,3 +46,7 @@ class Cataleg:
             vistos.add(competicio.id)
         if violacions:
             raise ErrorInvariant(tuple(violacions))
+
+    def competicio(self, id_competicio: str) -> Competicio | None:
+        """La competició amb aquest id, o `None` si no és al catàleg (RN-011)."""
+        return next((c for c in self.competicions if c.id == id_competicio), None)

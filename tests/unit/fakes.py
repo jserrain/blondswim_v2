@@ -4,11 +4,12 @@ from collections.abc import Sequence
 from dataclasses import replace
 from datetime import date
 
-from blondswim.application.ports import RepositoriNedadors
-from blondswim.domain.cataleg import Competicio
+from blondswim.application.ports import RepositoriCataleg, RepositoriNedadors
+from blondswim.domain.cataleg import Cataleg, Competicio
+from blondswim.domain.inscripcions import Inscripcions
 from blondswim.domain.nedador import MillorRegistre, Nedador, VolumSetmanal
 from blondswim.domain.nedador import TestCss as CssTest
-from blondswim.domain.validacio import ErrorCarrega, ErrorValidacio, Identitat
+from blondswim.domain.validacio import CatalegAbsent, ErrorCarrega, ErrorValidacio, Identitat
 from blondswim.domain.valors import (
     Alias,
     Canal,
@@ -92,6 +93,10 @@ class RepositoriMemoria:
     def __init__(self) -> None:
         self.nedadors: dict[IdNedador, Nedador] = {}
         self.il_legibles: dict[IdNedador, tuple[ErrorValidacio, ...]] = {}
+        self.inscripcions: dict[tuple[IdNedador, CodiTemporada], Inscripcions] = {}
+        self.inscripcions_il_legibles: dict[
+            tuple[IdNedador, CodiTemporada], tuple[ErrorValidacio, ...]
+        ] = {}
 
     def semina(self, id_nedador: IdNedador, nedador: Nedador) -> None:
         self.nedadors[id_nedador] = nedador
@@ -113,11 +118,56 @@ class RepositoriMemoria:
     def desa(self, id_nedador: IdNedador, nedador: Nedador) -> None:
         self.nedadors[id_nedador] = nedador
 
-    def carrega_inscripcions(self, id_nedador: IdNedador, temporada: CodiTemporada) -> object:
-        raise NotImplementedError
+    def semina_inscripcions(
+        self, id_nedador: IdNedador, temporada: CodiTemporada, inscripcions: Inscripcions
+    ) -> None:
+        self.inscripcions[(id_nedador, temporada)] = inscripcions
+
+    def semina_inscripcions_il_legibles(
+        self, id_nedador: IdNedador, temporada: CodiTemporada, errors: tuple[ErrorValidacio, ...]
+    ) -> None:
+        self.inscripcions_il_legibles[(id_nedador, temporada)] = errors
+
+    def temporades(self, id_nedador: IdNedador) -> list[CodiTemporada]:
+        claus = {*self.inscripcions, *self.inscripcions_il_legibles}
+        return sorted({t for i, t in claus if i == id_nedador}, key=lambda t: t.valor)
+
+    def carrega_inscripcions(self, id_nedador: IdNedador, temporada: CodiTemporada) -> Inscripcions:
+        if (id_nedador, temporada) in self.inscripcions_il_legibles:
+            raise ErrorCarrega(self.inscripcions_il_legibles[(id_nedador, temporada)])
+        return self.inscripcions[(id_nedador, temporada)]
+
+    def desa_inscripcions(
+        self, id_nedador: IdNedador, temporada: CodiTemporada, inscripcions: Inscripcions
+    ) -> None:
+        self.inscripcions[(id_nedador, temporada)] = inscripcions
 
 
-def com_a_port(repositori: RepositoriMemoria) -> RepositoriNedadors[object]:
+def com_a_port(repositori: RepositoriMemoria) -> RepositoriNedadors:
+    return repositori
+
+
+class CatalegMemoria:
+    """`RepositoriCataleg` en memòria. Una temporada sense catàleg dona `CatalegAbsent`."""
+
+    def __init__(self) -> None:
+        self.catalegs: dict[CodiTemporada, Cataleg] = {}
+        self.il_legibles: dict[CodiTemporada, tuple[ErrorValidacio, ...]] = {}
+        self.demanats: list[CodiTemporada] = []
+
+    def carrega(self, temporada: CodiTemporada) -> Cataleg:
+        self.demanats.append(temporada)
+        if temporada in self.il_legibles:
+            raise ErrorCarrega(self.il_legibles[temporada])
+        if temporada not in self.catalegs:
+            raise CatalegAbsent(temporada)
+        return self.catalegs[temporada]
+
+    def desa(self, temporada: CodiTemporada, cataleg: Cataleg) -> None:
+        self.catalegs[temporada] = cataleg
+
+
+def cataleg_com_a_port(repositori: CatalegMemoria) -> RepositoriCataleg[Cataleg]:
     return repositori
 
 

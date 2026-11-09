@@ -3,7 +3,8 @@
 from dataclasses import dataclass
 
 from blondswim.application.carrega import carrega_nedadors
-from blondswim.application.ports import RepositoriNedadors
+from blondswim.application.ports import RepositoriCataleg, RepositoriNedadors
+from blondswim.domain.cataleg import Cataleg
 from blondswim.domain.validacio import Resultat
 from blondswim.domain.valors import IdNedador
 
@@ -14,9 +15,11 @@ class ResultatFiltre:
     planificables: tuple[IdNedador, ...]
 
 
-def filtra(repositori: RepositoriNedadors[object]) -> ResultatFiltre:
+def filtra(
+    repositori: RepositoriNedadors, cataleg: RepositoriCataleg[Cataleg] | None = None
+) -> ResultatFiltre:
     """Mateix resultat que la càrrega i que l'entrada (CA-001-78); no s'atura al primer error."""
-    carregats = carrega_nedadors(repositori)
+    carregats = carrega_nedadors(repositori, cataleg)
     return ResultatFiltre(
         resultats=carregats.resultats,
         planificables=tuple(carregats.nedadors),

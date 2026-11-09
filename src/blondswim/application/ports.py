@@ -1,15 +1,16 @@
-"""Ports de l'aplicació (Protocols). Les entitats són paràmetres de tipus fins que existeixin."""
+"""Ports de l'aplicació (Protocols)."""
 
 from datetime import datetime
 from typing import Protocol
 
+from blondswim.domain.inscripcions import Inscripcions
 from blondswim.domain.nedador import Nedador
 from blondswim.domain.validacio import Avis, Identitat
 from blondswim.domain.valors import CodiTemporada, IdNedador
 
 
-class RepositoriNedadors[I](Protocol):
-    """`I`: inscripcions d'una temporada."""
+class RepositoriNedadors(Protocol):
+    """Nedadors i les seves inscripcions per temporada."""
 
     def ids(self) -> list[IdNedador]: ...
 
@@ -21,7 +22,17 @@ class RepositoriNedadors[I](Protocol):
 
     def desa(self, id_nedador: IdNedador, nedador: Nedador) -> None: ...
 
-    def carrega_inscripcions(self, id_nedador: IdNedador, temporada: CodiTemporada) -> I: ...
+    def temporades(self, id_nedador: IdNedador) -> list[CodiTemporada]:
+        """Les temporades amb inscripcions; `ErrorCarrega` si una carpeta incompleix RN-031."""
+        ...
+
+    def carrega_inscripcions(
+        self, id_nedador: IdNedador, temporada: CodiTemporada
+    ) -> Inscripcions: ...
+
+    def desa_inscripcions(
+        self, id_nedador: IdNedador, temporada: CodiTemporada, inscripcions: Inscripcions
+    ) -> None: ...
 
 
 class RepositoriCataleg[C](Protocol):

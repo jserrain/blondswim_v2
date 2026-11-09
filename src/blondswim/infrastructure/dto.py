@@ -5,7 +5,7 @@ from datetime import date
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-from blondswim.domain.valors import Canal, Dia, Estil, Piscina
+from blondswim.domain.valors import Canal, Classe, Dia, Estil, Piscina, Prioritat
 
 _MISSATGES = {
     "model_type": "ha de ser un objecte",
@@ -90,6 +90,30 @@ class CatalegDto(DtoBase):
 
     versio_esquema: int
     competicions: list[CompeticioDto]
+
+
+class ProvaDto(DtoBase):
+    distancia: int
+    estil: Estil
+
+
+class InscripcioDto(DtoBase):
+    prova: ProvaDto
+    dia: date
+    prioritat: Prioritat
+
+
+class ParticipacioDto(DtoBase):
+    id_competicio: str
+    classe: Classe
+    proves: list[InscripcioDto]
+
+
+class InscripcionsDto(DtoBase):
+    """`nedadors/<id>/temporades/<AAAA-AA>/inscripcions.json`."""
+
+    versio_esquema: int
+    participacions: list[ParticipacioDto]
 
 
 class IdentitatDto(BaseModel):

@@ -3,12 +3,16 @@
 from pathlib import Path
 
 from blondswim.domain.cataleg import Cataleg
+from blondswim.domain.inscripcions import Inscripcions
 from blondswim.domain.nedador import Nedador
 from blondswim.domain.validacio import (
+    CatalegAbsent,
     ErrorCarrega,
     ErrorValidacio,
     Identitat,
+    carpeta_temporada,
     fitxer_cataleg,
+    fitxer_inscripcions,
     fitxer_nedador,
 )
 from blondswim.domain.valors import CodiTemporada, IdNedador
@@ -16,8 +20,10 @@ from blondswim.infrastructure.json_io import escriu
 from blondswim.infrastructure.mappers import (
     a_dto,
     cataleg_a_dto,
+    inscripcions_a_dto,
     llegeix_cataleg,
     llegeix_identitat,
+    llegeix_inscripcions,
     llegeix_nedador,
 )
 
@@ -25,7 +31,7 @@ from blondswim.infrastructure.mappers import (
 class RepositoriNedadorsJson:
     """`<arrel>/nedadors/<id>/nedador.json`. L'id és el nom de la carpeta (RN-001).
 
-    `carrega_inscripcions` del port arriba amb la US3 (T024).
+    Inscripcions: `<arrel>/nedadors/<id>/temporades/<AAAA-AA>/inscripcions.json` (RN-031).
     """
 
     def __init__(self, arrel: Path) -> None:
@@ -88,6 +94,50 @@ class RepositoriNedadorsJson:
     def _llegeix(self, id_nedador: IdNedador) -> str:
         return (self._arrel / fitxer_nedador(id_nedador)).read_text(encoding="utf-8")
 
+    def temporades(self, id_nedador: IdNedador) -> list[CodiTemporada]:
+        """Les temporades amb `inscripcions.json`. Una carpeta que no segueix RN-031 és un
+        ERROR d'aquell nedador (CA-001-43)."""
+        carpeta = self._arrel / "nedadors" / str(id_nedador) / "temporades"
+        if not carpeta.is_dir():
+            return []
+        temporades: list[CodiTemporada] = []
+        errors: list[ErrorValidacio] = []
+        for cami in sorted(p for p in carpeta.iterdir() if p.is_dir()):
+            try:
+                temporada = CodiTemporada(cami.name)
+            except ValueError:
+                errors.append(
+                    ErrorValidacio(
+                        "RN-031",
+                        carpeta_temporada(id_nedador, cami.name),
+                        "",
+                        cami.name,
+                        "el nom de la carpeta de temporada ha de ser `AAAA-AA`",
+                        "Reanomena la carpeta",
+                        str(id_nedador),
+                    )
+                )
+                continue
+            if (cami / "inscripcions.json").is_file():
+                temporades.append(temporada)
+        if errors:
+            raise ErrorCarrega(tuple(errors))
+        return temporades
+
+    def carrega_inscripcions(self, id_nedador: IdNedador, temporada: CodiTemporada) -> Inscripcions:
+        text = (self._arrel / fitxer_inscripcions(id_nedador, temporada)).read_text(
+            encoding="utf-8"
+        )
+        return llegeix_inscripcions(text, id_nedador, temporada, str(id_nedador))
+
+    def desa_inscripcions(
+        self, id_nedador: IdNedador, temporada: CodiTemporada, inscripcions: Inscripcions
+    ) -> None:
+        escriu(
+            self._arrel / fitxer_inscripcions(id_nedador, temporada),
+            inscripcions_a_dto(inscripcions),
+        )
+
 
 class RepositoriCatalegJson:
     """`<arrel>/competicions/<AAAA-AA>.json` (RN-031). Un ERROR falla TOTA la càrrega."""
@@ -121,23 +171,11 @@ class RepositoriCatalegJson:
         errors = self._errors_noms()
         if errors:
             raise ErrorCarrega(tuple(errors))
-        relatiu = fitxer_cataleg(temporada)
-        cami = self._arrel / relatiu
+        cami = self._arrel / fitxer_cataleg(temporada)
         if not cami.is_file():
-            # Error tipificat; la càrrega del sistema només demana el catàleg si hi ha inscripcions
-            # d'aquella temporada (T052), de manera que l'absència no impedeix carregar nedadors.
-            raise ErrorCarrega(
-                (
-                    ErrorValidacio(
-                        "format",
-                        relatiu,
-                        "",
-                        None,
-                        f"falta el catàleg de la temporada {temporada.valor}",
-                        "Importa el calendari d'aquella temporada",
-                    ),
-                )
-            )
+            # La càrrega del sistema només demana el catàleg si hi ha inscripcions d'aquella
+            # temporada (T052): l'absència no impedeix carregar nedadors.
+            raise CatalegAbsent(temporada)
         return llegeix_cataleg(cami.read_text(encoding="utf-8"), temporada)
 
     def desa(self, temporada: CodiTemporada, cataleg: Cataleg) -> None:

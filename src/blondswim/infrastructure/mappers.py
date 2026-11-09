@@ -1,4 +1,4 @@
-"""Mapper DTO ↔ domini del nedador."""
+"""Mappers DTO ↔ domini: nedador, catàleg i inscripcions."""
 
 import json
 from collections.abc import Callable
@@ -6,6 +6,7 @@ from collections.abc import Callable
 from pydantic import ValidationError
 
 from blondswim.domain.cataleg import Cataleg, Competicio
+from blondswim.domain.inscripcions import Inscripcio, Inscripcions, Participacio
 from blondswim.domain.nedador import (
     DetallProva,
     ErrorInvariant,
@@ -19,17 +20,22 @@ from blondswim.domain.validacio import (
     ErrorValidacio,
     Identitat,
     fitxer_cataleg,
+    fitxer_inscripcions,
     fitxer_nedador,
     valida_nedador,
 )
-from blondswim.domain.valors import Alias, Canal, CodiTemporada, Correu, IdNedador, Temps
+from blondswim.domain.valors import Alias, Canal, CodiTemporada, Correu, IdNedador, Prova, Temps
 from blondswim.infrastructure.dto import (
     CatalegDto,
     CompeticioDto,
     DetallProvaDto,
     IdentitatDto,
+    InscripcioDto,
+    InscripcionsDto,
     MillorRegistreDto,
     NedadorDto,
+    ParticipacioDto,
+    ProvaDto,
     TestCssDto,
     VolumSetmanalDto,
     errors_en_catala,
@@ -38,6 +44,7 @@ from blondswim.infrastructure.dto import (
 VERSIO_ESQUEMA = 1
 _ACCIO = "Corregeix el camp al fitxer del nedador"
 _ACCIO_CATALEG = "Corregeix el camp al fitxer del catàleg"
+_ACCIO_INSCRIPCIONS = "Corregeix el camp al fitxer d'inscripcions"
 
 
 def _camp(prefix: str, camp: str) -> str:
@@ -271,6 +278,82 @@ def llegeix_cataleg(text: str, temporada: CodiTemporada) -> Cataleg:
                 for v in excepcio.violacions
             )
         ) from None
+
+
+def llegeix_inscripcions(
+    text: str, id_nedador: IdNedador, temporada: CodiTemporada, qui: str
+) -> Inscripcions:
+    """Llegeix `inscripcions.json`; si no és vàlid, `ErrorCarrega` amb tots els errors (exclou
+    aquell nedador). La validació creuada amb el catàleg és a `valida_inscripcions`."""
+    fitxer = fitxer_inscripcions(id_nedador, temporada)
+    errors: list[ErrorValidacio] = []
+
+    def afegeix(rn: str, camp: str, valor: object, missatge: str) -> None:
+        errors.append(
+            ErrorValidacio(rn or "format", fitxer, camp, valor, missatge, _ACCIO_INSCRIPCIONS, qui)
+        )
+
+    try:
+        brut = json.loads(text)
+    except json.JSONDecodeError:
+        afegeix("format", "", None, "JSON invàlid")
+        raise ErrorCarrega(tuple(errors)) from None
+    if not isinstance(brut, dict):
+        afegeix("format", "", None, "ha de ser un objecte")
+        raise ErrorCarrega(tuple(errors))
+    if "versio_esquema" in brut:
+        versio = brut["versio_esquema"]
+        if type(versio) is not int or versio != VERSIO_ESQUEMA:
+            missatge = f"versió d'esquema no admesa (cal {VERSIO_ESQUEMA})"
+            afegeix("format", "versio_esquema", versio, missatge)
+            raise ErrorCarrega(tuple(errors))
+    try:
+        dto = InscripcionsDto.model_validate_json(text)
+    except ValidationError as excepcio:
+        for e in errors_en_catala(excepcio):
+            afegeix("format", e.camp, _valor_a(brut, e.camp), e.missatge)
+        raise ErrorCarrega(tuple(errors)) from None
+
+    participacions: list[Participacio] = []
+    for i, p in enumerate(dto.participacions):
+        proves = tuple(
+            Inscripcio(Prova(x.prova.distancia, x.prova.estil), x.dia, x.prioritat)
+            for x in p.proves
+        )
+        try:
+            participacions.append(Participacio(p.id_competicio, p.classe, proves))
+        except ErrorInvariant as excepcio:
+            for v in excepcio.violacions:
+                afegeix(v.rn, _camp(f"participacions.{i}", v.camp), v.valor, v.missatge)
+    if errors:
+        raise ErrorCarrega(tuple(errors))
+    try:
+        return Inscripcions(tuple(participacions))
+    except ErrorInvariant as excepcio:
+        for v in excepcio.violacions:
+            afegeix(v.rn, v.camp, v.valor, v.missatge)
+        raise ErrorCarrega(tuple(errors)) from None
+
+
+def inscripcions_a_dto(inscripcions: Inscripcions) -> InscripcionsDto:
+    return InscripcionsDto(
+        versio_esquema=VERSIO_ESQUEMA,
+        participacions=[
+            ParticipacioDto(
+                id_competicio=p.id_competicio,
+                classe=p.classe,
+                proves=[
+                    InscripcioDto(
+                        prova=ProvaDto(distancia=x.prova.distancia, estil=x.prova.estil),
+                        dia=x.dia,
+                        prioritat=x.prioritat,
+                    )
+                    for x in p.proves
+                ],
+            )
+            for p in inscripcions.participacions
+        ],
+    )
 
 
 def cataleg_a_dto(cataleg: Cataleg) -> CatalegDto:

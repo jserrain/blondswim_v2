@@ -96,3 +96,33 @@ def escriu(arrel: Path, dades: object, id_nedador: IdNedador = ID_A) -> Path:
     text = dades if isinstance(dades, str) else json.dumps(dades, indent=2)
     cami.write_text(text, encoding="utf-8")
     return cami
+
+
+def inscripcions_json() -> dict[str, object]:
+    return {
+        "versio_esquema": 1,
+        "participacions": [
+            {
+                "id_competicio": "c001",
+                "classe": "A",
+                "proves": [
+                    {
+                        "prova": {"distancia": 100, "estil": "Cr"},
+                        "dia": "2000-03-04",
+                        "prioritat": "principal",
+                    }
+                ],
+            }
+        ],
+    }
+
+
+def escriu_inscripcions(
+    arrel: Path, dades: object, id_nedador: IdNedador = ID_A, temporada: str = str(TEMPORADA)
+) -> Path:
+    """Escriu `nedadors/<id>/temporades/<temporada>/inscripcions.json` (objecte o text cru)."""
+    cami = arrel / "nedadors" / str(id_nedador) / "temporades" / temporada / "inscripcions.json"
+    cami.parent.mkdir(parents=True, exist_ok=True)
+    text = dades if isinstance(dades, str) else json.dumps(dades, indent=2)
+    cami.write_text(text, encoding="utf-8")
+    return cami

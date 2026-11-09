@@ -136,13 +136,13 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 **Depends on**: US2 (catàleg)
 
-- [ ] T020 [P] [US3] [domain] Tests a `tests/unit/test_inscripcions.py`: CA-001-08, 09, 10, 19, 20, 22, 23, 29, 42 (inscripció)
-- [ ] T021 [P] [US3] [infrastructure] Tests a `tests/integration/test_inscripcions_json.py`: CA-001-02, 17 (`versio_esquema` desconegut d'`inscripcions.json`: aquell nedador no es carrega), 36 (`inscripcions.json` desat idèntic byte a byte), 43
-- [ ] T022 [US3] [domain] `Participacio` i `Inscripcio` a `src/blondswim/domain/inscripcions.py`. `proves`: «≥ 1» (RN-014); una participació per competició (RN-012); una inscripció per prova (RN-016)
-- [ ] T023 [US3] [domain] Validació creuada amb el catàleg (RN-011, RN-013, RN-015, RN-030 segons la piscina de la competició, només per a les inscripcions) a `src/blondswim/domain/validacio.py`
-- [ ] T024 [US3] [infrastructure] DTO, mapper i lectura de `temporades/<AAAA-AA>/inscripcions.json` a `src/blondswim/infrastructure/mappers.py` i `repositoris.py`; una carpeta que no segueix RN-031 → error
-- [ ] T051 [P] [US3] [application] Tests de càrrega del catàleg i de les inscripcions a `tests/unit/test_carrega_cataleg.py`, amb repositoris en memòria: CA-001-11, 17, 41 i 71 (un ERROR del catàleg falla TOTA la càrrega) i CA-001-19 (un ERROR d'inscripcions exclou només aquell nedador; la resta es carrega)
-- [ ] T052 [US3] [application] Càrrega del catàleg i de les inscripcions a `src/blondswim/application/carrega.py` i `filtre.py`: un ERROR del catàleg (RN-008, RN-031, format) falla TOTA la càrrega; un ERROR d'inscripcions (RN-011 a RN-016, RN-030 d'inscripcions) exclou només aquell nedador; el filtre ho llista per nedador i camp com a US1b (CA-001-11, 17, 19, 41, 71). Només es demana el catàleg d'una temporada si hi ha inscripcions d'aquella temporada: sense inscripcions, l'absència de catàleg no impedeix carregar nedadors
+- [x] T020 [P] [US3] [domain] Tests a `tests/unit/test_inscripcions.py`: CA-001-08, 09, 10, 19, 20, 22, 23, 29, 42 (inscripció)
+- [x] T021 [P] [US3] [infrastructure] Tests a `tests/integration/test_inscripcions_json.py`: CA-001-02, 17 (`versio_esquema` desconegut d'`inscripcions.json`: aquell nedador no es carrega), 36 (`inscripcions.json` desat idèntic byte a byte), 43
+- [x] T022 [US3] [domain] `Participacio` i `Inscripcio` a `src/blondswim/domain/inscripcions.py`. `proves`: «≥ 1» (RN-014); una participació per competició (RN-012); una inscripció per prova (RN-016)
+- [x] T023 [US3] [domain] Validació creuada amb el catàleg (RN-011, RN-013, RN-015, RN-030 segons la piscina de la competició, només per a les inscripcions) a `src/blondswim/domain/validacio.py`
+- [x] T024 [US3] [infrastructure] DTO, mapper i lectura de `temporades/<AAAA-AA>/inscripcions.json` a `src/blondswim/infrastructure/mappers.py` i `repositoris.py`; una carpeta que no segueix RN-031 → error
+- [x] T051 [P] [US3] [application] Tests de càrrega del catàleg i de les inscripcions a `tests/unit/test_carrega_cataleg.py`, amb repositoris en memòria: CA-001-11, 17, 41 i 71 (un ERROR del catàleg falla TOTA la càrrega) i CA-001-19 (un ERROR d'inscripcions exclou només aquell nedador; la resta es carrega)
+- [x] T052 [US3] [application] Càrrega del catàleg i de les inscripcions a `src/blondswim/application/carrega.py` i `filtre.py`: un ERROR del catàleg (RN-008, RN-031, format) falla TOTA la càrrega; un ERROR d'inscripcions (RN-011 a RN-016, RN-030 d'inscripcions) exclou només aquell nedador; el filtre ho llista per nedador i camp com a US1b (CA-001-11, 17, 19, 41, 71). Només es demana el catàleg d'una temporada si hi ha inscripcions d'aquella temporada: sense inscripcions, l'absència de catàleg no impedeix carregar nedadors
 
 ---
 

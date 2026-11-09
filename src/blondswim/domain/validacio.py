@@ -5,7 +5,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 
 from blondswim.domain.cataleg import Cataleg
-from blondswim.domain.definicions import es_prova_oficial
+from blondswim.domain.definicions import Temporada, es_prova_oficial
+from blondswim.domain.inscripcions import Inscripcions
 from blondswim.domain.nedador import MillorRegistre, Nedador
 from blondswim.domain.valors import BLANCS, Canal, CodiTemporada, Correu, IdNedador
 
@@ -56,6 +57,26 @@ class ErrorCarrega(Exception):
         self.errors = errors
 
 
+class CatalegAbsent(ErrorCarrega):
+    """No hi ha catàleg per a la temporada. La càrrega del sistema només el demana si hi ha
+    inscripcions d'aquella temporada, i aleshores exclou els nedadors afectats."""
+
+    def __init__(self, temporada: CodiTemporada) -> None:
+        self.temporada = temporada
+        super().__init__(
+            (
+                ErrorValidacio(
+                    "format",
+                    fitxer_cataleg(temporada),
+                    "",
+                    None,
+                    f"falta el catàleg de la temporada {temporada}",
+                    "Importa el calendari d'aquella temporada",
+                ),
+            )
+        )
+
+
 @dataclass(frozen=True)
 class Identitat:
     """Els dos camps que compten per a la unicitat (D1), llegits com a text cru.
@@ -85,6 +106,73 @@ def fitxer_nedador(id_nedador: IdNedador) -> str:
 
 def fitxer_cataleg(temporada: CodiTemporada) -> str:
     return f"competicions/{temporada}.json"
+
+
+def carpeta_temporada(id_nedador: IdNedador, temporada: str) -> str:
+    return f"nedadors/{id_nedador}/temporades/{temporada}"
+
+
+def fitxer_inscripcions(id_nedador: IdNedador, temporada: CodiTemporada) -> str:
+    return f"{carpeta_temporada(id_nedador, str(temporada))}/inscripcions.json"
+
+
+def valida_inscripcions(
+    id_nedador: IdNedador,
+    qui: str,
+    temporada: CodiTemporada,
+    inscripcions: Inscripcions,
+    cataleg: Cataleg,
+) -> Resultat:
+    """Validació creuada amb el catàleg i la temporada: RN-011, RN-013, RN-015 i RN-030.
+
+    RN-012, RN-014 i RN-016 els garanteix la construcció de les `Inscripcions`.
+    """
+    fitxer = fitxer_inscripcions(id_nedador, temporada)
+    periode = Temporada.de_codi(str(temporada))
+    accio = "Corregeix el fitxer d'inscripcions"
+    errors: list[ErrorValidacio] = []
+
+    def error(rn: str, camp: str, valor: object, missatge: str) -> None:
+        errors.append(ErrorValidacio(rn, fitxer, camp, valor, missatge, accio, qui))
+
+    for i, participacio in enumerate(inscripcions.participacions):
+        camp = f"participacions.{i}"
+        competicio = cataleg.competicio(participacio.id_competicio)
+        if competicio is None:
+            error(
+                "RN-011",
+                f"{camp}.id_competicio",
+                participacio.id_competicio,
+                f"la competició {participacio.id_competicio!r} no és al catàleg de {temporada}",
+            )
+            continue
+        for dia in competicio.dates:
+            if not periode.inici <= dia <= periode.fi:
+                error(
+                    "RN-013",
+                    f"{camp}.id_competicio",
+                    dia,
+                    f"la competició {competicio.id!r} té la data {dia.isoformat()} "
+                    f"fora de la temporada {temporada}",
+                )
+        for j, inscripcio in enumerate(participacio.proves):
+            prova = f"{inscripcio.prova.distancia} {inscripcio.prova.estil.value}"
+            if inscripcio.dia not in competicio.dates:
+                error(
+                    "RN-015",
+                    f"{camp}.proves.{j}.dia",
+                    inscripcio.dia,
+                    f"el dia {inscripcio.dia.isoformat()} de la prova {prova} no és "
+                    f"una data de {competicio.id!r}",
+                )
+            if not es_prova_oficial(inscripcio.prova, competicio.piscina):
+                error(
+                    "RN-030",
+                    f"{camp}.proves.{j}.prova",
+                    prova,
+                    f"la prova {prova} no és oficial en piscina de {int(competicio.piscina)} m",
+                )
+    return Resultat(errors=tuple(errors))
 
 
 def valida_cataleg(temporada: CodiTemporada, cataleg: Cataleg) -> Resultat:
