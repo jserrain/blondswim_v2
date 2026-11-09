@@ -162,8 +162,8 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 **Depends on**: US1b i US3. L'alta, la modificació, arxivar i desarxivar i afegir tests i registres són a T047.
 
-- [ ] T028 [P] [US5] [application] Tests a `tests/unit/test_gestio.py`, amb repositoris en memòria: CA-001-21, 30, 37
-- [ ] T029 [US5] [application] Casos d'ús a `src/blondswim/application/gestio.py`: esborrar nedador (sempre error, el nedador no canvia; RN-004), acceptar test (el test nou passa a ser el vigent; CA-001-30), esborrar competició (error si té participacions, RN-010)
+- [x] T028 [P] [US5] [application] Tests a `tests/unit/test_gestio.py`, amb repositoris en memòria: CA-001-21, 30, 37
+- [x] T029 [US5] [application] Casos d'ús a `src/blondswim/application/gestio.py`: esborrar nedador (sempre error, el nedador no canvia; RN-004), acceptar test (el test nou passa a ser el vigent; CA-001-30), esborrar competició (error si té participacions, RN-010)
 
 ---
 

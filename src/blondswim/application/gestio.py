@@ -1,13 +1,15 @@
-"""Operacions sobre els nedadors (CA-001-25, 45, 52, 53, 61, 62, 70, 79 a 83, 89, 90, 102, 108).
+"""Operacions de gestió (CA-001-21, 25, 30, 37, 45, 52, 53, 61, 62, 70, 79 a 83, 89, 90, 102, 108).
 
 Cap operació d'edició d'un test o d'un registre desat: només se n'afegeixen (CA-001-82, 83).
 Un ERROR no es desa; un AVÍS no bloqueja.
 """
 
 from dataclasses import dataclass, replace
+from datetime import date
 
 from blondswim.application.carrega import errors_d_unicitat
-from blondswim.application.ports import GeneradorId, RepositoriNedadors
+from blondswim.application.ports import GeneradorId, RepositoriCataleg, RepositoriNedadors
+from blondswim.domain.cataleg import Cataleg
 from blondswim.domain.nedador import (
     CanviNedador,
     ErrorInvariant,
@@ -22,10 +24,20 @@ from blondswim.domain.validacio import (
     ErrorValidacio,
     Identitat,
     Resultat,
+    fitxer_cataleg,
     fitxer_nedador,
     valida_nedador,
 )
-from blondswim.domain.valors import Alias, Canal, Correu, Dia, Estil, IdNedador
+from blondswim.domain.valors import (
+    Alias,
+    Canal,
+    CodiTemporada,
+    Correu,
+    Dia,
+    Estil,
+    IdNedador,
+    Piscina,
+)
 
 _ACCIO = "Corregeix el valor i torna-ho a provar"
 
@@ -206,3 +218,110 @@ def afegeix_millor_registre(
     if registres == actual.millors_registres:
         return ResultatOperacio(id_nedador, Resultat(), actual, False)
     return _valida_i_desa(repositori, id_nedador, replace(actual, millors_registres=registres))
+
+
+def esborra_nedador(repositori: RepositoriNedadors, id_nedador: IdNedador) -> ResultatOperacio:
+    """RN-004: un nedador no s'esborra mai; s'arxiva. Sempre error; el nedador no canvia."""
+    actual = _carrega(repositori, id_nedador)
+    qui = str(id_nedador) if isinstance(actual, ResultatOperacio) else _qui(id_nedador, actual)
+    error = ErrorValidacio(
+        "RN-004",
+        fitxer_nedador(id_nedador),
+        "",
+        None,
+        "un nedador no es pot esborrar: s'arxiva",
+        "Arxiva el nedador",
+        qui,
+    )
+    return ResultatOperacio(
+        id_nedador,
+        Resultat(errors=(error,)),
+        None if isinstance(actual, ResultatOperacio) else actual,
+        False,
+    )
+
+
+def accepta_test(
+    repositori: RepositoriNedadors, id_nedador: IdNedador, data: date, piscina: Piscina
+) -> ResultatOperacio:
+    """El coach accepta un test desat: passa a ser el vigent si és el més recent (CA-001-30).
+
+    És l'únic canvi admès en un test desat; la resta del test no es toca (CA-001-82).
+    """
+    actual = _carrega(repositori, id_nedador)
+    if isinstance(actual, ResultatOperacio):
+        return actual
+    index = next(
+        (i for i, t in enumerate(actual.tests_css) if t.data == data and t.piscina is piscina),
+        None,
+    )
+    if index is None:
+        error = ErrorValidacio(
+            "format",
+            fitxer_nedador(id_nedador),
+            "tests_css",
+            f"{data.isoformat()} {int(piscina)} m",
+            f"no hi ha cap test del {data.isoformat()} en piscina de {int(piscina)} m",
+            "Indica la data i la piscina d'un test registrat",
+            _qui(id_nedador, actual),
+        )
+        return _fallida(id_nedador, (error,))
+    tests = list(actual.tests_css)
+    tests[index] = replace(tests[index], acceptat=True)
+    return _valida_i_desa(repositori, id_nedador, replace(actual, tests_css=tuple(tests)))
+
+
+@dataclass(frozen=True)
+class ResultatCataleg:
+    resultat: Resultat
+    desat: bool
+
+
+def esborra_competicio(
+    cataleg: RepositoriCataleg[Cataleg],
+    repositori: RepositoriNedadors,
+    temporada: CodiTemporada,
+    id_competicio: str,
+) -> ResultatCataleg:
+    """RN-010: no es pot esborrar una competició amb participacions; el missatge identifica els
+    nedadors afectats. Unes inscripcions que no es poden llegir també ho impedeixen."""
+    fitxer = fitxer_cataleg(temporada)
+    actual = cataleg.carrega(temporada)
+    if actual.competicio(id_competicio) is None:
+        error = ErrorValidacio(
+            "format",
+            fitxer,
+            "competicions",
+            id_competicio,
+            f"la competició {id_competicio!r} no és al catàleg de {temporada}",
+            "Indica una competició del catàleg",
+        )
+        return ResultatCataleg(Resultat(errors=(error,)), False)
+    afectats: list[str] = []
+    for id_nedador in repositori.ids():
+        try:
+            qui = _qui(id_nedador, repositori.carrega(id_nedador))
+        except ErrorCarrega:
+            qui = str(id_nedador)
+        try:
+            if temporada not in repositori.temporades(id_nedador):
+                continue
+            inscripcions = repositori.carrega_inscripcions(id_nedador, temporada)
+        except ErrorCarrega:
+            afectats.append(f"{qui} (inscripcions il·legibles)")
+            continue
+        if any(p.id_competicio == id_competicio for p in inscripcions.participacions):
+            afectats.append(qui)
+    if afectats:
+        error = ErrorValidacio(
+            "RN-010",
+            fitxer,
+            "competicions",
+            id_competicio,
+            f"la competició {id_competicio!r} té participacions: {', '.join(afectats)}",
+            "Treu primer les participacions d'aquests nedadors",
+        )
+        return ResultatCataleg(Resultat(errors=(error,)), False)
+    restants = tuple(c for c in actual.competicions if c.id != id_competicio)
+    cataleg.desa(temporada, Cataleg(restants))
+    return ResultatCataleg(Resultat(), True)
