@@ -5,6 +5,7 @@ from collections.abc import Callable
 
 from pydantic import ValidationError
 
+from blondswim.domain.cataleg import Cataleg, Competicio
 from blondswim.domain.nedador import (
     DetallProva,
     ErrorInvariant,
@@ -17,11 +18,14 @@ from blondswim.domain.validacio import (
     ErrorCarrega,
     ErrorValidacio,
     Identitat,
+    fitxer_cataleg,
     fitxer_nedador,
     valida_nedador,
 )
-from blondswim.domain.valors import Alias, Canal, Correu, IdNedador, Temps
+from blondswim.domain.valors import Alias, Canal, CodiTemporada, Correu, IdNedador, Temps
 from blondswim.infrastructure.dto import (
+    CatalegDto,
+    CompeticioDto,
     DetallProvaDto,
     IdentitatDto,
     MillorRegistreDto,
@@ -33,6 +37,7 @@ from blondswim.infrastructure.dto import (
 
 VERSIO_ESQUEMA = 1
 _ACCIO = "Corregeix el camp al fitxer del nedador"
+_ACCIO_CATALEG = "Corregeix el camp al fitxer del catàleg"
 
 
 def _camp(prefix: str, camp: str) -> str:
@@ -210,6 +215,78 @@ def _de_registre(acc: _Acumulador, prefix: str, dto: MillorRegistreDto) -> Millo
     if temps is None:
         return None
     return MillorRegistre(dto.estil, dto.distancia, dto.piscina, temps, dto.data, dto.competicio)
+
+
+def llegeix_cataleg(text: str, temporada: CodiTemporada) -> Cataleg:
+    """Llegeix `competicions/<AAAA-AA>.json`; si no és vàlid, `ErrorCarrega` (falla TOTA la
+    càrrega) amb tots els errors."""
+    fitxer = fitxer_cataleg(temporada)
+    errors: list[ErrorValidacio] = []
+
+    def afegeix(rn: str, camp: str, valor: object, missatge: str) -> None:
+        errors.append(
+            ErrorValidacio(rn or "format", fitxer, camp, valor, missatge, _ACCIO_CATALEG)
+        )
+
+    try:
+        brut = json.loads(text)
+    except json.JSONDecodeError:
+        afegeix("format", "", None, "JSON invàlid")
+        raise ErrorCarrega(tuple(errors)) from None
+    if not isinstance(brut, dict):
+        afegeix("format", "", None, "ha de ser un objecte")
+        raise ErrorCarrega(tuple(errors))
+    if "versio_esquema" in brut:
+        versio = brut["versio_esquema"]
+        if type(versio) is not int or versio != VERSIO_ESQUEMA:
+            afegeix(
+                "format",
+                "versio_esquema",
+                versio,
+                f"versió d'esquema no admesa (cal {VERSIO_ESQUEMA})",
+            )
+            raise ErrorCarrega(tuple(errors))
+    try:
+        dto = CatalegDto.model_validate_json(text)
+    except ValidationError as excepcio:
+        for e in errors_en_catala(excepcio):
+            afegeix("format", e.camp, _valor_a(brut, e.camp), e.missatge)
+        raise ErrorCarrega(tuple(errors)) from None
+
+    competicions: list[Competicio] = []
+    for i, c in enumerate(dto.competicions):
+        try:
+            competicions.append(
+                Competicio(c.id, c.nom, tuple(c.dates), c.piscina, c.seu)
+            )
+        except ErrorInvariant as excepcio:
+            for v in excepcio.violacions:
+                afegeix(v.rn, _camp(f"competicions.{i}", v.camp), v.valor, v.missatge)
+    if errors:
+        raise ErrorCarrega(tuple(errors))
+    try:
+        return Cataleg(tuple(competicions))
+    except ErrorInvariant as excepcio:
+        raise ErrorCarrega(
+            tuple(
+                ErrorValidacio(
+                    v.rn or "format", fitxer, v.camp, v.valor, v.missatge, _ACCIO_CATALEG
+                )
+                for v in excepcio.violacions
+            )
+        ) from None
+
+
+def cataleg_a_dto(cataleg: Cataleg) -> CatalegDto:
+    return CatalegDto(
+        versio_esquema=VERSIO_ESQUEMA,
+        competicions=[
+            CompeticioDto(
+                id=c.id, nom=c.nom, dates=list(c.dates), piscina=c.piscina, seu=c.seu
+            )
+            for c in cataleg.competicions
+        ],
+    )
 
 
 def a_dto(nedador: Nedador) -> NedadorDto:

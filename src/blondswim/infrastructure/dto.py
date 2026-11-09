@@ -77,6 +77,21 @@ class NedadorDto(DtoBase):
     millors_registres: list[MillorRegistreDto]
 
 
+class CompeticioDto(DtoBase):
+    id: str
+    nom: str
+    dates: list[date]
+    piscina: Piscina
+    seu: str | None = None
+
+
+class CatalegDto(DtoBase):
+    """`competicions/<AAAA-AA>.json`."""
+
+    versio_esquema: int
+    competicions: list[CompeticioDto]
+
+
 class IdentitatDto(BaseModel):
     """DTO mínim d'identitat per a la unicitat (D1): `correu` i `alias` com a valor cru.
 

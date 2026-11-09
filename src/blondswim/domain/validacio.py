@@ -4,9 +4,10 @@ from collections import defaultdict
 from collections.abc import Mapping
 from dataclasses import dataclass
 
+from blondswim.domain.cataleg import Cataleg
 from blondswim.domain.definicions import es_prova_oficial
 from blondswim.domain.nedador import MillorRegistre, Nedador
-from blondswim.domain.valors import BLANCS, Canal, Correu, IdNedador
+from blondswim.domain.valors import BLANCS, Canal, CodiTemporada, Correu, IdNedador
 
 
 @dataclass(frozen=True)
@@ -80,6 +81,29 @@ class Identitat:
 
 def fitxer_nedador(id_nedador: IdNedador) -> str:
     return f"nedadors/{id_nedador}/nedador.json"
+
+
+def fitxer_cataleg(temporada: CodiTemporada) -> str:
+    return f"competicions/{temporada}.json"
+
+
+def valida_cataleg(temporada: CodiTemporada, cataleg: Cataleg) -> Resultat:
+    """Avís RN-009 (seu desconeguda). RN-008 i els invariants de format els garanteix la
+    construcció del `Cataleg`."""
+    fitxer = fitxer_cataleg(temporada)
+    avisos = tuple(
+        Avis(
+            "RN-009",
+            fitxer,
+            f"competicions.{i}.seu",
+            None,
+            f"la seu de la competició {competicio.id!r} és desconeguda",
+            "Indica la seu de la competició",
+        )
+        for i, competicio in enumerate(cataleg.competicions)
+        if competicio.seu is None
+    )
+    return Resultat(avisos=avisos)
 
 
 def _marca(mal: str, registre: MillorRegistre) -> str:

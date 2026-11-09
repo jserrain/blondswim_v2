@@ -2,11 +2,24 @@
 
 from pathlib import Path
 
+from blondswim.domain.cataleg import Cataleg
 from blondswim.domain.nedador import Nedador
-from blondswim.domain.validacio import ErrorValidacio, Identitat, fitxer_nedador
-from blondswim.domain.valors import IdNedador
+from blondswim.domain.validacio import (
+    ErrorCarrega,
+    ErrorValidacio,
+    Identitat,
+    fitxer_cataleg,
+    fitxer_nedador,
+)
+from blondswim.domain.valors import CodiTemporada, IdNedador
 from blondswim.infrastructure.json_io import escriu
-from blondswim.infrastructure.mappers import a_dto, llegeix_identitat, llegeix_nedador
+from blondswim.infrastructure.mappers import (
+    a_dto,
+    cataleg_a_dto,
+    llegeix_cataleg,
+    llegeix_identitat,
+    llegeix_nedador,
+)
 
 
 class RepositoriNedadorsJson:
@@ -74,3 +87,42 @@ class RepositoriNedadorsJson:
 
     def _llegeix(self, id_nedador: IdNedador) -> str:
         return (self._arrel / fitxer_nedador(id_nedador)).read_text(encoding="utf-8")
+
+
+class RepositoriCatalegJson:
+    """`<arrel>/competicions/<AAAA-AA>.json` (RN-031). Un ERROR falla TOTA la càrrega."""
+
+    def __init__(self, arrel: Path) -> None:
+        self._arrel = arrel
+
+    def _errors_noms(self) -> list[ErrorValidacio]:
+        """Un ERROR (RN-031) per cada `.json` de la carpeta el nom del qual no és `AAAA-AA`."""
+        carpeta = self._arrel / "competicions"
+        if not carpeta.is_dir():
+            return []
+        errors: list[ErrorValidacio] = []
+        for cami in sorted(carpeta.glob("*.json")):
+            try:
+                CodiTemporada(cami.stem)
+            except ValueError:
+                errors.append(
+                    ErrorValidacio(
+                        "RN-031",
+                        f"competicions/{cami.name}",
+                        "",
+                        cami.name,
+                        "el nom del fitxer del catàleg ha de ser `AAAA-AA.json`",
+                        "Reanomena o treu el fitxer",
+                    )
+                )
+        return errors
+
+    def carrega(self, temporada: CodiTemporada) -> Cataleg:
+        errors = self._errors_noms()
+        if errors:
+            raise ErrorCarrega(tuple(errors))
+        text = (self._arrel / fitxer_cataleg(temporada)).read_text(encoding="utf-8")
+        return llegeix_cataleg(text, temporada)
+
+    def desa(self, temporada: CodiTemporada, cataleg: Cataleg) -> None:
+        escriu(self._arrel / fitxer_cataleg(temporada), cataleg_a_dto(cataleg))

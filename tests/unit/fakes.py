@@ -5,6 +5,7 @@ from dataclasses import replace
 from datetime import date
 
 from blondswim.application.ports import RepositoriNedadors
+from blondswim.domain.cataleg import Competicio
 from blondswim.domain.nedador import MillorRegistre, Nedador, VolumSetmanal
 from blondswim.domain.nedador import TestCss as CssTest
 from blondswim.domain.validacio import ErrorCarrega, ErrorValidacio, Identitat
@@ -54,6 +55,17 @@ def registre(**canvis: object) -> MillorRegistre:
         temps=temps("1:15.00"),
         data=date(2000, 2, 1),
         competicio="Exemple",
+    )
+    return replace(base, **canvis)
+
+
+def competicio(**canvis: object) -> Competicio:
+    base = Competicio(
+        id="c001",
+        nom="Exemple",
+        dates=(date(2000, 3, 4), date(2000, 3, 5)),
+        piscina=Piscina.CURTA,
+        seu="Seu exemple",
     )
     return replace(base, **canvis)
 

@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-from blondswim.domain.valors import IdNedador
+from blondswim.domain.valors import CodiTemporada, IdNedador
 
 # UUID v4 fictius; ID_X comparteix els 7 primers caràcters amb ID_A.
 ID_A = IdNedador("3f2a9c1e-7b4d-4e8a-9c2f-1d6b5e0a8f47")
@@ -53,6 +53,40 @@ def nedador_json(alias: str = "exemple_3f2a9c1") -> dict[str, object]:
             },
         ],
     }
+
+
+TEMPORADA = CodiTemporada("1999-00")
+
+
+def cataleg_json() -> dict[str, object]:
+    return {
+        "versio_esquema": 1,
+        "competicions": [
+            {
+                "id": "c001",
+                "nom": "Exemple",
+                "dates": ["2000-03-04", "2000-03-05"],
+                "piscina": 25,
+                "seu": None,
+            },
+            {
+                "id": "c002",
+                "nom": "Altre exemple",
+                "dates": ["2000-05-20"],
+                "piscina": 50,
+                "seu": "Seu exemple",
+            },
+        ],
+    }
+
+
+def escriu_cataleg(arrel: Path, dades: object, nom: str = f"{TEMPORADA}.json") -> Path:
+    """Escriu `competicions/<nom>`; `dades` pot ser un objecte JSON o text cru."""
+    cami = arrel / "competicions" / nom
+    cami.parent.mkdir(parents=True, exist_ok=True)
+    text = dades if isinstance(dades, str) else json.dumps(dades, indent=2)
+    cami.write_text(text, encoding="utf-8")
+    return cami
 
 
 def escriu(arrel: Path, dades: object, id_nedador: IdNedador = ID_A) -> Path:
