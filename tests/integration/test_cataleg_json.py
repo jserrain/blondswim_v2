@@ -165,3 +165,11 @@ def test_json_trencat_falla_la_carrega(tmp_path: Path) -> None:
     errors = _errors_de_carrega(tmp_path).errors
 
     assert [(e.fitxer, e.camp, e.missatge) for e in errors] == [(FITXER, "", "JSON invàlid")]
+
+
+def test_cataleg_absent_dona_error_tipificat(tmp_path: Path) -> None:
+    with pytest.raises(ErrorCarrega) as exc:
+        RepositoriCatalegJson(tmp_path).carrega(TEMPORADA)
+    (error,) = exc.value.errors
+    assert error.fitxer == f"competicions/{TEMPORADA.valor}.json"
+    assert "falta el catàleg" in error.missatge

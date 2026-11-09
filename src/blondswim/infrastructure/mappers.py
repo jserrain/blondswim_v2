@@ -224,9 +224,7 @@ def llegeix_cataleg(text: str, temporada: CodiTemporada) -> Cataleg:
     errors: list[ErrorValidacio] = []
 
     def afegeix(rn: str, camp: str, valor: object, missatge: str) -> None:
-        errors.append(
-            ErrorValidacio(rn or "format", fitxer, camp, valor, missatge, _ACCIO_CATALEG)
-        )
+        errors.append(ErrorValidacio(rn or "format", fitxer, camp, valor, missatge, _ACCIO_CATALEG))
 
     try:
         brut = json.loads(text)
@@ -256,9 +254,7 @@ def llegeix_cataleg(text: str, temporada: CodiTemporada) -> Cataleg:
     competicions: list[Competicio] = []
     for i, c in enumerate(dto.competicions):
         try:
-            competicions.append(
-                Competicio(c.id, c.nom, tuple(c.dates), c.piscina, c.seu)
-            )
+            competicions.append(Competicio(c.id, c.nom, tuple(c.dates), c.piscina, c.seu))
         except ErrorInvariant as excepcio:
             for v in excepcio.violacions:
                 afegeix(v.rn, _camp(f"competicions.{i}", v.camp), v.valor, v.missatge)
@@ -281,9 +277,7 @@ def cataleg_a_dto(cataleg: Cataleg) -> CatalegDto:
     return CatalegDto(
         versio_esquema=VERSIO_ESQUEMA,
         competicions=[
-            CompeticioDto(
-                id=c.id, nom=c.nom, dates=list(c.dates), piscina=c.piscina, seu=c.seu
-            )
+            CompeticioDto(id=c.id, nom=c.nom, dates=list(c.dates), piscina=c.piscina, seu=c.seu)
             for c in cataleg.competicions
         ],
     )

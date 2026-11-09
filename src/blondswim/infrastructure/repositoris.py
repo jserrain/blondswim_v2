@@ -121,8 +121,24 @@ class RepositoriCatalegJson:
         errors = self._errors_noms()
         if errors:
             raise ErrorCarrega(tuple(errors))
-        text = (self._arrel / fitxer_cataleg(temporada)).read_text(encoding="utf-8")
-        return llegeix_cataleg(text, temporada)
+        relatiu = fitxer_cataleg(temporada)
+        cami = self._arrel / relatiu
+        if not cami.is_file():
+            # Error tipificat; la càrrega del sistema només demana el catàleg si hi ha inscripcions
+            # d'aquella temporada (T052), de manera que l'absència no impedeix carregar nedadors.
+            raise ErrorCarrega(
+                (
+                    ErrorValidacio(
+                        "format",
+                        relatiu,
+                        "",
+                        None,
+                        f"falta el catàleg de la temporada {temporada.valor}",
+                        "Importa el calendari d'aquella temporada",
+                    ),
+                )
+            )
+        return llegeix_cataleg(cami.read_text(encoding="utf-8"), temporada)
 
     def desa(self, temporada: CodiTemporada, cataleg: Cataleg) -> None:
         escriu(self._arrel / fitxer_cataleg(temporada), cataleg_a_dto(cataleg))

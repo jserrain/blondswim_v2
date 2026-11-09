@@ -124,9 +124,9 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 **Goal**: carregar i validar `competicions/<AAAA-AA>.json`.
 
-- [ ] T017 [P] [US2] [domain] Tests a `tests/unit/test_cataleg.py`: CA-001-11, 12, 17 (`versio_esquema` desconegut del catàleg: falla TOTA la càrrega), 36 (el fitxer del catàleg desat és idèntic byte a byte), 41 (competició), 71 (nom de fitxer que no segueix RN-031: falla TOTA la càrrega)
-- [ ] T018 [US2] [domain] `Competicio` i `Cataleg` a `src/blondswim/domain/cataleg.py`. `dates`: «≥ 1»; `seu`: «text \| null» amb avís RN-009; `id` únic (RN-008)
-- [ ] T019 [US2] [infrastructure] DTO, mapper i `RepositoriCataleg` a `src/blondswim/infrastructure/mappers.py` i `repositoris.py`. El nom del fitxer segueix RN-031; si no, falla TOTA la càrrega (CA-001-71)
+- [x] T017 [P] [US2] [domain] Tests a `tests/unit/test_cataleg.py`: CA-001-11, 12, 17 (`versio_esquema` desconegut del catàleg: falla TOTA la càrrega), 36 (el fitxer del catàleg desat és idèntic byte a byte), 41 (competició), 71 (nom de fitxer que no segueix RN-031: falla TOTA la càrrega)
+- [x] T018 [US2] [domain] `Competicio` i `Cataleg` a `src/blondswim/domain/cataleg.py`. `dates`: «≥ 1»; `seu`: «text \| null» amb avís RN-009; `id` únic (RN-008)
+- [x] T019 [US2] [infrastructure] DTO, mapper i `RepositoriCataleg` a `src/blondswim/infrastructure/mappers.py` i `repositoris.py`. El nom del fitxer segueix RN-031; si no, falla TOTA la càrrega (CA-001-71)
 
 ---
 
@@ -142,7 +142,7 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 - [ ] T023 [US3] [domain] Validació creuada amb el catàleg (RN-011, RN-013, RN-015, RN-030 segons la piscina de la competició, només per a les inscripcions) a `src/blondswim/domain/validacio.py`
 - [ ] T024 [US3] [infrastructure] DTO, mapper i lectura de `temporades/<AAAA-AA>/inscripcions.json` a `src/blondswim/infrastructure/mappers.py` i `repositoris.py`; una carpeta que no segueix RN-031 → error
 - [ ] T051 [P] [US3] [application] Tests de càrrega del catàleg i de les inscripcions a `tests/unit/test_carrega_cataleg.py`, amb repositoris en memòria: CA-001-11, 17, 41 i 71 (un ERROR del catàleg falla TOTA la càrrega) i CA-001-19 (un ERROR d'inscripcions exclou només aquell nedador; la resta es carrega)
-- [ ] T052 [US3] [application] Càrrega del catàleg i de les inscripcions a `src/blondswim/application/carrega.py` i `filtre.py`: un ERROR del catàleg (RN-008, RN-031, format) falla TOTA la càrrega; un ERROR d'inscripcions (RN-011 a RN-016, RN-030 d'inscripcions) exclou només aquell nedador; el filtre ho llista per nedador i camp com a US1b (CA-001-11, 17, 19, 41, 71)
+- [ ] T052 [US3] [application] Càrrega del catàleg i de les inscripcions a `src/blondswim/application/carrega.py` i `filtre.py`: un ERROR del catàleg (RN-008, RN-031, format) falla TOTA la càrrega; un ERROR d'inscripcions (RN-011 a RN-016, RN-030 d'inscripcions) exclou només aquell nedador; el filtre ho llista per nedador i camp com a US1b (CA-001-11, 17, 19, 41, 71). Només es demana el catàleg d'una temporada si hi ha inscripcions d'aquella temporada: sense inscripcions, l'absència de catàleg no impedeix carregar nedadors
 
 ---
 

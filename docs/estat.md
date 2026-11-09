@@ -3,10 +3,10 @@
 Fitxer de traspàs entre sessions. S'actualitza en tancar cada bloc. No és normatiu.
 
 ## On som
-- Branca: `001-model-domini`. Spec 001 amb les decisions del 2026-11-03 (marca de competició com a llista de millores, correu opcional sense verificar ni normalitzar, ADR-0020) i les correccions de G1 i G2 del 29/10, pendent de passar G1 i G2 de nou; 99 CA actius (90 amb test, 9 pendents), 13 retirats (CA-001-55, 56, 77, 85, 86, 87, 88, 94, 95, 98, 99, 100 i 103); 19 CA amb test als markers de `tests/`.
+- Branca: `001-model-domini`. Spec 001 amb les decisions del 2026-11-03 (marca de competició com a llista de millores, correu opcional sense verificar ni normalitzar, ADR-0020) i les correccions de G1 i G2; G1 i G2 signats (2026-11-03, r3); 99 CA actius (90 amb test, 9 pendents), 13 retirats (CA-001-55, 56, 77, 85, 86, 87, 88, 94, 95, 98, 99, 100 i 103); 19 CA amb test als markers de `tests/`.
 - Constitució 1.3.0 (G0 r2: passa amb condicions).
-- `tasks.md` (54 tasques, 90 CA amb tasca; IDs fora d'ordre, vegeu la nota): fetes Setup (T001), Foundational (T003–T010), US1 (T011–T016) i US1b (T035–T050: UUID, alias, contacte, validador únic, millor marca, càrrega, filtre i operacions). US3 (T051–T052) i US4 (T053–T054) amb tasques noves, pendents d'implementar. Decisions D1 i D2 confirmades (`plan.md`).
-- Següent pas: US2 (T017–T019).
+- `tasks.md` (54 tasques, 90 CA amb tasca; IDs fora d'ordre, vegeu la nota): fetes Setup (T001), Foundational (T003–T010), US1 (T011–T016) US1b (T035–T050: UUID, alias, contacte, validador únic, millor marca, càrrega, filtre i operacions) i US2 (T017–T019: catàleg). US3 (T051–T052) i US4 (T053–T054) amb tasques noves, pendents d'implementar. Decisions D1 i D2 confirmades (`plan.md`).
+- Següent pas: US3 (T020–T023, T051–T052).
 - Durant la implementació, `verify.sh` mostra «Traçabilitat CA» com a AVÍS (CA sense test encara). Passa a bloquejant amb T002, al final.
 
 ## Decisions recents (detall als ADR i a la spec)
