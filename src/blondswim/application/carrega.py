@@ -7,7 +7,12 @@ Un ERROR d'un fitxer del nedador (també les inscripcions) exclou només aquell 
 from collections.abc import Mapping
 from dataclasses import dataclass, field, replace
 
-from blondswim.application.ports import RepositoriCataleg, RepositoriNedadors
+from blondswim.application.ports import (
+    RegistreAvisos,
+    Rellotge,
+    RepositoriCataleg,
+    RepositoriNedadors,
+)
 from blondswim.domain.cataleg import Cataleg
 from blondswim.domain.inscripcions import Inscripcions
 from blondswim.domain.nedador import Nedador
@@ -106,12 +111,32 @@ def errors_d_unicitat(
 
 
 def carrega_nedadors(
-    repositori: RepositoriNedadors, cataleg: RepositoriCataleg[Cataleg] | None = None
+    repositori: RepositoriNedadors,
+    cataleg: RepositoriCataleg[Cataleg] | None = None,
+    *,
+    registre: RegistreAvisos | None = None,
+    rellotge: Rellotge | None = None,
 ) -> ResultatCarrega:
     """Valida tots els nedadors, la unicitat i les inscripcions contra el catàleg.
 
     Una col·lisió exclou tots els implicats. Un ERROR del catàleg llança `ErrorCarrega`.
+    Amb `registre` i `rellotge`, els avisos (RN-009 i RN-035) es registren amb `decisio: null`,
+    sense demanar confirmació (T032).
     """
+    resultat = _carrega(repositori, cataleg)
+    if registre is not None and rellotge is not None:
+        ara = rellotge.ara()
+        for avis in resultat.avisos_cataleg:
+            registre.afegeix(ara, avis, None)
+        for id_nedador, de_nedador in resultat.resultats.items():
+            for avis in de_nedador.avisos:
+                registre.afegeix(ara, avis, id_nedador)
+    return resultat
+
+
+def _carrega(
+    repositori: RepositoriNedadors, cataleg: RepositoriCataleg[Cataleg] | None
+) -> ResultatCarrega:
     identitats = repositori.identitats()
     catalegs = _Catalegs(cataleg)
     nedadors: dict[IdNedador, Nedador] = {}

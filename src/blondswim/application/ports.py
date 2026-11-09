@@ -50,7 +50,16 @@ class GeneradorId(Protocol):
 
 
 class RegistreAvisos(Protocol):
-    def afegeix(self, data_hora: datetime, avis: Avis, id_nedador: IdNedador | None) -> None: ...
+    """`decisio`: `confirmat` o `rebutjat` a l'entrada (spec 002); `None` a la càrrega i a la
+    planificació."""
+
+    def afegeix(
+        self,
+        data_hora: datetime,
+        avis: Avis,
+        id_nedador: IdNedador | None,
+        decisio: str | None = None,
+    ) -> None: ...
 
 
 class Rellotge(Protocol):

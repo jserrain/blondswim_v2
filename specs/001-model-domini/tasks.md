@@ -153,8 +153,8 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 - [x] T025 [P] [US4] [domain] Tests a `tests/unit/test_derivats.py`: CA-001-05, 13, 14, 15, 16, 18, 28
 - [x] T026 [US4] [domain] Consultes `setmana_iso`, `test_vigent` i `proves_objectiu` a `src/blondswim/domain/derivats.py`. Cap d'aquests valors es desa. La temporada és una definició (`Temporada.de_codi`, `definicions.py`, T040; RN-031) i la `marca_vigent` és a T041
 - [x] T027 [US4] [domain] Aptitud per planificar a `src/blondswim/domain/validacio.py`: bloquegen RN-017 i RN-018; avisos RN-019 i RN-020 al `Resultat`
-- [ ] T053 [P] [US4] [application] Tests del cas d'ús d'aptitud a `tests/unit/test_aptitud.py`, amb registre d'avisos en memòria i rellotge fix: CA-001-13 i 14 (l'avís es registra amb `decisio: null`), 15, 28
-- [ ] T054 [US4] [application] Cas d'ús d'aptitud per planificar a `src/blondswim/application/aptitud.py`: aplica T027 i registra els avisos RN-019 i RN-020 al registre d'avisos (T031) amb `decisio: null`, sense confirmació. Depèn de T027 i T031
+- [x] T053 [P] [US4] [application] Tests del cas d'ús d'aptitud a `tests/unit/test_aptitud.py`, amb registre d'avisos en memòria i rellotge fix: CA-001-13 i 14 (l'avís es registra amb `decisio: null`), 15, 28
+- [x] T054 [US4] [application] Cas d'ús d'aptitud per planificar a `src/blondswim/application/aptitud.py`: aplica T027 i registra els avisos RN-019 i RN-020 al registre d'avisos (T031) amb `decisio: null`, sense confirmació. Depèn de T027 i T031
 
 ---
 
@@ -171,9 +171,9 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 **Depends on**: US1b i US2 (avisos RN-009 i RN-035)
 
-- [ ] T030 [P] [US6] [infrastructure] Tests a `tests/integration/test_registre_avisos.py`, amb `tmp_path` i rellotge fix: CA-001-47 (`decisio: null`), 48, 57 (RN-035 amb `decisio: null`, sense demanar confirmació), 110 (RN-035 per `canal_preferent` = `correu` sense correu, identificant `canal_preferent`, amb `decisio: null`)
-- [ ] T031 [US6] [infrastructure] `data/avisos.jsonl` en mode afegir a `src/blondswim/infrastructure/registre_avisos.py` (camps `data_hora`, `rn`, `fitxer`, `camp`, `valor`, `missatge`, `id_nedador` i `decisio`: `confirmat` \| `rebutjat` \| `null`) i rellotge del sistema a `src/blondswim/infrastructure/rellotge.py`. Les línies anteriors no es toquen (CA-001-48)
-- [ ] T032 [US6] [application] Afegir el registre d'avisos a la càrrega (T045 i T052) a `src/blondswim/application/carrega.py` (RN-009 i RN-035, també `canal_preferent` = `correu` sense correu; CA-001-110): `decisio: null`, sense confirmació. La decisió `confirmat`/`rebutjat` de l'entrada és de la spec 002. Els avisos d'aptitud (RN-019, RN-020) es registren a T054
+- [x] T030 [P] [US6] [infrastructure] Tests a `tests/integration/test_registre_avisos.py`, amb `tmp_path` i rellotge fix: CA-001-47 (`decisio: null`), 48, 57 (RN-035 amb `decisio: null`, sense demanar confirmació), 110 (RN-035 per `canal_preferent` = `correu` sense correu, identificant `canal_preferent`, amb `decisio: null`)
+- [x] T031 [US6] [infrastructure] `data/avisos.jsonl` en mode afegir a `src/blondswim/infrastructure/registre_avisos.py` (camps `data_hora`, `rn`, `fitxer`, `camp`, `valor`, `missatge`, `id_nedador` i `decisio`: `confirmat` \| `rebutjat` \| `null`) i rellotge del sistema a `src/blondswim/infrastructure/rellotge.py`. Les línies anteriors no es toquen (CA-001-48)
+- [x] T032 [US6] [application] Afegir el registre d'avisos a la càrrega (T045 i T052) a `src/blondswim/application/carrega.py` (RN-009 i RN-035, també `canal_preferent` = `correu` sense correu; CA-001-110): `decisio: null`, sense confirmació. La decisió `confirmat`/`rebutjat` de l'entrada és de la spec 002. Els avisos d'aptitud (RN-019, RN-020) es registren a T054
 
 ---
 

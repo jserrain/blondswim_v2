@@ -2,14 +2,14 @@
 
 from collections.abc import Sequence
 from dataclasses import replace
-from datetime import date
+from datetime import date, datetime
 
 from blondswim.application.ports import RepositoriCataleg, RepositoriNedadors
 from blondswim.domain.cataleg import Cataleg, Competicio
 from blondswim.domain.inscripcions import Inscripcions
 from blondswim.domain.nedador import MillorRegistre, Nedador, VolumSetmanal
 from blondswim.domain.nedador import TestCss as CssTest
-from blondswim.domain.validacio import CatalegAbsent, ErrorCarrega, ErrorValidacio, Identitat
+from blondswim.domain.validacio import Avis, CatalegAbsent, ErrorCarrega, ErrorValidacio, Identitat
 from blondswim.domain.valors import (
     Alias,
     Canal,
@@ -193,3 +193,27 @@ def error_il_legible(id_nedador: IdNedador, camp: str = "", valor: object = None
         accio="Corregeix el fitxer",
         nedador=str(id_nedador),
     )
+
+
+class RegistreMemoria:
+    """`RegistreAvisos` en memòria: (data_hora, avís, id_nedador, decisió)."""
+
+    def __init__(self) -> None:
+        self.linies: list[tuple[datetime, Avis, IdNedador | None, str | None]] = []
+
+    def afegeix(
+        self,
+        data_hora: datetime,
+        avis: Avis,
+        id_nedador: IdNedador | None,
+        decisio: str | None = None,
+    ) -> None:
+        self.linies.append((data_hora, avis, id_nedador, decisio))
+
+
+class RellotgeFix:
+    def __init__(self, ara: datetime = datetime(2000, 3, 4, 10, 15)) -> None:
+        self._ara = ara
+
+    def ara(self) -> datetime:
+        return self._ara
