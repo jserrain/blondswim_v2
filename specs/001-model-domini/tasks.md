@@ -150,9 +150,9 @@ description: "Llista de tasques de la spec 001 — Model de domini"
 
 **Depends on**: US1, US1b i US3. T054 també depèn de T031 (US6).
 
-- [ ] T025 [P] [US4] [domain] Tests a `tests/unit/test_derivats.py`: CA-001-05, 13, 14, 15, 16, 18, 28
-- [ ] T026 [US4] [domain] Consultes `setmana_iso`, `test_vigent` i `proves_objectiu` a `src/blondswim/domain/derivats.py`. Cap d'aquests valors es desa. La temporada és una definició (`Temporada.de_codi`, `definicions.py`, T040; RN-031) i la `marca_vigent` és a T041
-- [ ] T027 [US4] [domain] Aptitud per planificar a `src/blondswim/domain/validacio.py`: bloquegen RN-017 i RN-018; avisos RN-019 i RN-020 al `Resultat`
+- [x] T025 [P] [US4] [domain] Tests a `tests/unit/test_derivats.py`: CA-001-05, 13, 14, 15, 16, 18, 28
+- [x] T026 [US4] [domain] Consultes `setmana_iso`, `test_vigent` i `proves_objectiu` a `src/blondswim/domain/derivats.py`. Cap d'aquests valors es desa. La temporada és una definició (`Temporada.de_codi`, `definicions.py`, T040; RN-031) i la `marca_vigent` és a T041
+- [x] T027 [US4] [domain] Aptitud per planificar a `src/blondswim/domain/validacio.py`: bloquegen RN-017 i RN-018; avisos RN-019 i RN-020 al `Resultat`
 - [ ] T053 [P] [US4] [application] Tests del cas d'ús d'aptitud a `tests/unit/test_aptitud.py`, amb registre d'avisos en memòria i rellotge fix: CA-001-13 i 14 (l'avís es registra amb `decisio: null`), 15, 28
 - [ ] T054 [US4] [application] Cas d'ús d'aptitud per planificar a `src/blondswim/application/aptitud.py`: aplica T027 i registra els avisos RN-019 i RN-020 al registre d'avisos (T031) amb `decisio: null`, sense confirmació. Depèn de T027 i T031
 

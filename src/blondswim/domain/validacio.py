@@ -6,9 +6,19 @@ from dataclasses import dataclass
 
 from blondswim.domain.cataleg import Cataleg
 from blondswim.domain.definicions import Temporada, es_prova_oficial
+from blondswim.domain.derivats import test_vigent
 from blondswim.domain.inscripcions import Inscripcions
 from blondswim.domain.nedador import MillorRegistre, Nedador
-from blondswim.domain.valors import BLANCS, Canal, CodiTemporada, Correu, IdNedador
+from blondswim.domain.valors import (
+    BLANCS,
+    Canal,
+    Classe,
+    CodiTemporada,
+    Correu,
+    IdNedador,
+    Piscina,
+    Prioritat,
+)
 
 
 @dataclass(frozen=True)
@@ -376,3 +386,68 @@ def valida_unicitat(identitats: Mapping[IdNedador, Identitat]) -> tuple[ErrorVal
                     )
                 )
     return tuple(errors)
+
+
+def valida_aptitud(
+    id_nedador: IdNedador,
+    qui: str,
+    nedador: Nedador,
+    inscripcions: Inscripcions | None,
+    temporada: CodiTemporada | None = None,
+) -> Resultat:
+    """Aptitud per planificar (data-model § Validació, nivell 3).
+
+    Bloquegen RN-017 («arxivat») i RN-018 («falta competició A»); RN-019 i RN-020 són avisos.
+    `inscripcions`: les de la temporada que es planifica (`None` si no n'hi ha).
+    """
+    fitxer = fitxer_nedador(id_nedador)
+    fitxer_ins = fitxer if temporada is None else fitxer_inscripcions(id_nedador, temporada)
+    errors: list[ErrorValidacio] = []
+    avisos: list[Avis] = []
+    if nedador.arxivat:
+        errors.append(
+            ErrorValidacio(
+                "RN-017", fitxer, "arxivat", True, "arxivat", "Desarxiva el nedador", qui
+            )
+        )
+    participacions = () if inscripcions is None else inscripcions.participacions
+    if not any(p.classe is Classe.A for p in participacions):
+        errors.append(
+            ErrorValidacio(
+                "RN-018",
+                fitxer_ins,
+                "participacions",
+                None,
+                "falta competició A",
+                "Inscriu el nedador a una competició de classe A",
+                qui,
+            )
+        )
+    for i, participacio in enumerate(participacions):
+        if participacio.classe is Classe.A and not any(
+            x.prioritat is Prioritat.PRINCIPAL for x in participacio.proves
+        ):
+            avisos.append(
+                Avis(
+                    "RN-019",
+                    fitxer_ins,
+                    f"participacions.{i}",
+                    participacio.id_competicio,
+                    f"la participació A a {participacio.id_competicio!r} no té cap prova principal",
+                    "Marca una prova com a principal",
+                    qui,
+                )
+            )
+    if all(test_vigent(nedador, piscina) is None for piscina in Piscina):
+        avisos.append(
+            Avis(
+                "RN-020",
+                fitxer,
+                "tests_css",
+                None,
+                "sense ritmes",
+                "Registra i accepta un test CSS o introdueix els ritmes (spec 004)",
+                qui,
+            )
+        )
+    return Resultat(errors=tuple(errors), avisos=tuple(avisos))
