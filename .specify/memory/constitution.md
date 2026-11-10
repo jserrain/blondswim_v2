@@ -80,6 +80,17 @@ les definicions externes només canvien quan canvia la seva font.
 - A cada document normatiu hi ha només l'estat actual. El perquè va a l'ADR i la
   història, a git.
 
+### IX. Contracte dels casos d'ús d'entrada
+- Tot cas d'ús que introdueix dades rep un DTO d'entrada i retorna un resultat
+  tipat: `ok` i `errors[]`; cada error té origen (fila/camp), codi, nivell
+  (bloquejant | avís) i missatge.
+- Els nivells i els codis d'error viuen al cas d'ús.
+- Les vistes (CLI, lector CSV, web) només mapegen la seva entrada al DTO i el
+  resultat al seu format; no contenen lògica de negoci ni de validació.
+
+### X. Regla de capa per a les vistes
+- `interfaces/*` només importa `application/`. Es fa complir amb import-linter.
+- Cap vista accedeix a `domain/`, a `infrastructure/` ni a fitxers JSON.
 ## Fonts normatives
 
 Són normatives, per aquest ordre de precedència:
@@ -110,7 +121,6 @@ a `docs/regles.md`.
   tests, traçabilitat dels criteris d'acceptació i comprovacions de seguretat.
 - Els secrets només els llegeix `infrastructure`, i no es versionen mai.
 - La v1 només es pot llegir.
-
 ## Governance
 
 - La constitució té precedència sobre qualsevol altra pràctica o document. `AGENTS.md` és
@@ -123,4 +133,4 @@ a `docs/regles.md`.
 - El *Constitution Check* de `/speckit-plan` i `/speckit-analyze` verifica el compliment.
   Una violació s'ha de justificar o corregir abans d'implementar.
 
-**Version**: 1.3.0 | **Ratified**: 2026-10-18 | **Last Amended**: 2026-10-23
+**Version**: 1.4.0 | **Ratified**: 2026-10-18 | **Last Amended**: 2026-11-10
