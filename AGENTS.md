@@ -9,6 +9,7 @@ Periodització per objectius A/B/C, mesocicles planificats cap enrere des de l'o
 - `infrastructure/`: JSON, Excel, clients LLM, secrets.
 - `interfaces/`: CLI.
 Una capa només importa capes inferiors.
+`interfaces/*` només importa `application/` (constitució X): cap vista accedeix a `domain/`, a `infrastructure/` ni a fitxers JSON.
 
 ## Principis i decisions
 Els principis són a la constitució (`.specify/memory/constitution.md`). Les decisions
@@ -46,3 +47,6 @@ vigents són als ADR acceptats de `docs/decisions/`; no les canviïs sense un AD
 ## Ordres
 - Verificació completa: `bash scripts/verify.sh`
 - Tests: `uv run pytest`
+- Importació (spec 002): `uv run blondswim importar nedadors [--confirma]`,
+  `uv run blondswim importar calendari --temporada <AAAA-AA> [--confirma]`,
+  `uv run blondswim importar inscripcions --temporada <AAAA-AA> --alias <alias> [--confirma]`

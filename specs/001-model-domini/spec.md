@@ -155,7 +155,7 @@ data/
 
 ## Registre d'avisos
 - Tot avís (RN-009, RN-019, RN-020, RN-035 i els que defineixin altres specs) s'afegeix a `data/avisos.jsonl`, una línia JSON per avís, amb `data_hora`, `rn`, `fitxer`, `camp`, `valor`, `missatge`, `id_nedador` (o `null`) i `decisio`.
-- `decisio` és `confirmat` o `rebutjat` per als avisos d'entrada (la línia s'escriu quan el coach decideix) i `null` per als de càrrega i de planificació.
+- `decisio` és `confirmat` per als avisos d'entrada confirmats pel coach (la línia s'escriu en confirmar; un avís no confirmat no es registra) i `null` per als de càrrega i de planificació.
 - El registre només creix: no s'hi esborra ni s'hi modifica cap línia.
 - La data i hora la dona el rellotge del sistema en el moment de registrar l'avís.
 
@@ -211,7 +211,7 @@ data/
 - P: Pot un nedador quedar en un estat intermedi per les dades? → No. L'aptitud per planificar continua regida per RN-017 i RN-018.
 - P: Com acaba cada ordre i on són el resum i el codi de sortida? → Són de la spec 002. La 001 només dona el resultat de la validació per nedador i per nivell (CA-001-67).
 - P: Un error d'un nedador fa fallar tota la càrrega? → No: aquell nedador no es carrega i la resta sí. Amb una col·lisió de correu o d'alias no es carrega cap dels implicats. Els avisos de càrrega es desen al registre, sense confirmació.
-- P: Què registra el registre d'avisos sobre la decisió del coach? → El camp `decisio`: `confirmat`, `rebutjat` o `null` (avisos de càrrega i de planificació).
+- P: Què registra el registre d'avisos sobre la decisió del coach? → El camp `decisio`: `confirmat`, `rebutjat` o `null` (avisos de càrrega i de planificació). Substituïda per 2026-11-10 (spec 002: `rebutjat` desapareix).
 - P: Falta `canal_preferent`? → Avís (a la càrrega o a la importació; RN-035). Un valor fora de `correu` i `mobil` és un error de format del camp, no de RN-035. Ja no hi ha incidències resolubles ni valor per defecte.
 - P: Què vol dir `[PENDENT spec 002]` a la 001? → Que el criteri depèn del flux d'importació. Les operacions de domini no parlen de CLI: l'alta genera l'id i l'alias i rebutja un ERROR (CA-001-52, 61, 62); la confirmació de l'alias és el CA-001-68; `canal_preferent` no admès en una importació és el CA-001-58. Cap operació permet canviar l'alias (CA-001-53).
 - P: Com s'entren els nedadors i quina n'és la font? → A la 001 no hi ha entrada per CLI: el format d'entrada de nedadors el defineix la spec 002 i no es justifica amb cap ADR. Els criteris que en depenen (CA-001-58, 63, 64, 68 i 72) són `[PENDENT spec 002]`, que també ha de definir com es confirmen els avisos en una importació massiva.
@@ -284,6 +284,7 @@ Els números no es reutilitzen.
 |---|---|
 | CA-001-55 | Format de mòbil: RN-033 retirada (ADR-0020) |
 | CA-001-56 | Mòbil compartit: RN-034 retirada (ADR-0020) |
+| CA-001-64 | Avís rebutjat amb línia `decisio: rebutjat`: rebutjar = no confirmar, sense registre (spec 002) |
 | CA-001-77 | Avís de mòbil compartit amb un ERROR en un altre camp: RN-034 retirada (ADR-0020) |
 | CA-001-85 | Normalització del correu (minúscules, espais): el correu es desa tal com s'entra (ADR-0020) |
 | CA-001-86 | Correu de format vàlid segons l'expressió regular: substituïda pel format mínim (CA-001-104, ADR-0020) |
@@ -358,7 +359,6 @@ Els números no es reutilitzen.
 - **CA-001-61** — **Donat** un nedador nou l'alias generat del qual ja existeix, **quan** s'executa l'operació d'alta, **aleshores** el sistema genera un id nou i un alias nou (RN-003).
 - **CA-001-62** — **Donat** un nedador nou amb un ERROR (p. ex. `correu: "nedador.example.com"`), **quan** s'executa l'operació d'alta, **aleshores** el nedador no es desa i el missatge indica l'alias, la RN i l'acció que cal fer.
 - **CA-001-63** [PENDENT spec 002] — **Donat** un nedador nou amb un AVÍS (p. ex. sense `canal_preferent`), **quan** el coach el confirma explícitament, **aleshores** el nedador es desa i el registre d'avisos té una línia amb `decisio: "confirmat"`.
-- **CA-001-64** [PENDENT spec 002] — **Donat** un nedador nou amb un AVÍS, **quan** el coach el rebutja, **aleshores** el nedador no es desa, el registre d'avisos té una línia amb `decisio: "rebutjat"`.
 - **CA-001-65** — **Donats** dos nedadors, un d'ells amb un `nedador.json` editat a mà que ja no és vàlid (p. ex. `correu` sense `@`), **quan** es carreguen, **aleshores** aquell nedador no es carrega i l'altre sí.
 - **CA-001-66** — **Donats** dos nedadors amb el mateix correu (o el mateix alias) al JSON, **quan** es carreguen, **aleshores** no es carrega cap dels dos i la resta de nedadors sí.
 - **CA-001-67** — **Donats** diversos nedadors amb errors i avisos, **quan** es validen, **aleshores** el resultat dona, per a cada nedador, els errors (nivell ERROR) i els avisos (nivell AVÍS) per separat, cadascun amb alias, camp, valor, RN (o «format») i acció.
