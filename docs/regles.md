@@ -19,10 +19,10 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-004 | Els nedadors no s'esborren | bloquejant | gestió | spec 001 |
 | RN-005 | Rang de volum setmanal | bloquejant | càrrega | spec 001 |
 | RN-006 | Coherència del test CSS | bloquejant | càrrega | spec 001 |
-| RN-007 | Millor marca de competició per prova i piscina | bloquejant | càrrega, gestió | spec 001 |
-| RN-008 | Unicitat de l'id de competició | bloquejant | càrrega | spec 001, ADR-0006 |
+| RN-007 | Millor marca de competició per prova i piscina | bloquejant | càrrega, gestió | spec 001, ADR-0022 |
+| RN-008 | Unicitat de l'id de competició | bloquejant | càrrega, importació | spec 001, spec 002, ADR-0006 |
 | RN-009 | Seu desconeguda | avís | càrrega | spec 001 |
-| RN-010 | Competició amb participacions | bloquejant | gestió | ADR-0006 |
+| RN-010 | Competició amb participacions | bloquejant | gestió, importació | ADR-0006 |
 | RN-011 | Participació d'una competició del catàleg | bloquejant | càrrega | spec 001, ADR-0006 |
 | RN-012 | Una participació per competició | bloquejant | càrrega | spec 001 |
 | RN-013 | Competició dins de la temporada | bloquejant | càrrega | spec 001 |
@@ -31,7 +31,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-016 | Una inscripció per prova i competició | bloquejant | càrrega | spec 001 |
 | RN-017 | Nedador arxivat | bloquejant | planificació | spec 001 |
 | RN-018 | Competició A obligatòria | bloquejant | planificació | spec 001 |
-| RN-019 | Participació A sense prova principal | avís | planificació | spec 001 |
+| RN-019 | Participació A sense prova principal | avís | planificació, importació | spec 001 |
 | RN-020 | Sense ritmes | avís | planificació | spec 001 |
 | RN-021 | Cobertura de la biblioteca de tècnica | bloquejant | planificació | ADR-0005 |
 | RN-022 | La importació no modifica plans | avís | importació | ADR-0013 |
@@ -99,10 +99,10 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 ### RN-007 — Millor marca de competició per prova i piscina
 - **Tipus:** bloquejant · **Moment:** càrrega, gestió
-- **Regla:** `millors_registres` és una llista de millores successives de la marca de competició per prova (`{estil, distancia}`) i piscina. Tots els camps del registre són obligatoris: prova, piscina (25 o 50), temps, data i `competicio` (el nom de la competició, text no buit). La competició és informativa: no es comprova contra el catàleg. Les marques de 25 m i de 50 m no es comparen mai. En afegir una marca, només s'afegeix si és millor que la marca vigent de la mateixa prova i piscina (l'última de la llista); si és igual o pitjor, no es fa res (ni error ni avís). Dins de cada prova i piscina, cada marca de la llista és millor que l'anterior; si no ho és (fitxer editat a mà), ERROR. La data d'una marca nova ha de ser posterior a la de la marca vigent de la mateixa prova i piscina; si no ho és, ERROR (en afegir-la, només si el temps és menor; en carregar, per a cada marca respecte de l'anterior). Els tests CSS no segueixen aquesta regla: es desen tots, per estudiar-ne l'evolució.
+- **Regla:** `millors_registres` és una llista de millores successives de la marca de competició per prova (`{estil, distancia}`) i piscina. Tots els camps del registre són obligatoris: prova, piscina (25 o 50), temps, data i `competicio` (el nom de la competició, text no buit). La competició és informativa: no es comprova contra el catàleg. Les marques de 25 m i de 50 m no es comparen mai. En afegir una marca, només s'afegeix si és millor que la marca vigent de la mateixa prova i piscina (l'última de la llista); si és igual o pitjor, no es fa res (ni error ni avís). Dins de cada prova i piscina, cada marca de la llista és millor que l'anterior; si no ho és (fitxer editat a mà), ERROR. La data d'una marca nova ha de ser posterior a la de la marca vigent de la mateixa prova i piscina; si no ho és, ERROR (en afegir-la, només si el temps és menor; en carregar, per a cada marca respecte de l'anterior).
 - **Missatge:** identifica la prova i la piscina (o el camp `competicio`).
-- **Font:** spec 001.
-- **Coherència:** revisada contra RN-006 (els tests CSS no es substitueixen), RN-008, RN-010, RN-011 (la competició d'una marca és un nom i no apunta al catàleg: cap d'elles no hi actua) i RN-030 (la prova ha de ser oficial per a la piscina). Sense conflicte.
+- **Font:** spec 001, ADR-0022.
+- **Coherència:** revisada contra RN-006, RN-008, RN-010, RN-011 (la competició d'una marca és un nom i no apunta al catàleg: cap d'elles no hi actua) i RN-030 (la prova ha de ser oficial per a la piscina). Sense conflicte.
 
 ### RN-032 — Correu del nedador
 - **Tipus:** bloquejant · **Moment:** càrrega, gestió
@@ -127,10 +127,10 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 ## Catàleg de competicions
 
 ### RN-008 — Unicitat de l'id de competició
-- **Tipus:** bloquejant · **Moment:** càrrega
-- **Regla:** l'id de cada competició és únic dins del catàleg de la temporada.
-- **Missatge:** identifica l'id repetit.
-- **Font:** spec 001, ADR-0006.
+- **Tipus:** bloquejant · **Moment:** càrrega, importació
+- **Regla:** l'id de cada competició el genera el sistema a partir del nom: és el slug del nom (minúscules, sense accents ni diacrítics, qualsevol seqüència de caràcters que no siguin lletres o xifres → un sol `-`, sense `-` als extrems) i és estable entre reimportacions. L'id de cada competició és únic dins del catàleg de la temporada.
+- **Missatge:** identifica l'id repetit i, en la importació, les files del nom.
+- **Font:** spec 001, spec 002, ADR-0006.
 - **Coherència:** revisada contra RN-007, RN-010 i RN-011; l'id de competició només l'usen les participacions (RN-011) i no els millors registres. Sense conflicte.
 
 ### RN-009 — Seu desconeguda
@@ -141,7 +141,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Coherència:** aplica el principi V de la constitució; sense conflicte.
 
 ### RN-010 — Competició amb participacions
-- **Tipus:** bloquejant · **Moment:** gestió
+- **Tipus:** bloquejant · **Moment:** gestió, importació
 - **Regla:** no es pot esborrar una competició del catàleg que tingui participacions (inscripcions). Els millors registres no hi intervenen: la seva competició és un nom (RN-007).
 - **Missatge:** identifica els nedadors afectats.
 - **Font:** ADR-0006, spec 001.
@@ -225,7 +225,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Coherència:** revisada contra RN-017, RN-019, RN-020 i RN-021. És l'única condició de contingut per ser apte; RN-019 i RN-020 no bloquegen. Sense conflicte.
 
 ### RN-019 — Participació A sense prova principal
-- **Tipus:** avís · **Moment:** planificació
+- **Tipus:** avís · **Moment:** planificació, importació
 - **Regla:** una participació de classe A sense cap inscripció principal genera un avís i no bloqueja la planificació.
 - **Missatge:** identifica la participació.
 - **Font:** spec 001.

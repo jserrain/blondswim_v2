@@ -1,6 +1,6 @@
 # Spec 002 — Importació estricta
 
-**Estat:** Esborrany (revisió 2, 2026-11-11: fitxa del nedador segons ADR-0021 revisat i ADR-0022; correccions de l'auditoria G1 del 2026-11-11)
+**Estat:** Esborrany
 
 ## Objectiu
 Entrar les dades del nedador (fitxa), el catàleg de competicions (calendari) i les inscripcions de cada nedador a partir de tres CSV de format estricte (ADR-0013, ADR-0021), convertint-los a JSON segons la spec 001. Cap normalització de dades heretades: el que no s'ajusta al format és un error.
@@ -9,7 +9,7 @@ Fora d'abast:
 - Arxivar i desarxivar nedadors (operació pròpia de la spec 001, sense canal d'entrada en aquesta spec).
 - Interfície web (spec 009).
 - Qualsevol lectura dels Excels de la v1 (`claude/fonts_dades.md` és referència històrica).
-- Migració del model de la spec 001 a `test_css` (ADR-0022): prerequisit de codi, no regla d'aquesta spec; el pla la inclou com a fase 0.
+- Migració del model de la spec 001 a `test_css` (ADR-0022) i retirada dels tests dels CA retirats: prerequisit de codi, no regla d'aquesta spec.
 
 ## Històries d'usuari
 - **US1 (P1)** — Com a coach, importo el calendari de la temporada des d'un CSV per tenir el catàleg comú sense editar JSON.
@@ -32,15 +32,16 @@ Sense capçalera. Cada fila és `clau;valor`. L'ordre de les files és lliure. U
 | Clau | Valor | Regla |
 |---|---|---|
 | `alias` | text | obligatòria. Sense sufix (`part`) → alta; amb sufix (`part_xxxxxxx`) que coincideix amb un nedador → actualització; amb sufix sense coincidència → error (RN-003) |
-| `correu` | text o buit | RN-032; es desa tal qual |
+| `correu` | text o buit | obligatòria; valor buit admès; RN-032; es desa tal qual |
 | `mobil` | text no buit | obligatòria (spec 001) |
-| `canal_preferent` | `correu`, `mobil` o buit | buit = avís RN-035; altre valor = error |
+| `canal_preferent` | `correu`, `mobil` o buit | obligatòria; valor buit admès; buit = avís RN-035; altre valor = error |
 | `estils_preferents` | llista de Cr, Esq, Br, Pap, Ei | obligatòria; un o més, sense repetir |
 | `dies_entrenament` | llista de dl, dt, dc, dj, dv, ds, dg | obligatòria; un o més, sense repetir |
 | `volum_setmanal` | `min\|max` en metres | obligatòria (RN-005) |
-| `test_css` | `piscina\|data\|t400\|t200[\|rpe]` | repetible, màxim una per piscina (25, 50). `rpe` enter 0-10, opcional. Substitueix el test de la piscina (ADR-0022); rpe es desa a detall_400.rpe i detall_200.rpe |
+| `test_css` | `piscina\|data\|t400\|t200` | repetible, màxim una per piscina (25, 50). Substitueix el test de la piscina (ADR-0022) |
 | `marca` | `estil\|distancia\|piscina\|temps\|data\|competicio` | repetible, màxim una per estil+distància+piscina. S'afegeix només si millora la vigent (RN-007); si no, no es fa res |
 
+- Totes les claus excepte `test_css` i `marca` són obligatòries; així una actualització mai no perd un valor per omissió.
 - Les claus de contacte, estils, dies i volum descriuen l'**estat complet** del nedador: en una actualització substitueixen el valor desat (spec 001 § Modificació). Un `correu` buit en una actualització deixa el nedador sense correu (CA-001-112).
 - `test_css` i `marca` són **incrementals**: una fitxa sense `test_css` no esborra cap test; una fitxa sense `marca` no toca les marques.
 - Dates `AAAA-MM-DD`; temps `m:ss.cc` (spec 000).
@@ -55,7 +56,7 @@ Sense capçalera. Cada fila és `clau;valor`. L'ordre de les files és lliure. U
 | piscina | `25` o `50` | |
 | seu | text o buit | buit = avís RN-009 |
 
-L'`id` de la competició el genera el sistema a partir del nom (slug: minúscules, sense accents ni diacrítics, qualsevol seqüència de caràcters que no siguin lletres o xifres → un sol `-`, sense `-` als extrems). És estable entre reimportacions (RN-008).
+L'`id` de la competició el genera el sistema a partir del nom i és estable entre reimportacions (RN-008).
 
 ### inscripcions_<alias>.csv
 `competicio;classe;dia;distancia;estil;prioritat`
@@ -97,28 +98,17 @@ blondswim importar inscripcions --temporada <AAAA-AA> --alias <alias> [--confirm
 - **Inscripcions:** el CSV és la font: `inscripcions.json` del nedador i temporada se substitueix sencer. Quan ja existeix un `inscripcions.json` i el resultat en difereix (participacions o proves que desapareixen o canvien), es genera l'avís RN-039 amb el resum de les diferències; es desa només amb `--confirma`. Les files s'agrupen per competició en una participació (classe) amb les seves proves.
 - **Plans:** la importació no modifica mai cap pla. Si el nedador té un pla a la temporada i canvia una participació de classe A o la data d'una competició amb participació → avís RN-040 «el pla pot quedar desfasat».
 
-## Regles de negoci noves (a `docs/regles.md`)
-| RN | Nivell | Regla |
-|---|---|---|
-| RN-036 | ERROR | Totes les files d'una mateixa competició al CSV d'inscripcions tenen la mateixa classe |
-| RN-037 | ERROR | L'alias de l'ordre d'importar inscripcions correspon a un nedador existent no arxivat |
-| RN-038 | ERROR | Una reimportació del calendari no pot treure una data en què un nedador té una inscripció |
-| RN-039 | AVÍS | Reimportar inscripcions sobre un fitxer existent amb diferències requereix confirmació |
-| RN-040 | AVÍS | Canvi en una participació A o en la data d'una competició amb participació, amb pla existent: el pla pot quedar desfasat |
-| RN-041 | AVÍS | Fitxa amb `alias` sense sufix que coincideix amb la part d'un nedador existent: es tracta com a alta d'un nedador nou (la unicitat d'alias la resol el sufix); l'avís demana confirmar que no és una actualització |
-
 ## Validació
 Un sol validador (spec 001): la importació aplica les mateixes regles que la càrrega. Aquesta spec només afegeix els errors de format del CSV i les RN-036 a RN-041.
 
 - **ERROR** (bloquejant): format del fitxer (codificació, capçalera, columnes; claus de la fitxa), format d'un camp o valor, qualsevol RN de nivell ERROR de la spec 001, RN-036, RN-037, RN-038, RN-008, RN-010, RN-011.
-- **AVÍS**: RN-009, RN-035, RN-039, RN-040, RN-041, CA-001-13 (participació A sense prova principal).
+- **AVÍS**: RN-009, RN-019, RN-035, RN-039, RN-040, RN-041.
 
 ## Contracte del cas d'ús (constitució IX)
 Un cas d'ús per fitxer (`importar_fitxa`, `importar_calendari`, `importar_inscripcions`) a `application/`:
-- Entrada: DTO amb les files com a text (llista de diccionaris columna → valor cru; per a la fitxa, llista de parells clau → valor) i els arguments (`temporada`, `alias`, `confirma`).
+- Entrada: DTO amb el contingut del fitxer com a text cru (sense tipar) i els arguments (`temporada`, `alias`, `confirma`).
 - Sortida: `ResultatImportacio` amb `ok`, `desat`, `pendent_confirmacio` (bool), `errors[]`, `avisos[]`, `alias_generat` (només alta), `resum`. Cada incidència: `origen` (fila i columna o clau, o `fitxer`), `codi` (RN o `FORMAT-<camp>`), `nivell`, `valor`, `missatge`, `accio`.
 - El lector CSV (`infrastructure/`) només obre el fitxer, comprova codificació i capçalera (o parells clau;valor), i retorna text. La CLI (`interfaces/`) només pinta el resultat i tradueix `ok/desat/pendent_confirmacio` a codi de sortida (0/1/2). Cap dels dos conté regles.
-- La funció de slug és una regla d'id (RN-008) i viu a `domain/`.
 - El rellotge s'injecta (línies del registre d'avisos).
 
 ## Informe (CLI)
@@ -153,28 +143,36 @@ Per fitxer: ruta, files llegides; errors i avisos ordenats per fila (o per clau)
 - P: CA-002-01 vs CA-002-10? → Una alta sempre queda pendent (alias a confirmar); CA-002-01 s'aplica a calendari, inscripcions i actualitzacions de fitxa.
 - P: Substituir `inscripcions.json` sense avís? → Avís RN-039 amb resum de diferències; es desa amb `--confirma`.
 - P: Alias sense sufix que coincideix amb la part d'un nedador existent? → Alta nova amb avís RN-041 (abans: fila ignorada).
+- Revisió 2 de la spec: fitxa del nedador segons ADR-0021 revisat i ADR-0022; correccions de l'auditoria G1 r1.
+
+### Sessió 2026-11-11 (auditoria G1 r2)
+- P: Què fa una clau opcional absent en una actualització? → No n'hi ha: totes les claus excepte `test_css` i `marca` són obligatòries; `correu` i `canal_preferent` admeten el valor buit. Una actualització mai no perd un valor per omissió.
+- P: La fitxa porta `rpe` del test CSS? → No: `test_css` és `piscina|data|t400|t200`; un cinquè valor és error de format i `detall_400`, `detall_200` i `notes` queden `null` (ADR-0022).
+- P: On és la derivació de l'id de competició? → A RN-008 (slug del nom).
+- P: BOM? → Error de format del fitxer (el format és UTF-8 sense BOM).
+- P: Moment de les RN aplicades en importar? → RN-008, RN-010 i RN-019 inclouen el moment `importació`.
 
 ## Criteris d'acceptació
 
 Format i lectura
 - **CA-002-01** — Donat un CSV de calendari, d'inscripcions o una fitxa d'actualització amb cap incidència, quan s'importa sense `--confirma`, aleshores es desa, el codi de sortida és 0 i l'informe diu `desat`.
 - **CA-002-02** — Donat un CSV de calendari o d'inscripcions amb una columna de menys, de més o en un altre ordre, quan s'importa, aleshores no es desa res, hi ha un ERROR d'origen `fitxer` que identifica la capçalera esperada, i el codi és 1.
-- **CA-002-03** — Donat un CSV amb separador `,` o codificació no UTF-8, quan s'importa, aleshores no es desa res i hi ha un ERROR d'origen `fitxer`.
-- **CA-002-04** — Donat un CSV amb files en blanc intercalades, quan s'importa, aleshores s'ignoren sense error ni avís i els números de fila de l'informe són els del fitxer.
+- **CA-002-03** — Donat un CSV amb codificació no UTF-8 o amb BOM, quan s'importa, aleshores no es desa res i hi ha un ERROR d'origen `fitxer`.
+- **CA-002-04** — Donat un CSV amb files en blanc (buides o només amb espais) intercalades, quan s'importa, aleshores s'ignoren sense error ni avís i els números de fila de l'informe són els del fitxer.
 - **CA-002-05** — Donat un CSV amb una data `31/12/2026`, quan s'importa, aleshores hi ha un ERROR `FORMAT-<camp>` que indica fila, columna i valor, i no es desa res.
 - **CA-002-06** — Donat un CSV amb diversos errors en files diferents, quan s'importa, aleshores l'informe els llista tots, ordenats per fila, i no s'atura al primer.
 - **CA-002-07** — Donada una fitxa amb una clau desconeguda, una clau no repetible repetida o una clau obligatòria absent, quan s'importa, aleshores ERROR d'origen la clau (o `fitxer` si és absent) i no es desa res.
 
 Confirmació
 - **CA-002-08** — Donat un fitxer amb un avís i cap error, quan s'importa sense `--confirma`, aleshores no es desa res, el codi és 2, l'informe diu `pendent de confirmar` i `avisos.jsonl` no canvia.
-- **CA-002-09** — Donat el mateix fitxer, quan s'importa amb `--confirma`, aleshores es desa, el codi és 0 i `avisos.jsonl` té una línia per avís amb `decisio: confirmat`, `rn`, `fitxer`, `camp`, `valor` i `data_hora` del rellotge injectat.
+- **CA-002-09** — Donat un fitxer amb un avís i cap error, quan s'importa amb `--confirma`, aleshores es desa, el codi és 0 i `avisos.jsonl` té una línia per avís amb `decisio: confirmat`, `rn`, `fitxer` (la ruta), `camp` (la columna o la clau), `valor` i `data_hora` del rellotge injectat.
 - **CA-002-10** — Donat un fitxer amb un error i un avís, quan s'importa amb `--confirma`, aleshores no es desa res, el codi és 1 i `avisos.jsonl` no canvia.
 - **CA-002-11** — Donada una fitxa d'alta sense cap avís, quan s'importa sense `--confirma`, aleshores no es desa res, el codi és 2 i l'informe mostra `part → alias` (CA-001-68); amb `--confirma`, es desa.
 
 Fitxa: alta
 - **CA-002-12** — Donada una fitxa d'alta vàlida, quan s'importa amb `--confirma`, aleshores es crea `nedadors/<uuid>/nedador.json` vàlid segons la spec 001, amb alias amb el sufix de l'id (CA-001-52), `arxivat: false`, i els camps informatius no presents a la fitxa a `null`.
 - **CA-002-13** — Donada una fitxa amb `estils_preferents` `Cr|Cr` o `Cr|EP`, quan s'importa, aleshores ERROR que identifica clau i valor (CA-001-39).
-- **CA-002-14** — Donada una fitxa amb `canal_preferent` buit, quan s'importa, aleshores AVÍS RN-035 i es desa només amb `--confirma` (CA-001-57, 63).
+- **CA-002-14** — Donada una fitxa amb `canal_preferent` buit, quan s'importa, aleshores AVÍS RN-035, no es desa res i el codi és 2 (CA-001-57).
 - **CA-002-15** — Donada una fitxa amb `canal_preferent` `whatsapp`, quan s'importa, aleshores ERROR de format que indica les opcions admeses (CA-001-58).
 - **CA-002-16** — Donada una fitxa d'alta amb un correu ja existent en un nedador arxivat (comparat en minúscules i sense espais als extrems), quan s'importa, aleshores ERROR RN-032 i no es desa res.
 - **CA-002-17** — Donada una fitxa d'alta amb `alias` igual a la part de l'alias d'un nedador existent, quan s'importa, aleshores AVÍS RN-041, i amb `--confirma` es crea un nedador nou amb sufix diferent; el nedador existent no canvia.
@@ -187,8 +185,8 @@ Fitxa: actualització, test i marques
 - **CA-002-22** — Donada una fitxa d'actualització amb el `correu` d'un altre nedador, quan s'importa, aleshores ERROR RN-032 i no es desa res (CA-001-79).
 - **CA-002-23** — Donada una fitxa d'actualització amb `correu` buit en un nedador que en tenia, quan s'importa, aleshores el nedador queda sense correu i l'antic queda lliure (CA-001-112).
 - **CA-002-24** — Donada una fitxa amb `test_css;25|<data>|<t400>|<t200>` en un nedador amb test de 25 m, quan s'importa, aleshores `test_css["25"]` és el nou, el de 50 m no canvia i els camps informatius no presents queden `null` (ADR-0022).
-- **CA-002-25** — Donada una fitxa amb dues files `test_css` de la mateixa piscina, o amb t400 ≤ t200, quan s'importa, aleshores ERROR que identifica la clau (CA-001-04).
-- **CA-002-26** — Donada una fitxa amb `test_css` amb `rpe` 11, quan s'importa, aleshores ERROR de format; amb `rpe` 7, es desa a `detall_400.rpe` i `detall_200.rpe` del test (l'rpe únic de la fitxa es desa a tots dos detalls).
+- **CA-002-25** — Donada una fitxa amb dues files `test_css` de la mateixa piscina, quan s'importa, aleshores ERROR que identifica la clau i les dues files.
+- **CA-002-26** — Donada una fitxa amb `test_css` amb un cinquè valor, quan s'importa, aleshores ERROR de format que identifica la clau; els camps `detall_400`, `detall_200` i `notes` del test desat són `null`.
 - **CA-002-27** — Donada una fitxa amb una `marca` millor que la vigent de la mateixa prova i piscina i data posterior, quan s'importa, aleshores s'afegeix a `millors_registres` (RN-007); amb temps igual o pitjor, no es fa res ni s'avisa (CA-001-89); amb temps millor i data no posterior, ERROR (CA-001-102).
 - **CA-002-28** — Donada una fitxa amb una `marca` d'una prova no oficial per a la piscina, quan s'importa, aleshores ERROR RN-030 (CA-001-42).
 - **CA-002-29** — Donada una fitxa sense cap fila `test_css` ni `marca` en un nedador que en té, quan s'importa, aleshores tests i marques no canvien.
@@ -210,19 +208,22 @@ Inscripcions
 - **CA-002-41** — Donada una fila amb un `dia` que no és cap data de la competició, quan s'importa, aleshores ERROR RN-015 (CA-001-09).
 - **CA-002-42** — Donada una fila `100;Ei` en una competició de piscina 50, quan s'importa, aleshores ERROR RN-030 (CA-001-42).
 - **CA-002-43** — Donades dues files amb la mateixa competició, distància i estil, quan s'importa, aleshores ERROR RN-016 (CA-001-29).
-- **CA-002-44** — Donat un `--alias` que no correspon a cap nedador no arxivat, o un fitxer `inscripcions_<alias>.csv` inexistent, quan s'importa, aleshores ERROR RN-037 (o d'origen `fitxer`) i no es desa res.
+- **CA-002-44** — Donat un `--alias` que no correspon a cap nedador no arxivat, quan s'importa, aleshores ERROR RN-037 i no es desa res.
 - **CA-002-45** — Donat un `inscripcions.json` existent, quan es reimporta un CSV amb una participació menys, aleshores AVÍS RN-039 amb la participació que desapareix, no es desa sense `--confirma`, i amb `--confirma` el fitxer només té les participacions del CSV.
 - **CA-002-46** — Donat un `inscripcions.json` existent, quan es reimporta un CSV idèntic en contingut, aleshores no hi ha avís RN-039 i es desa amb codi 0.
-- **CA-002-47** — Donada una participació de classe A sense cap prova `principal`, quan s'importa, aleshores AVÍS (CA-001-13) i es desa només amb `--confirma`.
+- **CA-002-47** — Donada una participació de classe A sense cap prova `principal`, quan s'importa, aleshores AVÍS RN-019 (CA-001-13) i es desa només amb `--confirma`.
 - **CA-002-48** [PENDENT spec 003] — Donat un nedador amb pla a la temporada, quan es reimporten inscripcions que canvien una participació A, aleshores AVÍS RN-040 i el pla no canvia.
 
 Arquitectura
 - **CA-002-49** — Donat el codi d'`interfaces/` i d'`infrastructure/csv`, quan passa import-linter, aleshores no importen `domain/` ni llegeixen fitxers JSON (constitució X).
 - **CA-002-50** — Donat un `ResultatImportacio` amb errors i avisos, quan la CLI el pinta, aleshores el text conté per a cada incidència origen, codi, valor i acció, i el codi de sortida segueix `ok/desat/pendent_confirmacio` (0, 1, 2) sense cap lògica addicional.
-- **CA-002-51** — Donada la funció de slug, quan rep `Campionat d'Hivern  (25 m)`, aleshores retorna `campionat-d-hivern-25-m`, i és a `domain/`.
+- **CA-002-51** — Donada la funció de slug, quan rep `Campionat d'Hivern  (25 m)`, aleshores retorna `campionat-d-hivern-25-m` (RN-008).
 
-## Canvis en altres documents
-- Spec 001: fets (CA-001-64 retirat; ADR-0022 aplicat).
-- `docs/regles.md`: afegir RN-036 a RN-041.
-- `AGENTS.md`: fet (regla de capa, ordres `importar`, ADR-0021 i 0022).
-- Pla (fase 0): migrar el codi de la spec 001 a `test_css` sense `acceptat` i retirar els tests de CA-001-05, 30, 35 i 82.
+Casos límit i parts de CA separades (els números no es reutilitzen)
+- **CA-002-52** — Donat un calendari o unes inscripcions amb separador `,`, quan s'importa, aleshores no es desa res i hi ha un ERROR d'origen `fitxer` que identifica la capçalera esperada; en una fitxa, ERROR (fila que no és `clau;valor`) i no es desa res.
+- **CA-002-53** — Donada una fitxa amb `canal_preferent` buit, quan s'importa amb `--confirma`, aleshores es desa i `avisos.jsonl` té una línia RN-035 amb `decisio: confirmat` (CA-001-63).
+- **CA-002-54** — Donada una fitxa amb `test_css` amb t400 ≤ t200, quan s'importa, aleshores ERROR RN-006 que identifica la clau (CA-001-04).
+- **CA-002-55** — Donat un `inscripcions_<alias>.csv` inexistent, quan s'importa, aleshores ERROR d'origen `fitxer` i no es desa res.
+- **CA-002-56** — Donada una fitxa amb `test_css` amb una piscina diferent de 25 o 50, quan s'importa, aleshores ERROR de format que identifica la clau i el valor (CA-001-41).
+- **CA-002-57** — Donada una fitxa amb dues files `marca` de la mateixa prova i piscina, quan s'importa, aleshores ERROR que identifica la clau i les dues files.
+- **CA-002-58** — Donada una fitxa amb un `alias` que no té la forma `<part>` ni `<part>_<sufix>` de RN-003, quan s'importa, aleshores ERROR RN-003 que identifica la clau i el valor i no es desa res.
