@@ -5,7 +5,6 @@
       "Read(./.env)",
       "Bash(cat:~/.secrets/*)",
       "Edit(~/projectes/ws_blondswim/**)",
-      "Read(./docs/auditoria/**)",
       "Read(./docs/inventari/**)",
       "Read(~/projectes/ws_blondswim/**)"
     ]
