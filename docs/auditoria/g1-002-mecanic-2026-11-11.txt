@@ -1,0 +1,23 @@
+== Gate 1: Spec 002-importacio (2026-11-11) ==
+  OK     G1-S01 Carpeta specs/002-importacio amb spec.md
+  OK     G1-S01 Branca = carpeta: 002-importacio
+  OK     G1-S02 ## Clarifications
+  PISTA  G1-S03 Checklist present; ítems pendents: 1
+  OK     G1-S04 Sense plan/tasks
+  OK     G1-S04 Sense codi nou respecte de main
+  INFO   G1-S05 Estat: Esborrany
+  OK     G1-Q02 Criteris d'acceptació definits: 39
+  OK     G1-Q03 CA únics
+  OK     G1-Q03 Tots els CA són de la spec 002
+  OK     G1-Q02 Tots els CA en format Donat/quan/aleshores
+  INFO   G1-Q02 CA marcats [PENDENT spec NNN]: 1
+  OK     G1-Q04 13 RN referenciades, totes definides
+  OK     G1-Q05 Zero [NEEDS CLARIFICATION]
+  OK     G1-Q05 ## Assumptions
+  OK     G1-Q07 Sense dates concretes
+  PISTA  G1-Q01 Hi ha històries prioritzades
+  INFO   G1-Q08 FR-NNN: 0 · SC-NNN: 0
+  PISTA  G1-A02 Esmenta dades o accions sensibles
+  PISTA  G1-A03 Esmenta punts de judici LLM
+
+Resultat: cap FALLA

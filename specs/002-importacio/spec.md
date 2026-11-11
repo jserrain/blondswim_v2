@@ -10,6 +10,11 @@ Fora d'abast:
 - Interfície web (spec 009).
 - Qualsevol lectura dels Excels de la v1 (`claude/fonts_dades.md` és referència històrica).
 
+## Històries d'usuari
+- **US1 (P1)** — Com a coach, importo el calendari de la temporada des d'un CSV per tenir el catàleg comú sense editar JSON.
+- **US2 (P1)** — Com a coach, importo les inscripcions d'un nedador des del seu CSV i veig totes les incidències d'un cop, amb fila i columna.
+- **US3 (P2)** — Com a coach, dono d'alta els nedadors des d'un CSV i confirmo els alias generats abans que es desin.
+
 ## Fitxers d'entrada
 
 ```
@@ -104,6 +109,22 @@ Per fitxer: ruta, nombre de files llegides; llista d'errors i avisos ordenats pe
 - Un sol coach; execució local.
 - El coach escriu els CSV amb una fulla de càlcul exportant a CSV amb `;` i UTF-8; no es dona suport a cap altra configuració.
 - Els CSV es conserven a `data/entrada/` com a font; el sistema no els modifica ni els esborra.
+
+## Dades i accions sensibles
+- `nedadors.csv` conté correu i mòbil (dades personals, spec 001). El fitxer viu a `data/entrada/`, no versionat. L'informe de la CLI mostra el valor només a la incidència que l'afecta.
+- Cap dada del CSV arriba a un LLM: aquesta spec no té punts de judici LLM.
+- Acció destructiva: la reimportació substitueix `inscripcions.json` sencer i pot esborrar competicions sense inscripcions del catàleg. Totes dues queden protegides pel flux de dues passades i per RN-010.
+
+## Clarifications
+
+### Sessió 2026-11-10 (decisions preses al xat abans de `/speckit-specify`)
+- P: Interfície web per a l'entrada de dades? → Diferida a la spec 009. L'entrada actual és CSV estricte (ADR-0013 revisat); el contracte de cas d'ús (constitució IX) permet afegir la web com a vista sense refer res.
+- P: On es desen els CSV? → `data/entrada/nedadors.csv`, `data/entrada/<AAAA-AA>/calendari.csv`, `data/entrada/<AAAA-AA>/inscripcions_<alias>.csv`.
+- P: Com s'identifica el nedador en importar inscripcions? → L'alias és argument de l'ordre; el nom del fitxer se'n deriva; no es llegeix del CSV.
+- P: Com s'entren els nedadors? → Tercer CSV, només altes; modificar, arxivar, tests i marques van per ordres de CLI pròpies.
+- P: Qui posa l'id de la competició? → El sistema, com a slug del nom; les inscripcions referencien el nom.
+- P: Com es confirmen avisos i alias? → Dues passades amb `--confirma`, sense diàleg. Rebutjar = no confirmar; CA-001-64 retirat.
+- P: Canvi de dates que deixa una inscripció sense dia? → Error en importar el calendari; el catàleg no canvia.
 
 ## Criteris d'acceptació
 
