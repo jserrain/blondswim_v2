@@ -48,9 +48,8 @@ data/
 - `estils_preferents`: un o més codis, sense repetir. Admesos: Cr, Esq, Br, Pap, Ei (spec 000, §4). `Ei` indica un especialista en estils.
 - `dies_entrenament`: un o més dies de la setmana (dl, dt, dc, dj, dv, ds, dg), sense repetir. Les competicions no hi compten.
 - `volum_setmanal`: `{min, max}` en metres (RN-005).
-- `tests_css`: llista de tests (RN-006). Cada test té:
-  - `data`, `piscina` (25 o 50), `t400` i `t200` (`m:ss.cc`): obligatoris.
-  - `acceptat`: booleà, obligatori. En registrar el test val `false`.
+- `test_css`: objecte amb les claus `25` i `50` (piscina); cada una és un test o `null` (RN-006, ADR-0022). Cada test té:
+  - `data`, `t400` i `t200` (`m:ss.cc`): obligatoris.
   - `detall_400` i `detall_200`: informatius. Cada un és un objecte amb aquests camps, tots informatius:
     - `parcials`: temps `m:ss.cc` de cada 100 m (4 al 400, 2 al 200);
     - `bracades_per_llarg`: cicles per llarg, mitjana de la prova (nombre positiu);
@@ -59,13 +58,13 @@ data/
   - `notes`: text o `null` (informatiu).
   - Sempre en crol. Protocol: spec 000 (§9) i ADR-0011.
   - El coach col·loca la sessió de test a mà al pla del nedador i en registra el resultat a mà. El sistema no col·loca mai el test. Afegir-la al pla genera una versió nova del pla (principi VI); la mecànica la decideix la spec del pla.
-  - **Test vigent:** l'últim test acceptat de la piscina del període. Registrar un test no canvia els ritmes fins que el coach l'accepta.
+  - **Test vigent:** el test de la piscina P és `test_css[P]`. Un test nou de la piscina P substitueix l'anterior.
   - Les validacions del test (ràtio T400/T200, 200 no màxim, regularitat del 400) són de la spec 004. Avisos del test: RN-028 i RN-029.
   - El CSS i les zones es calculen a partir del test vigent (spec 004); no es desen. SWOLF i longitud de braçada són derivats: no es desen.
 - `millors_registres`: llista de millores successives de la marca de competició per prova i piscina (RN-007). Cada registre és `{estil, distancia, piscina, temps, data, competicio}`, tots obligatoris.
   - `competicio`: el nom de la competició (text no buit). És informatiu: no es comprova contra el catàleg.
   - La prova (`estil`, `distancia`) és oficial per a la `piscina` (RN-030).
-  - Els tests CSS no funcionen així: es desen tots, per estudiar-ne l'evolució.
+  - Els tests CSS no funcionen així: només hi ha el vigent de cada piscina (`test_css`).
 
 **Temporada** (carpeta `temporades/<AAAA-AA>/`)
 - No té fitxer propi. El nom de la carpeta i les dates d'inici i fi segueixen RN-031.
@@ -90,7 +89,7 @@ data/
 
 **Consultes (no es desen mai)**
 - `setmana_iso`: setmana ISO 8601 (de dilluns a diumenge), identificada per l'any ISO i el número de setmana.
-- `test_vigent`: vegeu `tests_css`.
+- `test_vigent(piscina)`: `test_css[piscina]`.
 - `marca_vigent(nedador, prova, piscina)`: l'última marca de la llista `millors_registres` d'aquella prova i piscina (RN-007).
 - `proves_objectiu`: les inscripcions de les participacions de classe A.
 - CSS i zones: spec 004.
@@ -140,7 +139,7 @@ data/
 
 **Amb operació pròpia:**
 - Arxivar i desarxivar: es permeten totes dues (RN-017).
-- `tests_css`: només s'hi afegeixen tests. Un test desat no s'edita; el coach l'accepta o no (`acceptat`).
+- `test_css`: substituir el test de la piscina P (entrada: spec 002).
 - `millors_registres`: només s'hi afegeixen marques, segons RN-007. Un registre desat no s'edita.
 
 ## Format JSON
@@ -175,7 +174,7 @@ data/
 - P: Què identifica un nedador? → Un id opac, que és el nom de la carpeta (RN-001, RN-002). El correu és una dada de `nedador.json` i és únic (RN-032); l'alias és obligatori (RN-003). Matisada per 2026-11-03 (vespre) (el correu és opcional).
 - P: Es pot esborrar un nedador? → No: s'arxiva (RN-004, RN-017).
 - P: Es pot planificar un nedador sense test CSS? → Sí: és apte i es genera l'avís «sense ritmes» (CA-001-14).
-- P: Quin test CSS s'aplica? → El test vigent: l'últim acceptat de la piscina del període. Registrar-ne un no canvia els ritmes fins que el coach l'accepta.
+- P: Quin test CSS s'aplica? → El test vigent: l'últim acceptat de la piscina del període. Registrar-ne un no canvia els ritmes fins que el coach l'accepta. Substituïda per 2026-11-11 (ADR-0022: un sol test per piscina, sense `acceptat`).
 - P: Qui col·loca la sessió de test CSS al pla? → El coach, a mà; el sistema no ho fa mai (ADR-0011).
 - P: Quins camps poden faltar? → Només els informatius (`canal_preferent`, `notes`, `detall_400`, `detall_200` i els seus camps) i `seu`; en desar s'escriuen com a `null` (§ Format JSON). Substituïda per 2026-10-27 (`canal_preferent` passa a opcional amb avís).
 - P: Com es defineix la setmana? → Setmana ISO 8601; és un valor derivat i no es desa.
@@ -229,12 +228,12 @@ data/
 - N1 — P: Quins fitxers compten per a la unicitat? → Tots els que es poden llegir, vàlids o no (RN-032, RN-003, RN-034). Una col·lisió identifica tots els implicats. Un fitxer il·legible és un ERROR propi i no hi participa. Substituïda per 2026-10-29 quant a RN-034 (retirada).
 - N3 — P: Quines dades no canvien mai? → `id`, `alias` i `versio_esquema` (només amb una migració). La modificació no els rep com a dada.
 - N3 — P: Què es pot modificar? → `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament` i `volum_setmanal`. La modificació torna a validar el nedador sencer, unicitat inclosa; amb un ERROR no es desa res.
-- N3 — P: Quines dades tenen operació pròpia? → Arxivar i desarxivar; `tests_css` (només s'afegeixen; el coach accepta o no); `millors_registres` (només s'afegeixen; el millor per prova i piscina és derivat). Un test o un registre desat no s'edita. Substituïda per 2026-10-29 (decisió B) quant a `millors_registres`.
+- N3 — P: Quines dades tenen operació pròpia? → Arxivar i desarxivar; `tests_css` (només s'afegeixen; el coach accepta o no); `millors_registres` (només s'afegeixen; el millor per prova i piscina és derivat). Un test o un registre desat no s'edita. Substituïda per 2026-10-29 (decisió B) quant a `millors_registres`. Substituïda per 2026-11-11 (ADR-0022: un sol test per piscina, sense `acceptat`) quant a `tests_css`.
 - N3 — P: Es pot canviar `dies_entrenament` o `volum_setmanal` a mitja temporada? → Sí. Replanificar és de la spec 005 (CA-001-84, `[PENDENT spec 005]`).
 - N3 — P: Els millors registres s'actualitzen? → No: només s'afegeixen. El millor per prova i piscina és un valor derivat (el millor temps de la llista) i no es desa. RN-007 (unicitat) queda retirada. Substituïda per 2026-10-29 (decisió B).
 - Decisió a — P: Es pot desarxivar? → Sí: un nedador pot tornar una temporada posterior (RN-017).
 - Decisió b — P: Es poden canviar `dies_entrenament` i `volum_setmanal` a mitja temporada? → Sí; es torna a planificar amb la configuració nova i la planificació passada es conserva com a registre (CA-001-84, spec 005).
-- Decisió c — P: S'editen els tests CSS i els millors registres desats? → No.
+- Decisió c — P: S'editen els tests CSS i els millors registres desats? → No. Substituïda per 2026-11-11 (ADR-0022: un sol test per piscina, sense `acceptat`) quant als tests CSS.
 
 ### Sessió 2026-10-29 (decisions A, B i C; correccions del G2)
 
@@ -243,7 +242,7 @@ data/
 - Decisió A — P: A què s'aplica la unicitat? → Només a correu i alias (RN-003, RN-032).
 - Decisió A — P: Un nedador amb un camp d'identitat il·legible (que falta o no és text) participa a la unicitat? → A la dels altres camps sí; a la d'aquell camp no. L'error del camp el dona el validador (CA-001-92).
 - Decisió B — P: Què és un millor registre? → El de competició, un sol per prova i piscina, amb `temps`, `data` i `competicio` (id del catàleg, obligatori). Un temps menor substitueix el desat; igual o pitjor, no es fa res, ni error ni avís (RN-007, CA-001-83, 89 a 91). Desfà la decisió del 2026-10-28 (millor registre derivat i només-afegir). Substituïda per 2026-11-03 (decisió 1).
-- Decisió B — P: I els tests CSS? → Es desen tots, per estudiar l'evolució; sense canvis.
+- Decisió B — P: I els tests CSS? → Es desen tots, per estudiar l'evolució; sense canvis. Substituïda per 2026-11-11 (ADR-0022: un sol test per piscina, sense `acceptat`).
 - Decisió B — P: Què és una consulta i què una definició? → Consultes (no es desen): `proves_objectiu`, `test_vigent`, `marca_vigent`, `setmana_iso`. L'inici i el fi de temporada són una definició del domini (RN-031).
 - Decisió C — P: Els CA de la spec 000 sense test? → Només el CA-000-10 (millor registre sense piscina) fa servir el domini de la 001: té tasca a la US1b. El CA-000-01 és `[PENDENT spec 004]` i els CA-000-02 a 09 i 11 a 24, `[PENDENT spec 006]`. La part d'estils de CA-000-02 i 03 ja la cobreix CA-001-39.
 - Decisió 2 (2026-10-29) — P: Quan és vàlid el `mobil`? → Si no és buit després de treure'n els espais als extrems; buit és un ERROR. Cap altra validació (CA-001-54, 93). Matisada per 2026-11-03 (vespre): els espais en blanc són espais, tabuladors i salts de línia (CA-001-111).
@@ -276,6 +275,12 @@ data/
 - F — P: Quins canvis té el pla? → `tasks.md` (T035, T036, T038 a T042, T044, T047 i la taula CA → tasca), `plan.md` (D1: el correu es compara en minúscules i sense espais, el valor no canvia), `research.md`, `data-model.md`, contracte i quickstart.
 - D-H1 — P: Es pot treure el correu en modificar el nedador? → Sí: `correu: null` el deixa sense correu i el correu antic queda lliure per a un altre nedador (CA-001-112; test a T039, implementació a T041 i T047). Amb això, CA nous: CA-001-104 a 112. Recomptes: 99 CA actius (90 amb test, 9 pendents) i 13 retirats.
 
+### Sessió 2026-11-11 (ADR-0021 revisat i ADR-0022)
+
+- P: Es conserva l'històric de tests CSS? → No: un test per piscina, el nou substitueix l'anterior; entrar-lo és acceptar-lo (ADR-0022).
+- P: Com entren les dades del nedador? → Fitxa `clau;valor`, una per nedador, alta o actualització segons l'alias (ADR-0021; detall a la spec 002).
+- P: Els camps informatius del test? → Es mantenen; la fitxa només porta `piscina|data|t400|t200` i opcionalment `rpe`.
+
 ## CA retirats
 
 Els números no es reutilitzen.
@@ -284,8 +289,12 @@ Els números no es reutilitzen.
 |---|---|
 | CA-001-55 | Format de mòbil: RN-033 retirada (ADR-0020) |
 | CA-001-56 | Mòbil compartit: RN-034 retirada (ADR-0020) |
+| CA-001-05 | Un sol test per piscina, sense `acceptat` (ADR-0022) |
+| CA-001-30 | Un sol test per piscina, sense `acceptat` (ADR-0022) |
+| CA-001-35 | Un sol test per piscina, sense `acceptat` (ADR-0022) |
 | CA-001-64 | Avís rebutjat amb línia `decisio: rebutjat`: rebutjar = no confirmar, sense registre (spec 002) |
 | CA-001-77 | Avís de mòbil compartit amb un ERROR en un altre camp: RN-034 retirada (ADR-0020) |
+| CA-001-82 | Un sol test per piscina, sense `acceptat` (ADR-0022) |
 | CA-001-85 | Normalització del correu (minúscules, espais): el correu es desa tal com s'entra (ADR-0020) |
 | CA-001-86 | Correu de format vàlid segons l'expressió regular: substituïda pel format mínim (CA-001-104, ADR-0020) |
 | CA-001-87 | Correus no vàlids segons l'expressió regular: substituïda pel format mínim (CA-001-105, ADR-0020) |
@@ -301,8 +310,7 @@ Els números no es reutilitzen.
 - **CA-001-01** — **Donat** un `nedador.json` vàlid, **quan** es carrega i es torna a desar, **aleshores** el contingut desat és equivalent a l'original (mateixos valors; el correu es desa i es torna a llegir idèntic, sense normalitzar; un camp informatiu absent equival a `null`).
 - **CA-001-02** — **Donat** un catàleg de competicions i un `inscripcions.json` vàlids, **quan** es carreguen i es tornen a desar, **aleshores** el contingut desat és equivalent a l'original.
 - **CA-001-03** — **Donat** un nedador sense estils preferents, sense dies d'entrenament o amb `volum_setmanal.min > max`, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp.
-- **CA-001-04** — **Donat** un test CSS amb t400 ≤ t200, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error.
-- **CA-001-05** — **Donats** dos tests CSS acceptats de la mateixa piscina i un de més recent no acceptat, **quan** es demana el vigent per a aquella piscina, **aleshores** s'obté l'acceptat de data més recent.
+- **CA-001-04** — **Donat** un `test_css[piscina]` amb t400 ≤ t200, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error.
 - **CA-001-06** — **Donats** dos millors registres consecutius amb el mateix estil, distància i piscina i el mateix temps, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica la prova i la piscina (RN-007).
 - **CA-001-07** — **Donat** un millor registre amb temps `1:05.3`, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error de format.
 - **CA-001-08** — **Donada** una participació sense inscripcions, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error.
@@ -311,7 +319,7 @@ Els números no es reutilitzen.
 - **CA-001-11** — **Donats** dos ids de competició repetits al catàleg, **quan** es carrega, **aleshores** falla TOTA la càrrega i dona un error.
 - **CA-001-12** — **Donada** una competició amb `seu: null` o sense el camp `seu`, **quan** es carrega, **aleshores** es carrega correctament i genera un avís.
 - **CA-001-13** — **Donada** una participació de classe A sense cap inscripció principal, **quan** es valida, **aleshores** genera un avís i no bloqueja la planificació.
-- **CA-001-14** — **Donat** un nedador vàlid, no arxivat, sense cap test CSS acceptat i sense ritmes, amb una participació de classe A, **quan** es demana si és apte per planificar, **aleshores** la resposta és «sí» i genera l'avís «sense ritmes».
+- **CA-001-14** — **Donat** un nedador vàlid, no arxivat, sense cap test CSS i sense ritmes, amb una participació de classe A, **quan** es demana si és apte per planificar, **aleshores** la resposta és «sí» i genera l'avís «sense ritmes».
 - **CA-001-15** — **Donat** un nedador sense cap participació de classe A, **quan** es demana si és apte per planificar, **aleshores** la resposta és «no» i el motiu és «falta competició A».
 - **CA-001-16** — **Donat** un nedador amb participacions A, B i C, **quan** es demanen les proves objectiu, **aleshores** s'obtenen només les inscripcions de les participacions A.
 - **CA-001-17** — **Donat** un fitxer amb un `versio_esquema` desconegut, **quan** es carrega, **aleshores** si és el d'un fitxer del catàleg, falla TOTA la càrrega i dona un error; si és el d'un fitxer del nedador, aquell nedador no es carrega i dona un error.
@@ -327,12 +335,10 @@ Els números no es reutilitzen.
 - **CA-001-27** — **Donada** una carpeta de nedador amb un nom que no compleix RN-001 (p. ex. `n0001`, `3F2A9C1E-7B4D-4E8A-9C2F-1D6B5E0A8F47` o un UUID v1), **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error.
 - **CA-001-28** — **Donat** un nedador arxivat, **quan** es demana si és apte per planificar, **aleshores** la resposta és «no» i el motiu és «arxivat».
 - **CA-001-29** — **Donada** una participació amb la mateixa prova inscrita en dos dies diferents de la competició, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error (RN-016).
-- **CA-001-30** — **Donat** un nedador amb un test acceptat vigent, **quan** es registra un test nou de la mateixa piscina, **aleshores** el test nou té `acceptat: false` i el vigent no canvia; **quan** el coach l'accepta, **aleshores** el test nou passa a ser el vigent.
-- **CA-001-31** — **Donat** un test amb `detall_400` i `detall_200` amb tots els camps a `null`, **quan** es carrega i es torna a desar, **aleshores** el contingut desat és equivalent a l'original i els `null` es conserven.
-- **CA-001-32** — **Donat** un test amb `notes` i tots els camps de detall a `null`, **quan** es carrega, **aleshores** no genera cap avís (principi V).
-- **CA-001-33** [PENDENT spec 004] — **Donat** un nedador amb l'últim test acceptat d'una piscina més antic que el termini de RN-028 i cap test planificat d'aquella piscina, **quan** es planifica, **aleshores** genera l'avís de test caducat (RN-028).
-- **CA-001-34** [PENDENT spec 004] — **Donat** un període de piscina que comença sense cap test acceptat ni planificat d'aquella piscina, **quan** es planifica, **aleshores** genera l'avís de canvi de període sense test (RN-029).
-- **CA-001-35** — **Donat** un test sense el camp `acceptat`, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error.
+- **CA-001-31** — **Donat** un `test_css[piscina]` amb `detall_400` i `detall_200` amb tots els camps a `null`, **quan** es carrega i es torna a desar, **aleshores** el contingut desat és equivalent a l'original i els `null` es conserven.
+- **CA-001-32** — **Donat** un `test_css[piscina]` amb `notes` i tots els camps de detall a `null`, **quan** es carrega, **aleshores** no genera cap avís (principi V).
+- **CA-001-33** [PENDENT spec 004] — **Donat** un nedador amb el `test_css[piscina]` més antic que el termini de RN-028 i cap test planificat d'aquella piscina, **quan** es planifica, **aleshores** genera l'avís de test caducat (RN-028).
+- **CA-001-34** [PENDENT spec 004] — **Donat** un període de piscina que comença sense `test_css[piscina]` ni cap test planificat d'aquella piscina, **quan** es planifica, **aleshores** genera l'avís de canvi de període sense test (RN-029).
 - **CA-001-36** — **Donat** un fitxer desat pel sistema, **quan** es carrega i es torna a desar, **aleshores** el fitxer resultant és idèntic byte a byte.
 - **CA-001-37** — **Donat** un nedador, **quan** es demana esborrar-lo, **aleshores** dona un error que indica que s'ha d'arxivar, i el nedador no canvia (RN-004).
 - **CA-001-38** [PENDENT spec 002] — **Donada** una importació que no inclou un nedador existent, **quan** s'importa, **aleshores** el nedador no s'esborra ni s'arxiva (RN-004).
@@ -346,7 +352,7 @@ Els números no es reutilitzen.
 - **CA-001-46** — **Donat** un nedador amb un `alias` que no compleix RN-003 (p. ex. `""`, `marc` sense sufix, `Marc_3f2a9c1` o `marc_cognom_3f2a9c1`), **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp.
 - **CA-001-47** — **Donada** una competició amb `seu: null`, **quan** es carrega, **aleshores** `data/avisos.jsonl` té una línia nova amb `rn: "RN-009"`, el fitxer, el camp `seu`, la data i hora i `decisio: null`.
 - **CA-001-48** — **Donat** un registre d'avisos amb línies, **quan** es registra un avís nou, **aleshores** les línies anteriors es conserven sense canvis.
-- **CA-001-49** — **Donat** un nedador amb un test sense `notes` ni `detall_400`, **quan** es carrega i es torna a desar, **aleshores** es carrega sense error ni avís i el fitxer desat té aquests camps a `null`.
+- **CA-001-49** — **Donat** un nedador amb un `test_css[piscina]` sense `notes` ni `detall_400`, **quan** es carrega i es torna a desar, **aleshores** es carrega sense error ni avís i el fitxer desat té aquests camps a `null`.
 - **CA-001-50** — **Donat** un `nedador.json` sense `alias` o amb `alias: null`, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp (RN-003).
 - **CA-001-51** — **Donat** un nedador amb un `alias` el sufix del qual no coincideix amb el seu id (p. ex. `marc_0000000` en un nedador amb id `3f2a9c1e-…`), **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp (RN-003).
 - **CA-001-52** — **Donat** un nedador nou amb la part d'alias `marc` i un id que comença per `3f2a9c1`, **quan** s'executa l'operació d'alta, **aleshores** l'alias generat és `marc_3f2a9c1` (RN-003).
@@ -375,7 +381,6 @@ Els números no es reutilitzen.
 - **CA-001-79** — **Donat** un nedador existent, **quan** es modifica `correu` amb el d'un altre nedador, arxivat o no, **aleshores** es torna a validar el nedador sencer, unicitat inclosa, i dona un ERROR (RN-032).
 - **CA-001-80** — **Donat** un nedador existent, **quan** es modifica amb un valor que dona un ERROR (p. ex. `volum_setmanal.min > max`), **aleshores** no es desa res i el nedador no canvia.
 - **CA-001-81** — **Donat** un nedador arxivat, **quan** es desarxiva, **aleshores** `arxivat` val `false` i la resta del nedador no canvia (RN-017). **Quan** s'arxiva un nedador no arxivat, **aleshores** `arxivat` val `true`.
-- **CA-001-82** — **Donat** un test CSS desat, **quan** s'intenta editar, **aleshores** no es permet i el test no canvia; només es pot afegir un test nou o acceptar-lo.
 - **CA-001-83** — **Donat** un millor registre desat, **quan** s'afegeix un registre de la mateixa prova i piscina amb un temps menor, **aleshores** s'afegeix a la llista i el desat es conserva (RN-007); **quan** s'afegeix un registre de la mateixa prova a l'altra piscina, **aleshores** s'afegeix sense comparar-lo amb el de la primera, tingui el temps que tingui; **quan** s'intenta editar un registre desat, **aleshores** no es permet.
 - **CA-001-84** [PENDENT spec 005] — **Donat** un nedador al qual es canvia `dies_entrenament` o `volum_setmanal` a mitja temporada, **quan** es planifica, **aleshores** es torna a planificar amb la configuració nova i la planificació passada es conserva com a registre (des de quina setmana: ho decideix la spec 005).
 - **CA-001-89** — **Donat** un millor registre desat, **quan** s'afegeix un registre de la mateixa prova i piscina amb un temps igual o pitjor, **aleshores** no es fa res: el desat no canvia i no hi ha ni ERROR ni AVÍS (RN-007).

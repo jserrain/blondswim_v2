@@ -25,6 +25,7 @@ vigents són als ADR acceptats de `docs/decisions/`; no les canviïs sense un AD
 - ADR-0014 — L'id del nedador és un UUID
 - ADR-0020 — Contacte del nedador
 - ADR-0021 — Fitxa del nedador en CSV
+- ADR-0022 — Test CSS: només el vigent per piscina
 
 ## Regles de treball
 - Treballa sempre a partir d'una spec de `specs/`. Si no n'hi ha, atura't i demana-la.
@@ -47,6 +48,6 @@ vigents són als ADR acceptats de `docs/decisions/`; no les canviïs sense un AD
 ## Ordres
 - Verificació completa: `bash scripts/verify.sh`
 - Tests: `uv run pytest`
-- Importació (spec 002): `uv run blondswim importar nedadors [--confirma]`,
+- Importació (spec 002): `uv run blondswim importar fitxa <camí> [--confirma]`,
   `uv run blondswim importar calendari --temporada <AAAA-AA> [--confirma]`,
   `uv run blondswim importar inscripcions --temporada <AAAA-AA> --alias <alias> [--confirma]`
