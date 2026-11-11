@@ -6,18 +6,18 @@
   OK     G1-S04 Sense plan/tasks
   OK     G1-S04 Sense codi nou respecte de main
   INFO   G1-S05 Estat: Esborrany
-  OK     G1-Q02 Criteris d'acceptació definits: 39
+  OK     G1-Q02 Criteris d'acceptació definits: 51
   OK     G1-Q03 CA únics
   OK     G1-Q03 Tots els CA són de la spec 002
   OK     G1-Q02 Tots els CA en format Donat/quan/aleshores
   INFO   G1-Q02 CA marcats [PENDENT spec NNN]: 1
-  OK     G1-Q04 13 RN referenciades, totes definides
-  OK     G1-Q05 Zero [NEEDS CLARIFICATION]
+  FALLA  G1-Q04 RN no definides a docs/regles.md: RN-036 RN-037 RN-038 RN-039 RN-040 RN-041
+  FALLA  G1-Q05 [NEEDS CLARIFICATION] pendents: 1
   OK     G1-Q05 ## Assumptions
-  OK     G1-Q07 Sense dates concretes
+  PISTA  G1-Q07 Dates concretes a revisar: 2026-11-11 
   PISTA  G1-Q01 Hi ha històries prioritzades
   INFO   G1-Q08 FR-NNN: 0 · SC-NNN: 0
   PISTA  G1-A02 Esmenta dades o accions sensibles
   PISTA  G1-A03 Esmenta punts de judici LLM
 
-Resultat: cap FALLA
+Resultat: 2 FALLA(ES)
