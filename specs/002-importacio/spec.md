@@ -38,7 +38,7 @@ Sense capçalera. Cada fila és `clau;valor`. L'ordre de les files és lliure. U
 | `estils_preferents` | llista de Cr, Esq, Br, Pap, Ei | obligatòria; un o més, sense repetir |
 | `dies_entrenament` | llista de dl, dt, dc, dj, dv, ds, dg | obligatòria; un o més, sense repetir |
 | `volum_setmanal` | `min\|max` en metres | obligatòria (RN-005) |
-| `test_css` | `piscina\|data\|t400\|t200[\|rpe]` | repetible, màxim una per piscina (25, 50). `rpe` enter 0-10, opcional. Substitueix el test de la piscina (ADR-0022) |
+| `test_css` | `piscina\|data\|t400\|t200[\|rpe]` | repetible, màxim una per piscina (25, 50). `rpe` enter 0-10, opcional. Substitueix el test de la piscina (ADR-0022); rpe es desa a detall_400.rpe i detall_200.rpe |
 | `marca` | `estil\|distancia\|piscina\|temps\|data\|competicio` | repetible, màxim una per estil+distància+piscina. S'afegeix només si millora la vigent (RN-007); si no, no es fa res |
 
 - Les claus de contacte, estils, dies i volum descriuen l'**estat complet** del nedador: en una actualització substitueixen el valor desat (spec 001 § Modificació). Un `correu` buit en una actualització deixa el nedador sense correu (CA-001-112).
@@ -188,7 +188,7 @@ Fitxa: actualització, test i marques
 - **CA-002-23** — Donada una fitxa d'actualització amb `correu` buit en un nedador que en tenia, quan s'importa, aleshores el nedador queda sense correu i l'antic queda lliure (CA-001-112).
 - **CA-002-24** — Donada una fitxa amb `test_css;25|<data>|<t400>|<t200>` en un nedador amb test de 25 m, quan s'importa, aleshores `test_css["25"]` és el nou, el de 50 m no canvia i els camps informatius no presents queden `null` (ADR-0022).
 - **CA-002-25** — Donada una fitxa amb dues files `test_css` de la mateixa piscina, o amb t400 ≤ t200, quan s'importa, aleshores ERROR que identifica la clau (CA-001-04).
-- **CA-002-26** — Donada una fitxa amb `test_css` amb `rpe` 11, quan s'importa, aleshores ERROR de format; amb `rpe` 7, es desa a `detall_400.rpe` i `detall_200.rpe` del test [NEEDS CLARIFICATION: a quin dels dos detalls va l'rpe únic de la fitxa, o se'n demanen dos].
+- **CA-002-26** — Donada una fitxa amb `test_css` amb `rpe` 11, quan s'importa, aleshores ERROR de format; amb `rpe` 7, es desa a `detall_400.rpe` i `detall_200.rpe` del test (l'rpe únic de la fitxa es desa a tots dos detalls).
 - **CA-002-27** — Donada una fitxa amb una `marca` millor que la vigent de la mateixa prova i piscina i data posterior, quan s'importa, aleshores s'afegeix a `millors_registres` (RN-007); amb temps igual o pitjor, no es fa res ni s'avisa (CA-001-89); amb temps millor i data no posterior, ERROR (CA-001-102).
 - **CA-002-28** — Donada una fitxa amb una `marca` d'una prova no oficial per a la piscina, quan s'importa, aleshores ERROR RN-030 (CA-001-42).
 - **CA-002-29** — Donada una fitxa sense cap fila `test_css` ni `marca` en un nedador que en té, quan s'importa, aleshores tests i marques no canvien.

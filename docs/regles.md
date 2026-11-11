@@ -48,6 +48,12 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-033 | Mòbil del nedador (Retirada) | — | — | ADR-0020 |
 | RN-034 | Mòbil compartit (Retirada) | — | — | ADR-0020 |
 | RN-035 | Canal preferent absent | avís | càrrega, importació | spec 001, ADR-0020 |
+| RN-036 | Classe única per competició a l'entrada | bloquejant | importació | spec 002 |
+| RN-037 | Alias de l'importació d'inscripcions | bloquejant | importació | spec 002 |
+| RN-038 | Data amb inscripcions en reimportar el calendari | bloquejant | importació | spec 002 |
+| RN-039 | Reimportació d'inscripcions amb diferències | avís | importació | spec 002 |
+| RN-040 | Pla possiblement desfasat | avís | importació | spec 002 |
+| RN-041 | Alias sense sufix coincident amb un nedador existent | avís | importació | spec 002 |
 
 ## Nedador
 
@@ -227,9 +233,9 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 ### RN-020 — Sense ritmes
 - **Tipus:** avís · **Moment:** planificació
-- **Regla:** un nedador sense cap test CSS acceptat i sense ritmes introduïts pel coach és apte per planificar i genera un avís. El format dels ritmes introduïts pel coach és de la spec 004.
+- **Regla:** un nedador sense cap test CSS i sense ritmes introduïts pel coach és apte per planificar i genera un avís. El format dels ritmes introduïts pel coach és de la spec 004.
 - **Missatge:** «sense ritmes».
-- **Font:** spec 001.
+- **Font:** spec 001, ADR-0022.
 - **Coherència:** revisada contra RN-006, RN-018, RN-023 i RN-029. RN-023 fa que la planificació no depengui dels ritmes. Si el nedador té ritmes d'una altra piscina, RN-020 no salta i RN-029 sí: és el comportament volgut. Sense conflicte.
 
 ### RN-021 — Cobertura de la biblioteca de tècnica
@@ -247,6 +253,48 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Missatge:** identifica el pla afectat i el canvi.
 - **Font:** ADR-0013.
 - **Coherència:** aplica el principi VI de la constitució; sense conflicte.
+
+### RN-036 — Classe única per competició a l'entrada
+- **Tipus:** bloquejant · **Moment:** importació
+- **Regla:** totes les files d'una mateixa competició al CSV d'inscripcions tenen la mateixa classe.
+- **Missatge:** identifica les files i les classes en conflicte.
+- **Font:** spec 002.
+- **Coherència:** revisada contra RN-012 i RN-016. RN-012 limita a una participació per competició i la classe és de la participació; RN-036 comprova que les files del CSV, que es converteixen en una sola participació, no la contradiguin. Sense conflicte.
+
+### RN-037 — Alias de l'importació d'inscripcions
+- **Tipus:** bloquejant · **Moment:** importació
+- **Regla:** l'alias de l'ordre d'importar inscripcions correspon a un nedador existent no arxivat.
+- **Missatge:** identifica l'alias.
+- **Font:** spec 002.
+- **Coherència:** revisada contra RN-003, RN-004 i RN-017. RN-004 no esborra nedadors i RN-017 només tracta l'aptitud per planificar; RN-037 és una condició de l'ordre d'importar. Sense conflicte.
+
+### RN-038 — Data amb inscripcions en reimportar el calendari
+- **Tipus:** bloquejant · **Moment:** importació
+- **Regla:** una reimportació del calendari no pot treure una data en què un nedador té una inscripció.
+- **Missatge:** identifica l'alias, la competició i el dia.
+- **Font:** spec 002.
+- **Coherència:** revisada contra RN-010, RN-011 i RN-015. RN-010 protegeix la competició sencera i RN-015 exigeix que el dia sigui de la competició; RN-038 impedeix que una reimportació trenqui RN-015 en dades ja desades. Complementària, sense conflicte.
+
+### RN-039 — Reimportació d'inscripcions amb diferències
+- **Tipus:** avís · **Moment:** importació
+- **Regla:** reimportar inscripcions sobre un fitxer existent amb diferències requereix confirmació del coach.
+- **Missatge:** resumeix les diferències (participacions i proves que desapareixen o canvien).
+- **Font:** spec 002.
+- **Coherència:** revisada contra RN-022 i RN-040. RN-022 i RN-040 avisen d'efectes sobre el pla; RN-039 avisa de la substitució de les inscripcions mateixes. Cap contradiu l'altra.
+
+### RN-040 — Pla possiblement desfasat
+- **Tipus:** avís · **Moment:** importació
+- **Regla:** si hi ha pla a la temporada i canvia una participació de classe A o la data d'una competició amb participació, el pla pot quedar desfasat.
+- **Missatge:** identifica el nedador i el canvi.
+- **Font:** spec 002.
+- **Coherència:** revisada contra RN-022. RN-022 és la regla general (la importació no modifica plans i avisa); RN-040 en concreta el cas. Sense conflicte; el pla no es modifica mai.
+
+### RN-041 — Alias sense sufix coincident amb un nedador existent
+- **Tipus:** avís · **Moment:** importació
+- **Regla:** una fitxa amb alias sense sufix que coincideix amb la part de l'alias d'un nedador existent es tracta com a alta d'un nedador nou; l'avís demana confirmar que no és una actualització.
+- **Missatge:** identifica l'alias i el nedador existent amb la mateixa part.
+- **Font:** spec 002.
+- **Coherència:** revisada contra RN-003 i RN-004. RN-003 exigeix unicitat de l'alias complet i el sufix ho garanteix; un alta amb la mateixa part genera un alias diferent. RN-004 no s'altera: el nedador existent no canvia. Sense conflicte.
 
 ## Composició de sessions
 
@@ -285,14 +333,14 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 ### RN-028 — Test caducat
 - **Tipus:** avís · **Moment:** planificació
-- **Regla:** han passat 8 setmanes des de l'últim test acceptat d'una piscina i no hi ha cap test planificat d'aquella piscina.
-- **Missatge:** identifica la piscina i la data de l'últim test acceptat.
-- **Font:** spec 004 (pendent).
-- **Coherència:** revisada contra RN-020 i RN-029. Sense cap test acceptat, salta RN-020 i RN-028 no s'aplica. Sense solapament.
+- **Regla:** han passat 8 setmanes des de la data del test CSS vigent de la piscina (`test_css[piscina]`) i no hi ha cap test planificat d'aquella piscina.
+- **Missatge:** identifica la piscina i la data del test CSS vigent de la piscina.
+- **Font:** spec 004 (pendent), ADR-0022.
+- **Coherència:** revisada contra RN-020 i RN-029. Sense cap test CSS, salta RN-020 i RN-028 no s'aplica. Sense solapament.
 
 ### RN-029 — Canvi de període de piscina sense test
 - **Tipus:** avís · **Moment:** planificació
-- **Regla:** un període de piscina (25 m o 50 m) comença i el nedador no té cap test acceptat ni planificat d'aquella piscina.
+- **Regla:** un període de piscina (25 m o 50 m) comença i el nedador no té cap test CSS de la piscina ni cap test planificat d'aquella piscina.
 - **Missatge:** identifica el període i la piscina.
-- **Font:** spec 004 (pendent). La definició de període de piscina està pendent (mapa, pregunta 9).
+- **Font:** spec 004 (pendent), ADR-0022. La definició de període de piscina està pendent (mapa, pregunta 9).
 - **Coherència:** revisada contra RN-020 i RN-028. RN-029 mira l'inici del període i RN-028, el temps des de l'últim test. Poden saltar juntes sense contradir-se.
