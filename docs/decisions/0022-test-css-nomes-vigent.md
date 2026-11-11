@@ -11,12 +11,13 @@ La spec 001 desa tots els tests CSS del nedador en una llista, amb un camp `acce
 - Entrar el test és acceptar-lo: els ritmes derivats s'apliquen a la següent planificació. El camp `acceptat` es retira.
 - Es conserva la `data` del test: RN-028 (test caducat a 8 setmanes) i RN-029 (període sense test) segueixen igual.
 - Les validacions del test (ràtio T400/T200, 200 no màxim, regularitat) continuen sent avisos (spec 004). Confirmar l'avís substitueix igualment l'anterior.
-- Els camps informatius del test (`detall_400`, `detall_200` i els seus subcamps, `notes`) es mantenen a la spec 001 i poden ser `null`. La fitxa (ADR-0021) només porta `piscina|data|t400|t200` i, opcionalment, `rpe`; la resta queda `null`. No s'hi afegeix res més si augmenta la complexitat del lector.
+- Els camps informatius del test (`detall_400`, `detall_200` i els seus subcamps, `notes`) es mantenen a la spec 001 i poden ser `null`. La fitxa (ADR-0021) només porta `piscina|data|t400|t200`; els camps informatius queden `null`. No s'hi afegeix res més si augmenta la complexitat del lector.
 
 ## Alternatives
 - **Llista de tests per estudiar l'evolució (spec 001 fins avui):** descartat; cap regla de planificació la fa servir i la fitxa l'hauria de portar.
 - **Mantenir `acceptat` com a pas separat:** descartat; amb la fitxa, el coach ja decideix en escriure el test.
 - **Retirar també els camps informatius:** descartat; costen zero a `null` i poden servir més endavant.
+- **Un `rpe` únic a la fitxa:** descartat; la spec 001 té un `rpe` per detall (400 i 200) i copiar-ne un als dos inventa una dada.
 
 ## Conseqüències (spec 001)
 - `tests_css` (llista) → `test_css`: objecte amb claus `25` i `50`, cada una un test o `null`. Camps del test: `data`, `t400`, `t200` (obligatoris); `detall_400`, `detall_200`, `notes` (informatius).

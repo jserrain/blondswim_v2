@@ -54,6 +54,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-039 | Reimportació d'inscripcions amb diferències | avís | importació | spec 002 |
 | RN-040 | Pla possiblement desfasat | avís | importació | spec 002 |
 | RN-041 | Alias sense sufix coincident amb un nedador existent | avís | importació | spec 002 |
+| RN-042 | Fitxa d'un nedador arxivat | bloquejant | importació | spec 002 |
 
 ## Nedador
 
@@ -295,6 +296,13 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Missatge:** identifica l'alias i el nedador existent amb la mateixa part.
 - **Font:** spec 002.
 - **Coherència:** revisada contra RN-003 i RN-004. RN-003 exigeix unicitat de l'alias complet i el sufix ho garanteix; un alta amb la mateixa part genera un alias diferent. RN-004 no s'altera: el nedador existent no canvia. Sense conflicte.
+
+### RN-042 — Fitxa d'un nedador arxivat
+- **Tipus:** bloquejant · **Moment:** importació
+- **Regla:** una fitxa d'un nedador arxivat és un error: cal desarxivar-lo abans (operació de la spec 001).
+- **Missatge:** identifica l'alias i l'acció (desarxivar-lo).
+- **Font:** spec 002.
+- **Coherència:** revisada contra RN-004, RN-017 i RN-037. RN-004 i RN-017 permeten arxivar i desarxivar, i aquesta regla no ho canvia; RN-037 aplica el mateix criteri a les inscripcions (nedador no arxivat). La unicitat de correu i alias continua comptant els arxivats (RN-003, RN-032). Sense conflicte.
 
 ## Composició de sessions
 

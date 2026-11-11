@@ -24,7 +24,7 @@ data/entrada/<AAAA-AA>/calendari.csv
 data/entrada/<AAAA-AA>/inscripcions_<alias>.csv
 ```
 
-Format comú (ADR-0013): UTF-8 (sense BOM), separador `;`, valors compostos o llistes dins d'un camp separats per `|`, camp buit = `null`. Les files en blanc s'ignoren. Al calendari i a les inscripcions la primera fila és la capçalera amb els noms exactes de columna; qualsevol columna de més, de menys o en un altre ordre és error de format del fitxer.
+Format comú (ADR-0013): UTF-8 (un BOM inicial s'accepta i s'ignora), separador `;`, valors compostos o llistes dins d'un camp separats per `|`, camp buit = `null`. Les files en blanc s'ignoren. Un fitxer sense cap fila de dades (buit o només capçalera) és ERROR de format `fitxer`. No hi ha escapament: un valor que conté `"` o `;` és ERROR de format del camp. Al calendari i a les inscripcions la primera fila és la capçalera amb els noms exactes de columna; qualsevol columna de més, de menys o en un altre ordre és error de format del fitxer.
 
 ### Fitxa del nedador (`clau;valor`)
 Sense capçalera. Cada fila és `clau;valor`. L'ordre de les files és lliure. Una clau desconeguda, o repetida quan no és repetible, és error. Una clau obligatòria absent és error.
@@ -93,21 +93,21 @@ blondswim importar inscripcions --temporada <AAAA-AA> --alias <alias> [--confirm
 
 ## Efecte sobre les dades
 - **Fitxa, alta:** id UUID v4 i alias generats (RN-002, RN-003), `arxivat: false`. L'alta sempre queda pendent de confirmar a la primera passada (l'alias generat s'ha de confirmar). Unicitat de correu i alias contra tots els nedadors, arxivats inclosos.
-- **Fitxa, actualització:** es torna a validar el nedador sencer, unicitat inclosa; se substitueixen els camps modificables; id, alias i `versio_esquema` no canvien (CA-001-53). `test_css` substitueix el test de la piscina indicada. `marca` s'afegeix si millora (RN-007) i amb data posterior a la vigent (CA-001-102); si no millora, no es fa res ni s'avisa. Un nedador arxivat es pot actualitzar; no es desarxiva.
+- **Fitxa, actualització:** es torna a validar el nedador sencer, unicitat inclosa; se substitueixen els camps modificables; id, alias i `versio_esquema` no canvien (CA-001-53). `test_css` substitueix el test de la piscina indicada. `marca` s'afegeix si millora (RN-007) i amb data posterior a la vigent (CA-001-102); si no millora, no es fa res ni s'avisa. Una fitxa d'un nedador arxivat és ERROR (RN-042): cal desarxivar-lo abans (operació de la spec 001).
 - **Calendari:** el CSV és la font. Competició existent amb el mateix slug → s'actualitzen nom, dates, piscina i seu, mateix id; slug nou → competició nova; competició del catàleg sense fila al CSV → s'esborra si no té inscripcions, i si en té és error (RN-010). Dues files amb el mateix slug → error (RN-008). Si un canvi de dates deixa una inscripció existent sense el seu dia → error (RN-038); la importació del calendari no toca les inscripcions.
 - **Inscripcions:** el CSV és la font: `inscripcions.json` del nedador i temporada se substitueix sencer. Quan ja existeix un `inscripcions.json` i el resultat en difereix (participacions o proves que desapareixen o canvien), es genera l'avís RN-039 amb el resum de les diferències; es desa només amb `--confirma`. Les files s'agrupen per competició en una participació (classe) amb les seves proves.
 - **Plans:** la importació no modifica mai cap pla. Si el nedador té un pla a la temporada i canvia una participació de classe A o la data d'una competició amb participació → avís RN-040 «el pla pot quedar desfasat».
 
 ## Validació
-Un sol validador (spec 001): la importació aplica les mateixes regles que la càrrega. Aquesta spec només afegeix els errors de format del CSV i les RN-036 a RN-041.
+Un sol validador (spec 001): la importació aplica les mateixes regles que la càrrega. Aquesta spec només afegeix els errors de format del CSV i les RN-036 a RN-042.
 
-- **ERROR** (bloquejant): format del fitxer (codificació, capçalera, columnes; claus de la fitxa), format d'un camp o valor, qualsevol RN de nivell ERROR de la spec 001, RN-036, RN-037, RN-038, RN-008, RN-010, RN-011.
+- **ERROR** (bloquejant): format del fitxer (codificació, capçalera, columnes; claus de la fitxa), format d'un camp o valor, qualsevol RN de nivell ERROR de la spec 001, RN-036, RN-037, RN-038, RN-042, RN-008, RN-010, RN-011.
 - **AVÍS**: RN-009, RN-019, RN-035, RN-039, RN-040, RN-041.
 
 ## Contracte del cas d'ús (constitució IX)
 Un cas d'ús per fitxer (`importar_fitxa`, `importar_calendari`, `importar_inscripcions`) a `application/`:
 - Entrada: DTO amb el contingut del fitxer com a text cru (sense tipar) i els arguments (`temporada`, `alias`, `confirma`).
-- Sortida: `ResultatImportacio` amb `ok`, `desat`, `pendent_confirmacio` (bool), `errors[]`, `avisos[]`, `alias_generat` (només alta), `resum`. Cada incidència: `origen` (fila i columna o clau, o `fitxer`), `codi` (RN o `FORMAT-<camp>`), `nivell`, `valor`, `missatge`, `accio`.
+- Sortida: `ResultatImportacio` amb `ok`, `desat`, `pendent_confirmacio` (bool), `incidencies[]`, `alias_generat` (només alta), `resum`. Cada incidència: `origen` (fila i columna o clau, o `fitxer`), `codi` (RN o `FORMAT-<camp>`), `nivell` (`bloquejant` o `avís`; l'ERROR i l'AVÍS d'aquesta spec hi mapegen 1:1, constitució IX), `valor`, `missatge`, `accio`.
 - El lector CSV (`infrastructure/`) només obre el fitxer, comprova codificació i capçalera (o parells clau;valor), i retorna text. La CLI (`interfaces/`) només pinta el resultat i tradueix `ok/desat/pendent_confirmacio` a codi de sortida (0/1/2). Cap dels dos conté regles.
 - El rellotge s'injecta (línies del registre d'avisos).
 
@@ -149,7 +149,12 @@ Per fitxer: ruta, files llegides; errors i avisos ordenats per fila (o per clau)
 - P: Què fa una clau opcional absent en una actualització? → No n'hi ha: totes les claus excepte `test_css` i `marca` són obligatòries; `correu` i `canal_preferent` admeten el valor buit. Una actualització mai no perd un valor per omissió.
 - P: La fitxa porta `rpe` del test CSS? → No: `test_css` és `piscina|data|t400|t200`; un cinquè valor és error de format i `detall_400`, `detall_200` i `notes` queden `null` (ADR-0022).
 - P: On és la derivació de l'id de competició? → A RN-008 (slug del nom).
-- P: BOM? → Error de format del fitxer (el format és UTF-8 sense BOM).
+- P: BOM? → El BOM UTF-8 inicial s'accepta i s'ignora; només la codificació no UTF-8 és error de format del fitxer (CA-002-03, 62).
+- P: Fitxer buit o només capçalera? → ERROR de format `fitxer`: no es desa res (CA-002-59).
+- P: Cometes i `;` dins d'un valor? → No hi ha escapament: un valor que conté `"` o `;` és ERROR de format del camp (CA-002-60).
+- P: Estructura del resultat? → `incidencies[]` única, amb `nivell: bloquejant | avís` (constitució IX); ERROR i AVÍS de la spec hi mapegen 1:1; `errors[]` i `avisos[]` desapareixen (CA-002-50).
+- P: Fitxa d'un nedador arxivat? → ERROR RN-042: cal desarxivar-lo abans (operació de la spec 001), com per a les inscripcions (RN-037) (CA-002-61).
+- P: `rpe` únic a la fitxa? → Descartat (ADR-0022, Alternatives): la fitxa no el porta.
 - P: Moment de les RN aplicades en importar? → RN-008, RN-010 i RN-019 inclouen el moment `importació`.
 
 ## Criteris d'acceptació
@@ -157,7 +162,7 @@ Per fitxer: ruta, files llegides; errors i avisos ordenats per fila (o per clau)
 Format i lectura
 - **CA-002-01** — Donat un CSV de calendari, d'inscripcions o una fitxa d'actualització amb cap incidència, quan s'importa sense `--confirma`, aleshores es desa, el codi de sortida és 0 i l'informe diu `desat`.
 - **CA-002-02** — Donat un CSV de calendari o d'inscripcions amb una columna de menys, de més o en un altre ordre, quan s'importa, aleshores no es desa res, hi ha un ERROR d'origen `fitxer` que identifica la capçalera esperada, i el codi és 1.
-- **CA-002-03** — Donat un CSV amb codificació no UTF-8 o amb BOM, quan s'importa, aleshores no es desa res i hi ha un ERROR d'origen `fitxer`.
+- **CA-002-03** — Donat un CSV amb codificació no UTF-8, quan s'importa, aleshores no es desa res i hi ha un ERROR d'origen `fitxer`.
 - **CA-002-04** — Donat un CSV amb files en blanc (buides o només amb espais) intercalades, quan s'importa, aleshores s'ignoren sense error ni avís i els números de fila de l'informe són els del fitxer.
 - **CA-002-05** — Donat un CSV amb una data `31/12/2026`, quan s'importa, aleshores hi ha un ERROR `FORMAT-<camp>` que indica fila, columna i valor, i no es desa res.
 - **CA-002-06** — Donat un CSV amb diversos errors en files diferents, quan s'importa, aleshores l'informe els llista tots, ordenats per fila, i no s'atura al primer.
@@ -216,7 +221,7 @@ Inscripcions
 
 Arquitectura
 - **CA-002-49** — Donat el codi d'`interfaces/` i d'`infrastructure/csv`, quan passa import-linter, aleshores no importen `domain/` ni llegeixen fitxers JSON (constitució X).
-- **CA-002-50** — Donat un `ResultatImportacio` amb errors i avisos, quan la CLI el pinta, aleshores el text conté per a cada incidència origen, codi, valor i acció, i el codi de sortida segueix `ok/desat/pendent_confirmacio` (0, 1, 2) sense cap lògica addicional.
+- **CA-002-50** — Donat un `ResultatImportacio` amb incidències de nivell `bloquejant` i `avís`, quan la CLI el pinta, aleshores el text conté per a cada incidència origen, codi, nivell, valor i acció, i el codi de sortida segueix `ok/desat/pendent_confirmacio` (0, 1, 2) sense cap lògica addicional.
 - **CA-002-51** — Donada la funció de slug, quan rep `Campionat d'Hivern  (25 m)`, aleshores retorna `campionat-d-hivern-25-m` (RN-008).
 
 Casos límit i parts de CA separades (els números no es reutilitzen)
@@ -227,3 +232,7 @@ Casos límit i parts de CA separades (els números no es reutilitzen)
 - **CA-002-56** — Donada una fitxa amb `test_css` amb una piscina diferent de 25 o 50, quan s'importa, aleshores ERROR de format que identifica la clau i el valor (CA-001-41).
 - **CA-002-57** — Donada una fitxa amb dues files `marca` de la mateixa prova i piscina, quan s'importa, aleshores ERROR que identifica la clau i les dues files.
 - **CA-002-58** — Donada una fitxa amb un `alias` que no té la forma `<part>` ni `<part>_<sufix>` de RN-003, quan s'importa, aleshores ERROR RN-003 que identifica la clau i el valor i no es desa res.
+- **CA-002-59** — Donat un calendari, unes inscripcions o una fitxa sense cap fila de dades (buit o només capçalera), quan s'importa, aleshores ERROR de format d'origen `fitxer` i no es desa res.
+- **CA-002-60** — Donat un CSV amb un valor que conté `"` o un `;` addicional, quan s'importa, aleshores ERROR de format del camp que indica fila, columna (o clau) i valor, i no es desa res.
+- **CA-002-61** — Donada una fitxa d'un nedador arxivat, quan s'importa, aleshores ERROR RN-042 que identifica l'alias i l'acció (desarxivar-lo abans) i no es desa res.
+- **CA-002-62** — Donat un CSV amb un BOM UTF-8 inicial, quan s'importa, aleshores el BOM s'ignora i el fitxer es llegeix com si no en tingués (la primera capçalera o clau no el conté).
