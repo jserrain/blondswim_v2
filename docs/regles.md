@@ -50,11 +50,12 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-035 | Canal preferent absent | avís | càrrega, importació | spec 001, ADR-0020 |
 | RN-036 | Classe única per competició a l'entrada | bloquejant | importació | spec 002 |
 | RN-037 | Alias de l'importació d'inscripcions | bloquejant | importació | spec 002 |
-| RN-038 | Data amb inscripcions en reimportar el calendari | bloquejant | importació | spec 002 |
+| RN-038 | Reimportació del calendari amb inscripcions | bloquejant | importació | spec 002 |
 | RN-039 | Reimportació d'inscripcions amb diferències | avís | importació | spec 002 |
 | RN-040 | Pla possiblement desfasat | avís | importació | spec 002 |
 | RN-041 | Alias existent en una alta | avís | importació | spec 002 |
 | RN-042 | Fitxa d'un nedador arxivat | bloquejant | importació | spec 002 |
+| RN-043 | Dates de competició dins la temporada | bloquejant | càrrega, importació | spec 002 |
 
 ## Nedador
 
@@ -269,12 +270,12 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Font:** spec 002.
 - **Coherència:** revisada contra RN-003, RN-004 i RN-017. RN-004 no esborra nedadors i RN-017 només tracta l'aptitud per planificar; RN-037 és una condició de l'ordre d'importar. Sense conflicte.
 
-### RN-038 — Data amb inscripcions en reimportar el calendari
+### RN-038 — Reimportació del calendari amb inscripcions
 - **Tipus:** bloquejant · **Moment:** importació
-- **Regla:** una reimportació del calendari no pot treure una data en què un nedador té una inscripció.
-- **Missatge:** identifica l'alias, la competició i el dia.
+- **Regla:** una reimportació del calendari no pot deixar invàlida cap inscripció existent: ni treure el dia en què un nedador té una inscripció (RN-015), ni canviar la piscina de manera que una prova inscrita deixi de ser oficial (RN-030).
+- **Missatge:** identifica l'alias, la competició i el dia o la prova afectada.
 - **Font:** spec 002.
-- **Coherència:** revisada contra RN-010, RN-011 i RN-015. RN-010 protegeix la competició sencera i RN-015 exigeix que el dia sigui de la competició; RN-038 impedeix que una reimportació trenqui RN-015 en dades ja desades. Complementària, sense conflicte.
+- **Coherència:** revisada contra RN-010, RN-011 i RN-015. RN-010 protegeix la competició sencera i RN-015 exigeix que el dia sigui de la competició; RN-038 impedeix que una reimportació trenqui RN-015 o RN-030 en dades ja desades. Complementària, sense conflicte.
 
 ### RN-039 — Reimportació d'inscripcions amb diferències
 - **Tipus:** avís · **Moment:** importació
@@ -303,6 +304,13 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Missatge:** identifica l'alias i l'acció (desarxivar-lo).
 - **Font:** spec 002.
 - **Coherència:** revisada contra RN-004, RN-017 i RN-037. RN-004 i RN-017 permeten arxivar i desarxivar, i aquesta regla no ho canvia; RN-037 aplica el mateix criteri a les inscripcions (nedador no arxivat). La unicitat de correu i alias continua comptant els arxivats (RN-003, RN-032). Sense conflicte.
+
+### RN-043 — Dates de competició dins la temporada
+- **Tipus:** bloquejant · **Moment:** càrrega, importació
+- **Regla:** totes les dates d'una competició del catàleg són dins la temporada del catàleg (RN-031).
+- **Missatge:** identifica la competició, la data i la temporada.
+- **Font:** spec 002.
+- **Coherència:** revisada contra RN-031 i RN-013. RN-031 defineix la temporada; RN-013 comprova la participació respecte de la temporada del nedador; RN-043, el catàleg respecte de la seva temporada. Complementàries, sense conflicte.
 
 ## Composició de sessions
 

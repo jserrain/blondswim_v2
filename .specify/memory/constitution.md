@@ -82,8 +82,8 @@ les definicions externes només canvien quan canvia la seva font.
 
 ### IX. Contracte dels casos d'ús d'entrada
 - Tot cas d'ús que introdueix dades rep un DTO d'entrada i retorna un resultat
-  tipat: `ok` i `errors[]`; cada error té origen (fila/camp), codi, nivell
-  (bloquejant | avís) i missatge.
+  tipat: `ok` i `incidencies[]`; cada incidència té origen (fila/camp), codi,
+  nivell (bloquejant | avís) i missatge.
 - Els nivells i els codis d'error viuen al cas d'ús.
 - Les vistes (CLI, lector CSV, web) només mapegen la seva entrada al DTO i el
   resultat al seu format; no contenen lògica de negoci ni de validació.
@@ -133,4 +133,4 @@ a `docs/regles.md`.
 - El *Constitution Check* de `/speckit-plan` i `/speckit-analyze` verifica el compliment.
   Una violació s'ha de justificar o corregir abans d'implementar.
 
-**Version**: 1.4.0 | **Ratified**: 2026-10-18 | **Last Amended**: 2026-11-10
+**Version**: 1.4.1 | **Ratified**: 2026-10-18 | **Last Amended**: 2026-11-12

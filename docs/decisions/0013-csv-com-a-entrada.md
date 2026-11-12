@@ -18,7 +18,7 @@ La part cara de la importació no és validar sinó normalitzar dades heretades 
 - La importació converteix cada CSV a JSON. El sistema només llegeix JSON.
 - El CSV és la font del catàleg i de les inscripcions. Quan el CSV canvia, es torna a importar i el JSON corresponent se substitueix.
 - La importació no modifica mai els plans. Si un canvi afecta un pla existent, el sistema avisa.
-- La importació és un cas d'ús d'`application/` amb DTO d'entrada i resultat tipat (errors amb origen, codi, nivell i missatge). El lector CSV i la CLI són vistes: mapegen fitxer → DTO i resultat → text, sense lògica pròpia (constitució IX, X). Una futura interfície web reutilitza el mateix cas d'ús.
+- La importació és un cas d'ús d'`application/` amb DTO d'entrada i resultat tipat (`incidencies[]` amb origen, codi, nivell i missatge). El lector CSV i la CLI són vistes: mapegen fitxer → DTO i resultat → text, sense lògica pròpia (constitució IX, X). Una futura interfície web reutilitza el mateix cas d'ús.
 - Els Excels de sortida (full de piscina, resum) continuen sent només sortida.
 
 ## Alternatives
