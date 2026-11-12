@@ -117,6 +117,7 @@ Un cas d'ús per fitxer (`importar_fitxa`, `importar_calendari`, `importar_inscr
 | `RN-NNN` | el de la regla a `docs/regles.md` | s'incompleix una regla de negoci |
 | `FORMAT-FITXER` | bloquejant | fitxer inexistent, codificació no UTF-8, fitxer sense files de dades |
 | `FORMAT-CAPCALERA` | bloquejant | capçalera del calendari o de les inscripcions diferent de l'esperada |
+| `FORMAT-FILA` | bloquejant | fila del calendari o de les inscripcions amb un nombre de camps diferent de la capçalera |
 | `FORMAT-CLAU` | bloquejant | fitxa amb una clau desconeguda, repetida (no repetible) o obligatòria absent |
 | `FORMAT-<camp>` | bloquejant | valor amb format no vàlid, amb `"` o `;`, o fora dels admesos. `<camp>`: `nom`, `dates`, `piscina`, `seu`, `competicio`, `classe`, `dia`, `distancia`, `estil`, `prioritat`, `alias`, `correu`, `mobil`, `canal_preferent`, `estils_preferents`, `dies_entrenament`, `volum_setmanal`, `test_css`, `marca`, `temporada` |
 
@@ -180,6 +181,9 @@ Per fitxer: ruta, files llegides; errors i avisos ordenats per fila (o per clau)
 - P: `incidencies[]` o `errors[]`? → `incidencies[]` amb `nivell`; la constitució IX (1.4.1) i l'ADR-0013 s'hi alineen.
 - P: Catàleg de codis? → § Catàleg de codis.
 - P: Independència de les històries? → US1 i US3 independents (P1); US2 depèn de totes dues (P2).
+
+### Sessió 2026-11-12 (auditoria G2)
+- P: Quin codi té una fila amb un nombre de camps incorrecte? → `FORMAT-FILA` (afegit al catàleg de codis; ja el feien servir el pla i el data model).
 
 ## Criteris d'acceptació
 

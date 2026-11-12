@@ -43,5 +43,5 @@ Les dues operacions llancen `ErrorLectura`. Implementació: `infrastructure/csv/
 
 ## Nivells i codis
 - `nivell`: `bloquejant` o `avís`. ERROR i AVÍS de la spec hi mapegen 1:1.
-- `codi`: una RN (`RN-008`, `RN-036`…), `FORMAT-<camp>`, `FORMAT-fila` (nombre de camps incorrecte) o `FORMAT-fitxer`.
+- `codi`: una RN (`RN-008`, `RN-036`…), `FORMAT-<camp>`, `FORMAT-FILA` (nombre de camps incorrecte), `FORMAT-CLAU`, `FORMAT-CAPCALERA` o `FORMAT-FITXER` (spec § Catàleg de codis).
 - Els nivells i els codis viuen als casos d'ús (constitució IX), no a la vista.

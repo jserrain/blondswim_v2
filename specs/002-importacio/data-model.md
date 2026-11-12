@@ -58,7 +58,7 @@ Estat de l'informe i codi de sortida (R4): `desat` → 0; `pendent_confirmacio` 
 | Camp | Tipus | Nota |
 |---|---|---|
 | `origen` | `Origen(fila: int \| None, camp: str \| None)` | `fila` i `camp` buits = fitxer sencer; en una fitxa, `camp` és la clau |
-| `codi` | text | RN (`RN-036`) o `FORMAT-<camp>`, `FORMAT-fila`, `FORMAT-fitxer` |
+| `codi` | text | RN (`RN-036`) o `FORMAT-<camp>`, `FORMAT-FILA`, `FORMAT-CLAU`, `FORMAT-CAPCALERA`, `FORMAT-FITXER` (spec § Catàleg de codis) |
 | `nivell` | `bloquejant` o `avís` | ERROR i AVÍS de la spec, 1:1 |
 | `valor` | text | el valor del CSV que provoca la incidència |
 | `missatge` | text | en català |

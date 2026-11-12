@@ -7,7 +7,7 @@ Cada decisió porta raó i alternatives. Les decisions de disseny D1, D4, D5 i D
 ## R1 — Lectura del CSV
 - **Decisió:** `csv.reader(delimiter=";", quoting=csv.QUOTE_NONE)` sobre un fitxer obert amb `encoding="utf-8-sig"` i `newline=""`. El número de fila és `reader.line_num`. Les files buides o només amb espais s'ignoren sense canviar la numeració.
 - **Raó:** `utf-8-sig` accepta i ignora el BOM i falla amb `UnicodeDecodeError` si no és UTF-8 (CA-002-03, 62). `QUOTE_NONE` implementa «no hi ha escapament»: les cometes queden com a caràcter i la capa d'aplicació les detecta (CA-002-60). `line_num` dona els números de fila del fitxer (CA-002-04).
-- **Files amb més o menys camps que la capçalera:** el lector les retorna tal com són; el cas d'ús genera `FORMAT-fila` (un `;` addicional és un valor que en conté un, CA-002-60). La fitxa exigeix exactament dos camps per fila.
+- **Files amb més o menys camps que la capçalera:** el lector les retorna tal com són; el cas d'ús genera `FORMAT-FILA` (un `;` addicional és un valor que en conté un, CA-002-60). La fitxa exigeix exactament dos camps per fila.
 - **Alternatives:** `csv` amb cometes (contradiu la decisió de no escapar); llegir amb `str.split(";")` (perd la comprovació de l'estàndard i no gestiona `line_num`); pandas (dependència nova, prohibida).
 
 ## R2 — Slug de l'id de competició (RN-008)
@@ -23,7 +23,7 @@ Cada decisió porta raó i alternatives. Les decisions de disseny D1, D4, D5 i D
 
 ## R4 — Resultat d'importació (IX)
 - **Decisió:** `ResultatImportacio` amb `ok`, `desat`, `pendent_confirmacio`, `incidencies[]`, `resum`. `Incidencia(origen, codi, nivell, valor, missatge, accio)` amb `nivell` `bloquejant` o `avís`. Només tipus primitius (`str`, `int`, `bool`) perquè cap tipus de domini arribi a la vista.
-- **Raó:** constitució IX i decisió del 2026-11-11 (una sola llista). El `codi` és la RN o `FORMAT-<camp>` (o `FORMAT-fila`, `FORMAT-fitxer`).
+- **Raó:** constitució IX i decisió del 2026-11-11 (una sola llista). El `codi` és la RN o `FORMAT-<camp>` (o `FORMAT-FILA`, `FORMAT-CLAU`, `FORMAT-CAPCALERA`, `FORMAT-FITXER`; spec § Catàleg de codis).
 - **Conversió:** `ErrorValidacio` i `Avis` del domini porten `rn`, `fitxer`, `camp`, `valor`, `missatge` i `accio`; la conversió els copia i hi afegeix l'origen (R5). El `valor` es converteix a text.
 - **Alternatives:** dues llistes (contradiu IX); excepcions per als errors (perd el resum).
 
