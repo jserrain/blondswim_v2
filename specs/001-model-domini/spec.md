@@ -196,9 +196,9 @@ data/
 ### Sessió 2026-10-25 (esmena: id, alias i contacte)
 
 - P: Quin format té l'id del nedador? → UUID v4 en minúscules, generat pel sistema; no es pot endevinar (ADR-0014, RN-001, RN-002).
-- P: L'alias és opcional? → No: és obligatori, únic i immutable, amb la forma `<part>_<sufix>`; el sufix són els 7 primers caràcters de l'id i l'afegeix sempre el sistema (RN-003).
+- P: L'alias és opcional? → No: és obligatori, únic i immutable, amb la forma `<part>_<sufix>`; el sufix són els 7 primers caràcters de l'id i l'afegeix sempre el sistema (RN-003). Substituïda per 2026-11-11 (ADR-0023: alias escrit pel coach).
 - P: Es pot corregir un alias mal escrit? → No: en crear el nedador es mostra l'alias definitiu i es demana confirmació (RN-003). Substituïda per 2026-10-27 (la confirmació del coach és de la spec 002).
-- P: I si l'alias nou coincideix amb un d'existent? → El sistema genera un id nou i torna a proposar l'alias (RN-003). Substituïda per 2026-10-27 (l'alta genera l'alias, sense proposar-lo).
+- P: I si l'alias nou coincideix amb un d'existent? → El sistema genera un id nou i torna a proposar l'alias (RN-003). Substituïda per 2026-10-27 (l'alta genera l'alias, sense proposar-lo). Substituïda per 2026-11-11 (ADR-0023: alias escrit pel coach).
 - P: Quines dades de contacte té el nedador? → Correu i mòbil, tots dos obligatoris; el correu és únic i el mòbil pot ser compartit, amb avís (ADR-0015, RN-032 a RN-034). Substituïda per 2026-10-27 (ADR-0016 substitueix l'ADR-0015).
 - P: Com s'escriu el mòbil? → En E.164 (`+34…`). Afegir `+34` a un número sense prefix és feina de l'entrada de dades, no de la càrrega (ADR-0015). Substituïda per 2026-10-27 (ADR-0016 substitueix l'ADR-0015).
 - P: Què és `canal_preferent`? → `correu` o `mobil`; informatiu, sense avís si falta. Un valor no admès és una incidència resoluble (RN-035). Substituïda per 2026-10-27 (sense valor, avís; valor no admès, error de format).
@@ -275,11 +275,12 @@ data/
 - F — P: Quins canvis té el pla? → `tasks.md` (T035, T036, T038 a T042, T044, T047 i la taula CA → tasca), `plan.md` (D1: el correu es compara en minúscules i sense espais, el valor no canvia), `research.md`, `data-model.md`, contracte i quickstart.
 - D-H1 — P: Es pot treure el correu en modificar el nedador? → Sí: `correu: null` el deixa sense correu i el correu antic queda lliure per a un altre nedador (CA-001-112; test a T039, implementació a T041 i T047). Amb això, CA nous: CA-001-104 a 112. Recomptes: 99 CA actius (90 amb test, 9 pendents) i 13 retirats.
 
-### Sessió 2026-11-11 (ADR-0021 revisat i ADR-0022)
+### Sessió 2026-11-11 (ADR-0021 revisat, ADR-0022 i ADR-0023)
+- P: Quina forma té l'alias? → L'escriu el coach, `^[a-z0-9]{2,9}(\d{2})?$`, únic i immutable; ja no porta el sufix de l'id. En una alta amb un alias existent, el sistema proposa el primer sufix lliure `01`…`99` i l'alta queda pendent de confirmar (RN-003, RN-041, ADR-0023). CA-001-46, 52 i 61 reescrits; CA-001-51 i 68 retirats.
 
 - P: Es conserva l'històric de tests CSS? → No: un test per piscina, el nou substitueix l'anterior; entrar-lo és acceptar-lo (ADR-0022).
 - P: Com entren les dades del nedador? → Fitxa `clau;valor`, una per nedador, alta o actualització segons l'alias (ADR-0021; detall a la spec 002).
-- P: Els camps informatius del test? → Es mantenen; la fitxa només porta `piscina|data|t400|t200` i opcionalment `rpe`.
+- P: Els camps informatius del test? → Es mantenen; la fitxa només porta `piscina|data|t400|t200`; els camps informatius queden `null`.
 
 ## CA retirats
 
@@ -289,9 +290,11 @@ Els números no es reutilitzen.
 |---|---|
 | CA-001-55 | Format de mòbil: RN-033 retirada (ADR-0020) |
 | CA-001-56 | Mòbil compartit: RN-034 retirada (ADR-0020) |
+| CA-001-51 | Sufix de l'alias derivat de l'id: l'alias ja no en deriva (ADR-0023) |
 | CA-001-05 | Un sol test per piscina, sense `acceptat` (ADR-0022) |
 | CA-001-30 | Un sol test per piscina, sense `acceptat` (ADR-0022) |
 | CA-001-35 | Un sol test per piscina, sense `acceptat` (ADR-0022) |
+| CA-001-68 | Confirmació de l'alias generat: l'alias l'escriu el coach i és determinista (ADR-0023) |
 | CA-001-64 | Avís rebutjat amb línia `decisio: rebutjat`: rebutjar = no confirmar, sense registre (spec 002) |
 | CA-001-77 | Avís de mòbil compartit amb un ERROR en un altre camp: RN-034 retirada (ADR-0020) |
 | CA-001-82 | Un sol test per piscina, sense `acceptat` (ADR-0022) |
@@ -349,26 +352,24 @@ Els números no es reutilitzen.
 - **CA-001-43** — **Donada** una carpeta de temporada amb un nom que no segueix RN-031 (p. ex. `2026-28`), **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica la carpeta.
 - **CA-001-44** — **Donat** un nedador amb `correu` buit o només amb espais en blanc, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp (RN-032). Un correu absent o `null` és vàlid (CA-001-107).
 - **CA-001-45** — **Donats** dos nedadors existents, un d'ells arxivat, **quan** es crea un nedador nou, **aleshores** rep un id UUID v4 diferent dels dos (RN-002).
-- **CA-001-46** — **Donat** un nedador amb un `alias` que no compleix RN-003 (p. ex. `""`, `marc` sense sufix, `Marc_3f2a9c1` o `marc_cognom_3f2a9c1`), **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp.
+- **CA-001-46** — **Donat** un nedador amb un `alias` que no compleix RN-003 (p. ex. `""`, `a`, `Agonzalez`, `a_gonzalez`, `agonzález`, `agonzalez1` o `agonzalezzz01`), **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp.
 - **CA-001-47** — **Donada** una competició amb `seu: null`, **quan** es carrega, **aleshores** `data/avisos.jsonl` té una línia nova amb `rn: "RN-009"`, el fitxer, el camp `seu`, la data i hora i `decisio: null`.
 - **CA-001-48** — **Donat** un registre d'avisos amb línies, **quan** es registra un avís nou, **aleshores** les línies anteriors es conserven sense canvis.
 - **CA-001-49** — **Donat** un nedador amb un `test_css[piscina]` sense `notes` ni `detall_400`, **quan** es carrega i es torna a desar, **aleshores** es carrega sense error ni avís i el fitxer desat té aquests camps a `null`.
 - **CA-001-50** — **Donat** un `nedador.json` sense `alias` o amb `alias: null`, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp (RN-003).
-- **CA-001-51** — **Donat** un nedador amb un `alias` el sufix del qual no coincideix amb el seu id (p. ex. `marc_0000000` en un nedador amb id `3f2a9c1e-…`), **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error que identifica el camp (RN-003).
-- **CA-001-52** — **Donat** un nedador nou amb la part d'alias `marc` i un id que comença per `3f2a9c1`, **quan** s'executa l'operació d'alta, **aleshores** l'alias generat és `marc_3f2a9c1` (RN-003).
+- **CA-001-52** — **Donat** un nedador nou amb l'alias `agonzalez`, que no té cap altre nedador, **quan** s'executa l'operació d'alta, **aleshores** es desa amb l'alias `agonzalez` i un id UUID v4 nou (RN-002, RN-003). Exemples d'alias vàlids: `agonzalez`, `agonzalez01`, `lou`.
 - **CA-001-53** — **Donat** un nedador existent, **quan** es modifica, **aleshores** l'id i l'alias no canvien.
 - **CA-001-54** — **Donat** un nedador sense `mobil` o amb `mobil: null`, **quan** es carrega, **aleshores** aquell nedador no es carrega i dona un error de format que identifica el camp.
 - **CA-001-57** — **Donat** un nedador amb `canal_preferent: null` o sense el camp, **quan** es carrega, **aleshores** es carrega, genera un avís `RN-035` que identifica l'alias i el camp, es registra a `data/avisos.jsonl` amb `decisio: null` i no demana confirmació.
 - **CA-001-58** [PENDENT spec 002] — **Donat** un nedador nou amb `canal_preferent: "whatsapp"` en una importació, **quan** s'importa, **aleshores** dona un error de format que indica l'alias, el camp, el valor i les opcions admeses (`correu`, `mobil`), i el nedador no es desa.
 - **CA-001-59** — **Donat** un nedador amb `canal_preferent: "whatsapp"` en un JSON, **quan** es carrega, **aleshores** aquell nedador no es carrega i l'error de format indica l'alias, el camp, el valor i les opcions admeses (`correu`, `mobil`).
 - **CA-001-60** — **Donats** dos nedadors, un amb `canal_preferent: "whatsapp"` i l'altre vàlid, **quan** es carreguen tots dos, **aleshores** el nedador vàlid es carrega i l'altre no.
-- **CA-001-61** — **Donat** un nedador nou l'alias generat del qual ja existeix, **quan** s'executa l'operació d'alta, **aleshores** el sistema genera un id nou i un alias nou (RN-003).
+- **CA-001-61** — **Donat** un nedador existent amb l'alias `agonzalez` (i un altre amb `agonzalez01`), **quan** s'executa l'operació d'alta d'un nedador nou amb l'alias `agonzalez`, **aleshores** l'alias assignat és `agonzalez02` (primer sufix lliure) i els existents no canvien; **quan** l'alias proposat ja porta sufix (`agonzalez01`) i existeix, **aleshores** dona un ERROR (RN-003).
 - **CA-001-62** — **Donat** un nedador nou amb un ERROR (p. ex. `correu: "nedador.example.com"`), **quan** s'executa l'operació d'alta, **aleshores** el nedador no es desa i el missatge indica l'alias, la RN i l'acció que cal fer.
 - **CA-001-63** [PENDENT spec 002] — **Donat** un nedador nou amb un AVÍS (p. ex. sense `canal_preferent`), **quan** el coach el confirma explícitament, **aleshores** el nedador es desa i el registre d'avisos té una línia amb `decisio: "confirmat"`.
 - **CA-001-65** — **Donats** dos nedadors, un d'ells amb un `nedador.json` editat a mà que ja no és vàlid (p. ex. `correu` sense `@`), **quan** es carreguen, **aleshores** aquell nedador no es carrega i l'altre sí.
 - **CA-001-66** — **Donats** dos nedadors amb el mateix correu (o el mateix alias) al JSON, **quan** es carreguen, **aleshores** no es carrega cap dels dos i la resta de nedadors sí.
 - **CA-001-67** — **Donats** diversos nedadors amb errors i avisos, **quan** es validen, **aleshores** el resultat dona, per a cada nedador, els errors (nivell ERROR) i els avisos (nivell AVÍS) per separat, cadascun amb alias, camp, valor, RN (o «format») i acció.
-- **CA-001-68** [PENDENT spec 002] — **Donat** un nedador nou amb l'alias definitiu generat (`marc_3f2a9c1`), **quan** s'importa, **aleshores** el nedador no es desa fins que el coach confirma l'alias (RN-003).
 - **CA-001-69** — **Donats** un nedador amb un ERROR en un altre camp (p. ex. `estils_preferents` buit) i un altre nedador amb el mateix correu, tots dos amb el fitxer llegible, **quan** es carreguen, **aleshores** hi ha col·lisió, no es carrega cap dels dos i l'error de col·lisió identifica tots dos (RN-032).
 - **CA-001-70** — **Donat** un nedador amb un ERROR en un altre camp i el fitxer llegible, **quan** s'executa l'operació d'alta d'un nedador nou amb el seu correu, **aleshores** dona un ERROR i el nedador nou no es desa (RN-032).
 - **CA-001-71** — **Donat** un fitxer de catàleg amb un nom que no segueix RN-031 (p. ex. `2026-28.json`), **quan** es carrega, **aleshores** falla TOTA la càrrega i dona un error que identifica el fitxer.

@@ -48,7 +48,7 @@ Tot són valors de text cru, sense tipar (constitució IX).
 |---|---|---|
 | `ok` | bool | cap incidència de nivell `bloquejant` |
 | `desat` | bool | s'ha escrit el JSON |
-| `pendent_confirmacio` | bool | cap error i algun avís que requereix confirmació sense `--confirma`. RN-041 és informatiu i no en requereix |
+| `pendent_confirmacio` | bool | cap error i algun avís que requereix confirmació sense `--confirma`. |
 | `incidencies` | llista d'`Incidencia` | ordenades per fila (o per clau) |
 | `resum` | `ResumImportacio(ruta, files_llegides, bloquejants, avisos)` | comptadors per nivell |
 

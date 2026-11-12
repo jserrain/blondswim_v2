@@ -34,7 +34,7 @@ Cada decisió porta raó i alternatives. Les decisions de disseny D1, D4, D5 i D
 - **Alternatives:** validar fila per fila sense el validador (duplicaria regles, contradiu «un sol validador»).
 
 ## R6 — Fitxa: alta i actualització atòmiques
-- **Decisió:** `importar_fitxa` converteix les claus; amb `--alta` és una alta (si l'alias ja existeix, hi afegeix el primer sufix `01`…`99` lliure i emet RN-041 informatiu; si no es pot, ERROR RN-003, CA-002-64); sense `--alta` l'alias ha de correspondre a un nedador existent (RN-042 si és arxivat; si no existeix, ERROR RN-003, CA-002-21). Construeix el `Nedador` final en memòria (`CanviNedador.aplica`, `substitueix_test`, `afegeix_registre`), el valida (`valida_nedador` i `valida_unicitat`) i desa una vegada. *Confirmada* (D4).
+- **Decisió:** `importar_fitxa` converteix les claus; amb `--alta` és una alta (si l'alias ja existeix, hi afegeix el primer sufix `01`…`99` lliure i emet RN-041, que deixa l'alta pendent de confirmar; si no es pot, ERROR RN-003, CA-002-64); sense `--alta` l'alias ha de correspondre a un nedador existent (RN-042 si és arxivat; si no existeix, ERROR RN-003, CA-002-21). Construeix el `Nedador` final en memòria (`CanviNedador.aplica`, `substitueix_test`, `afegeix_registre`), el valida (`valida_nedador` i `valida_unicitat`) i desa una vegada. *Confirmada* (D4).
 - **Canvis a `gestio.py`:** `prepara_alta` (genera l'id, resol l'alias, valida, no desa) separada de `desar`; `NouNedador` amb l'alias proposat (en lloc de la part), `test_css` i `millors_registres`. `alta()` existent es manté com a combinació d'ambdues. El reintent d'id per col·lisió d'alias desapareix (l'id és independent de l'alias).
 - **Raó:** una alta amb un avís que requereix confirmació (p. ex. RN-035) no pot desar res a la primera passada, i una fitxa amb test i marques s'ha de validar com un tot (CA-002-19). Cridar `modifica`, `afegeix_test` i `afegeix_millor_registre` de manera successiva desaria parcialment.
 - **Alternatives:** cridar les operacions existents una a una (no atòmic); duplicar la validació a la importació.
@@ -63,9 +63,9 @@ Cada decisió porta raó i alternatives. Les decisions de disseny D1, D4, D5 i D
 - **Alternatives:** ignorar els il·legibles (podria esborrar una competició amb inscripcions).
 
 ## R11 — Alias de l'alta entre les dues passades (resolt, ADR-0023)
-- **Decisió:** l'alias l'escriu el coach i és determinista; no hi ha alias definitiu a confirmar (CA-001-68 retirat). Una alta sense avisos que requereixin confirmació es desa a la primera passada. RN-041 (alias existent amb `--alta`) és un avís informatiu: no requereix confirmació i es registra amb `decisio: null`.
+- **Decisió:** l'alias l'escriu el coach i és determinista; no hi ha alias definitiu a confirmar (CA-001-68 retirat). Una alta sense avisos que requereixin confirmació es desa a la primera passada. RN-041 (alias existent amb `--alta`) requereix confirmació: l'alta queda pendent fins a `--confirma`.
 - **Raó:** l'alias d'abans incloïa el sufix de l'UUID aleatori; dues passades donaven alias diferents. Ara el sufix numèric depèn només dels alias existents, que no canvien entre passades.
-- **Risc conegut:** tornar a executar `--alta` amb la mateixa fitxa un cop desada crea un segon nedador amb el sufix `01`. Sense correu, cap regla no ho impedeix; amb correu, RN-032 dona ERROR per correu repetit. No s'afegeix cap regla (principi II); si cal, és una decisió per a una spec posterior.
+- **Risc mitigat:** tornar a executar `--alta` amb la mateixa fitxa un cop desada activa RN-041; com que requereix confirmació, l'alta queda pendent (codi 2) i no es crea cap duplicat sense `--confirma`.
 - **Alternatives:** conservar l'id entre passades amb un estat pendent (descartat a l'ADR-0023); confirmar només la part (descartat).
 
 ## R12 — Fixtures com a plantilla

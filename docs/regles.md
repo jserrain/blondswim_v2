@@ -53,7 +53,7 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 | RN-038 | Data amb inscripcions en reimportar el calendari | bloquejant | importació | spec 002 |
 | RN-039 | Reimportació d'inscripcions amb diferències | avís | importació | spec 002 |
 | RN-040 | Pla possiblement desfasat | avís | importació | spec 002 |
-| RN-041 | Alias sense sufix coincident amb un nedador existent | avís | importació | spec 002 |
+| RN-041 | Alias existent en una alta | avís | importació | spec 002 |
 | RN-042 | Fitxa d'un nedador arxivat | bloquejant | importació | spec 002 |
 
 ## Nedador
@@ -73,10 +73,10 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 
 ### RN-003 — Alias del nedador
 - **Tipus:** bloquejant · **Moment:** càrrega, gestió, importació
-- **Regla:** l'alias és obligatori, únic entre tots els nedadors (arxivats inclosos) i immutable. Té la forma `<part>_<sufix>`: `<part>` l'escull el coach i és `[a-z0-9-]` de 2 a 12 caràcters; `<sufix>` són els 7 primers caràcters de l'id del nedador i l'afegeix sempre el sistema. Longitud màxima: 20 caràcters. En crear el nedador, el sistema genera l'id i l'alias definitiu; si l'alias ja existeix, genera un id nou i un altre alias. Cap operació permet canviar l'alias; la càrrega només comprova que el sufix coincideix amb l'id. Confirmació del coach (moment: importació, spec 002): el nedador no es desa fins que el coach confirma l'alias definitiu. Només es fa servir perquè el coach identifiqui el nedador: no apareix en rutes, noms de fitxer, sortides ni prompts de l'LLM.
+- **Regla:** l'alias és obligatori, únic entre tots els nedadors (arxivats inclosos) i immutable. Format: `^[a-z0-9]{2,9}(\d{2})?$` (minúscules i xifres, sense accents, signes ni guions; base de 2 a 9 caràcters i, opcionalment, un sufix numèric de dos dígits). L'escriu el coach a la fitxa (convenció recomanada: inicial del nom + fins a 8 caràcters del cognom); el sistema no rep ni desa nom ni cognoms. En una alta, si l'alias ja existeix, el sistema hi afegeix el primer sufix lliure `01`…`99` (RN-041); si l'alias ja porta sufix o no en queda cap de lliure, és ERROR. Cap operació permet canviar l'alias. Apareix al nom del CSV d'inscripcions, a l'argument `--alias`, als informes i al registre d'avisos; no apareix en prompts de l'LLM.
 - **Missatge:** identifica l'alias i, si està repetit, els nedadors que el tenen.
-- **Font:** spec 001, ADR-0014.
-- **Coherència:** revisada contra RN-001, RN-002 i RN-004. Un alias (màxim 20 caràcters) no pot tenir la forma d'un id (36 caràcters). El sufix deriva de l'id, que és immutable (RN-002), i com que els nedadors no s'esborren (RN-004) l'alias no es reutilitza. El sufix es desa dins de l'alias tot i derivar-se de l'id (principi V): és una definició derivada de l'id, que no canvia mai, i no un paràmetre ajustable; la càrrega en comprova la coherència. Sense conflicte.
+- **Font:** spec 001, ADR-0014, ADR-0023.
+- **Coherència:** revisada contra RN-001, RN-002 i RN-004. Un alias (màxim 11 caràcters) no pot tenir la forma d'un id (36 caràcters). L'alias ja no deriva de l'id; com que els nedadors no s'esborren (RN-004), un alias no es reutilitza mai. Pot contenir un cognom: és dada personal, com el correu (ADR-0023). Sense conflicte.
 
 ### RN-004 — Els nedadors no s'esborren
 - **Tipus:** bloquejant · **Moment:** gestió
@@ -290,12 +290,12 @@ Font única de les regles de negoci (constitució, principi III). Les specs, els
 - **Font:** spec 002.
 - **Coherència:** revisada contra RN-022. RN-022 és la regla general (la importació no modifica plans i avisa); RN-040 en concreta el cas. Sense conflicte; el pla no es modifica mai.
 
-### RN-041 — Alias sense sufix coincident amb un nedador existent
+### RN-041 — Alias existent en una alta
 - **Tipus:** avís · **Moment:** importació
-- **Regla:** una fitxa amb alias sense sufix que coincideix amb la part de l'alias d'un nedador existent es tracta com a alta d'un nedador nou; l'avís demana confirmar que no és una actualització.
-- **Missatge:** identifica l'alias i el nedador existent amb la mateixa part.
-- **Font:** spec 002.
-- **Coherència:** revisada contra RN-003 i RN-004. RN-003 exigeix unicitat de l'alias complet i el sufix ho garanteix; un alta amb la mateixa part genera un alias diferent. RN-004 no s'altera: el nedador existent no canvia. Sense conflicte.
+- **Regla:** en una alta (`--alta`), si l'alias de la fitxa ja existeix, el sistema proposa l'alias amb el primer sufix lliure `01`…`99`; l'alta queda pendent i es desa només amb `--confirma`.
+- **Missatge:** identifica l'alias proposat, el nedador que ja el té i l'alias que s'assignaria.
+- **Font:** spec 002, ADR-0023.
+- **Coherència:** revisada contra RN-003 i RN-004. La unicitat de RN-003 es manté amb el sufix numèric; el nedador existent no canvia (RN-004). La confirmació evita crear un duplicat en repetir per error una alta ja desada. Sense conflicte.
 
 ### RN-042 — Fitxa d'un nedador arxivat
 - **Tipus:** bloquejant · **Moment:** importació

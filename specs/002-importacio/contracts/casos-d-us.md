@@ -13,7 +13,7 @@ importar_fitxa(peticio: PeticioFitxa, repositoris, generador_id, rellotge, regis
 - No fan I/O: reben els repositoris i els ports per injecció.
 - Retornen sempre un `ResultatImportacio`; mai llancen excepcions per errors de dades.
 - Un error bloquejant no desa res, ni amb `confirma`.
-- Els avisos que requereixen confirmació es registren només en desar amb `confirma`, amb `decisio: confirmat`. Els informatius (RN-041) es registren en desar amb `decisio: null` i no fan que el resultat quedi pendent.
+- Els avisos que requereixen confirmació es registren només en desar amb `confirma`, amb `decisio: confirmat`.
 
 ## Servei (`application/importacio/serveis.py`)
 

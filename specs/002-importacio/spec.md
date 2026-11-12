@@ -85,14 +85,14 @@ blondswim importar inscripcions --temporada <AAAA-AA> --alias <alias> [--confirm
 - La temporada és un argument; la carpeta se'n deriva. Un nom que no segueix RN-031 és error.
 
 ## Flux en dues passades (sense diàleg interactiu)
-1. Sense `--confirma`: valida i mostra l'informe. Desa només si no hi ha cap error ni cap avís que requereixi confirmació. RN-041 és informatiu i no en requereix.
-2. Amb `--confirma`: valida, desa si no hi ha errors i registra cada avís que requereix confirmació a `data/avisos.jsonl` amb `decisio: confirmat`. Els avisos informatius (RN-041) es registren amb `decisio: null` en desar, sense `--confirma`.
+1. Sense `--confirma`: valida i mostra l'informe. Desa només si no hi ha cap error ni cap avís que requereixi confirmació.
+2. Amb `--confirma`: valida, desa si no hi ha errors i registra cada avís que requereix confirmació a `data/avisos.jsonl` amb `decisio: confirmat`.
 - Rebutjar = no tornar a executar amb `--confirma`. No s'escriu cap línia al registre (CA-001-64 retirat).
 - Qualsevol error bloquejant → no es desa res del fitxer, ni amb `--confirma`.
 - Codi de sortida: `0` desat; `1` errors; `2` pendent de confirmar.
 
 ## Efecte sobre les dades
-- **Fitxa, alta (`--alta`):** id UUID v4 generat (RN-002), `arxivat: false`; l'alias és el de la fitxa (RN-003) i, si ja existeix, el sistema hi afegeix el primer sufix numèric lliure (RN-041, avís informatiu). Una alta sense avisos que requereixin confirmació es desa a la primera passada. Unicitat de correu i alias contra tots els nedadors, arxivats inclosos.
+- **Fitxa, alta (`--alta`):** id UUID v4 generat (RN-002), `arxivat: false`; l'alias és el de la fitxa (RN-003) i, si ja existeix, el sistema hi afegeix el primer sufix numèric lliure (RN-041: l'alta queda pendent de confirmar). Una alta sense avisos que requereixin confirmació es desa a la primera passada. Unicitat de correu i alias contra tots els nedadors, arxivats inclosos.
 - **Fitxa, actualització (sense `--alta`):** l'alias ha de correspondre a un nedador existent; si no, ERROR RN-003. Es torna a validar el nedador sencer, unicitat inclosa; se substitueixen els camps modificables; id, alias i `versio_esquema` no canvien (CA-001-53). `test_css` substitueix el test de la piscina indicada. `marca` s'afegeix si millora (RN-007) i amb data posterior a la vigent (CA-001-102); si no millora, no es fa res ni s'avisa. Una fitxa d'un nedador arxivat és ERROR (RN-042): cal desarxivar-lo abans (operació de la spec 001).
 - **Calendari:** el CSV és la font. Competició existent amb el mateix slug → s'actualitzen nom, dates, piscina i seu, mateix id; slug nou → competició nova; competició del catàleg sense fila al CSV → s'esborra si no té inscripcions, i si en té és error (RN-010). Dues files amb el mateix slug → error (RN-008). Si un canvi de dates deixa una inscripció existent sense el seu dia → error (RN-038); la importació del calendari no toca les inscripcions.
 - **Inscripcions:** el CSV és la font: `inscripcions.json` del nedador i temporada se substitueix sencer. Quan ja existeix un `inscripcions.json` i el resultat en difereix (participacions o proves que desapareixen o canvien), es genera l'avís RN-039 amb el resum de les diferències; es desa només amb `--confirma`. Les files s'agrupen per competició en una participació (classe) amb les seves proves.
@@ -142,7 +142,7 @@ Per fitxer: ruta, files llegides; errors i avisos ordenats per fila (o per clau)
 - P: Regles sense RN? → RN-036 a RN-041 definides aquí i a `docs/regles.md`.
 - P: CA-002-01 vs CA-002-10? → Una alta sempre queda pendent (alias a confirmar); CA-002-01 s'aplica a calendari, inscripcions i actualitzacions de fitxa. Substituïda per 2026-11-11 (pla): l'alta sense avisos que requereixin confirmació es desa a la primera passada.
 - P: Substituir `inscripcions.json` sense avís? → Avís RN-039 amb resum de diferències; es desa amb `--confirma`.
-- P: Alias sense sufix que coincideix amb la part d'un nedador existent? → Alta nova amb avís RN-041 (abans: fila ignorada). Substituïda per 2026-11-11 (pla): RN-041 és informatiu i assigna un sufix numèric (ADR-0023).
+- P: Alias sense sufix que coincideix amb la part d'un nedador existent? → Alta nova amb avís RN-041 (abans: fila ignorada). Substituïda per 2026-11-11 (pla): RN-041 proposa un sufix numèric i l'alta queda pendent de confirmar (ADR-0023).
 - Revisió 2 de la spec: fitxa del nedador segons ADR-0021 revisat i ADR-0022; correccions de l'auditoria G1 r1.
 
 ### Sessió 2026-11-11 (auditoria G1 r2)
@@ -159,8 +159,8 @@ Per fitxer: ruta, files llegides; errors i avisos ordenats per fila (o per clau)
 ### Sessió 2026-11-11 (pla)
 - P: Com s'escriu l'alias? → El coach l'escriu a la fila `alias`, amb el format de RN-003 (`^[a-z0-9]{2,9}(\d{2})?$`); el sistema no rep ni desa nom ni cognoms (ADR-0023).
 - P: Com es distingeix una alta d'una actualització? → Per l'indicador `--alta` de l'ordre: amb `--alta` és una alta; sense, l'alias ha d'existir (si no, ERROR RN-003) (CA-002-20, 21).
-- P: Alias existent en una alta? → El sistema hi afegeix el primer sufix numèric lliure (`01`…`99`) i ho indica amb l'avís informatiu RN-041; si no es pot afegir cap sufix vàlid, ERROR RN-003 (CA-002-17, 64).
-- P: Es confirma l'alias? → No: és determinista; CA-001-68 retirat. Una alta sense avisos que requereixin confirmació es desa a la primera passada (CA-002-11). Els avisos informatius (RN-041) es registren amb `decisio: null`.
+- P: Alias existent en una alta? → El sistema hi afegeix el primer sufix numèric lliure (`01`…`99`) i ho indica amb l'avís RN-041, que requereix `--confirma` (evita duplicar un nedador en repetir una alta); si no es pot afegir cap sufix vàlid, ERROR RN-003 (CA-002-17, 64).
+- P: Es confirma l'alias? → No: és determinista; CA-001-68 retirat. Una alta sense avisos que requereixin confirmació es desa a la primera passada (CA-002-11). RN-041 requereix confirmació i es registra amb `decisio: confirmat`.
 - P: Nom de competició amb slug buit (cap lletra ni xifra)? → ERROR de format del camp `nom` (CA-002-63).
 - P: Pla d'implementació? → Cablatge fora de les capes (`arrel.py`), fitxa atòmica, `versio_esquema` sense canvi i lectura de les inscripcions de tots els nedadors al calendari: decisions confirmades (D1, D4, D5, D6 de `plan.md`).
 - P: Moment de les RN aplicades en importar? → RN-008, RN-010 i RN-019 inclouen el moment `importació`.
@@ -188,7 +188,7 @@ Fitxa: alta
 - **CA-002-14** — Donada una fitxa amb `canal_preferent` buit, quan s'importa, aleshores AVÍS RN-035, no es desa res i el codi és 2 (CA-001-57).
 - **CA-002-15** — Donada una fitxa amb `canal_preferent` `whatsapp`, quan s'importa, aleshores ERROR de format que indica les opcions admeses (CA-001-58).
 - **CA-002-16** — Donada una fitxa d'alta amb un correu ja existent en un nedador arxivat (comparat en minúscules i sense espais als extrems), quan s'importa, aleshores ERROR RN-032 i no es desa res.
-- **CA-002-17** — Donada una fitxa d'alta (`--alta`) amb un `alias` que ja existeix, quan s'importa, aleshores AVÍS RN-041 que indica l'alias proposat i l'assignat (el primer sufix `01`…`99` lliure), es desa sense `--confirma` i el nedador existent no canvia (CA-001-61).
+- **CA-002-17** — Donada una fitxa d'alta (`--alta`) amb un `alias` que ja existeix, quan s'importa, aleshores AVÍS RN-041 que indica l'alias proposat i l'assignat (el primer sufix `01`…`99` lliure), no es desa sense `--confirma` (codi 2), amb `--confirma` es desa amb l'alias assignat, i el nedador existent no canvia (CA-001-61).
 - **CA-002-18** — Donat un nedador existent sense fitxa importada, quan s'importa la fitxa d'un altre nedador, aleshores el primer no s'esborra, no s'arxiva ni canvia (CA-001-38).
 - **CA-002-19** — Donada una fitxa amb un ERROR (p. ex. `volum_setmanal` amb min > max), quan s'importa, aleshores no es desa res i el missatge indica l'alias, la RN i l'acció (CA-001-62, 72).
 

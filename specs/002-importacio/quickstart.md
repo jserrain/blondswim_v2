@@ -22,7 +22,7 @@ Amb una seu buida: codi `2`, `pendent de confirmar`; tornar-hi amb `--confirma` 
 uv run blondswim importar fitxa data/entrada/nedadors/<nom>.csv --alta
 uv run blondswim importar fitxa data/entrada/nedadors/<nom>.csv
 ```
-Esperat, fitxa d'alta sense avisos que requereixin confirmació: codi `0` a la primera passada i `nedadors/<uuid>/nedador.json` amb l'alias de la fitxa. Si l'alias ja existia, l'avís RN-041 informatiu indica l'alias assignat (`…01`) i el codi continua sent `0`. No repeteixis l'ordre amb `--alta`: crearia un segon nedador.
+Esperat, fitxa d'alta sense avisos que requereixin confirmació: codi `0` a la primera passada i `nedadors/<uuid>/nedador.json` amb l'alias de la fitxa. Si l'alias ja existia, l'avís RN-041 indica l'alias que s'assignaria (`…01`) i el codi és `2`: repeteix amb `--confirma` només si és un nedador nou.
 Esperat, fitxa d'actualització (segona ordre, sense `--alta`, amb l'alias d'un nedador existent) sense incidències: codi `0`. Un alias que no existeix: codi `1` amb RN-003.
 Una fitxa amb `canal_preferent` buit: codi `2` (RN-035) i, amb `--confirma`, es desa.
 
