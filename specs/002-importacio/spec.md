@@ -1,6 +1,6 @@
 # Spec 002 — Importació estricta
 
-**Estat:** Esborrany
+**Estat:** Aprovada (G1 r3, 2026-11-12)
 
 ## Objectiu
 Entrar les dades del nedador (fitxa), el catàleg de competicions (calendari) i les inscripcions de cada nedador a partir de tres CSV de format estricte (ADR-0013, ADR-0021), convertint-los a JSON segons la spec 001. Cap normalització de dades heretades: el que no s'ajusta al format és un error.
